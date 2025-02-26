@@ -18,12 +18,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AppSidebar>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/meals" element={<Meals />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div className="container mx-auto py-8 px-4">
+            <div className="max-w-7xl mx-auto">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/meals" element={<Meals />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </div>
         </AppSidebar>
       </BrowserRouter>
     </TooltipProvider>

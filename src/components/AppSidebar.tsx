@@ -8,8 +8,13 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { ReactNode } from "react";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  children: ReactNode;
+}
+
+export function AppSidebar({ children }: AppSidebarProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -30,10 +35,7 @@ export function AppSidebar() {
           </SidebarFooter>
         </Sidebar>
         <div className="flex-1 overflow-auto">
-          <div className="container mx-auto py-8 px-4">
-            <div className="max-w-7xl mx-auto">
-            </div>
-          </div>
+          {children}
         </div>
       </div>
     </SidebarProvider>
