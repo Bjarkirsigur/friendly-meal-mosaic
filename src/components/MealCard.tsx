@@ -4,6 +4,12 @@ import { cn } from "@/lib/utils";
 import { Edit2, Shuffle } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface MacroInfo {
   calories: number;
@@ -30,6 +36,7 @@ interface MealCardProps {
 
 const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, availableIngredients }: MealCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
 
   const handleEdit = () => {
     if (meal && ingredients && availableIngredients) {
@@ -37,20 +44,18 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     }
   };
 
-  const handleSwitch = () => {
-    if (availableIngredients && availableIngredients.length > 0) {
-      // Get a random set of ingredients from availableIngredients
-      const randomIngredients = [availableIngredients[Math.floor(Math.random() * availableIngredients.length)]];
+  const handleSwitch = (selectedIngredient: Ingredient) => {
+    if (onMealUpdate) {
+      const newIngredients = [selectedIngredient];
       const newMacros = {
-        calories: randomIngredients[0].macros.calories,
-        protein: randomIngredients[0].macros.protein,
-        carbs: randomIngredients[0].macros.carbs,
-        fat: randomIngredients[0].macros.fat,
+        calories: selectedIngredient.macros.calories,
+        protein: selectedIngredient.macros.protein,
+        carbs: selectedIngredient.macros.carbs,
+        fat: selectedIngredient.macros.fat,
       };
-      if (onMealUpdate) {
-        onMealUpdate(randomIngredients, newMacros);
-      }
+      onMealUpdate(newIngredients, newMacros);
     }
+    setIsSwitchDialogOpen(false);
   };
 
   const handleSave = (newIngredients: Ingredient[], newMacros: MacroInfo) => {
@@ -65,7 +70,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       <div className="flex gap-1 justify-end">
         <button 
           className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
-          onClick={handleSwitch}
+          onClick={() => setIsSwitchDialogOpen(true)}
         >
           <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
         </button>
@@ -117,6 +122,43 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           availableIngredients={availableIngredients}
         />
       )}
+
+      <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Choose a Meal</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {availableIngredients?.map((ingredient, index) => (
+              <button
+                key={index}
+                onClick={() => handleSwitch(ingredient)}
+                className="flex flex-col gap-2 p-4 hover:bg-secondary/50 rounded-lg transition-colors duration-200"
+              >
+                <p className="font-medium">{ingredient.name}</p>
+                <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
+                  <div className="text-center">
+                    <p className="font-medium">{ingredient.macros.calories}</p>
+                    <p>kcal</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium">{ingredient.macros.protein}g</p>
+                    <p>Protein</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium">{ingredient.macros.carbs}g</p>
+                    <p>Carbs</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="font-medium">{ingredient.macros.fat}g</p>
+                    <p>Fat</p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
