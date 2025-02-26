@@ -38,25 +38,20 @@ export const createInitialMeals = (): Record<string, DayMeals> => {
   DAYS.forEach(day => {
     initialMeals[day] = {} as DayMeals;
     MEAL_TYPES.forEach(mealType => {
-      const meal = AVAILABLE_MEALS[mealType as keyof typeof AVAILABLE_MEALS]?.[0] || null;
-      if (meal) {
-        initialMeals[day][mealType as MealType] = {
-          ...meal,
-          macros: {
-            ...meal.macros,
-            ...defaultMacroVisibility
-          },
-          ingredients: meal.ingredients.map(ingredient => ({
-            ...ingredient,
-            macros: {
-              ...ingredient.macros,
-              ...defaultMacroVisibility
-            }
-          }))
-        };
-      } else {
-        initialMeals[day][mealType as MealType] = null;
-      }
+      initialMeals[day][mealType as MealType] = {
+        meal: '',
+        ingredients: [],
+        macros: {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          showCalories: true,
+          showProtein: true,
+          showCarbs: true,
+          showFat: true
+        }
+      };
     });
   });
   return initialMeals;
