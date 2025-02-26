@@ -19,7 +19,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AppSidebar>
-          <div className="container mx-auto py-8 px-4">
+          <div className="py-8 px-4 h-full">
             <div className="max-w-7xl mx-auto">
               <Routes>
                 <Route path="/" element={<Index />} />
