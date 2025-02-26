@@ -36,9 +36,9 @@ export function AppSidebar({ children }: AppSidebarProps) {
             </SidebarTrigger>
           </SidebarFooter>
         </Sidebar>
-        <div className="flex-1 overflow-auto">
-          <div className="p-4">
-            <Button variant="outline" size="icon" className="md:hidden">
+        <div className="flex-1 overflow-auto relative">
+          <div className="fixed top-4 right-4 z-50">
+            <Button variant="outline" size="icon">
               <SidebarTrigger>
                 <Menu className="h-4 w-4" />
               </SidebarTrigger>
