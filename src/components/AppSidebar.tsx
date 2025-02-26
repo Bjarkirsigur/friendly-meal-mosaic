@@ -20,7 +20,7 @@ interface AppSidebarProps {
   children: ReactNode;
 }
 
-function SidebarContent() {
+function SidebarNavigation() {
   const location = useLocation();
   const { setOpen } = useSidebar();
 
@@ -30,7 +30,7 @@ function SidebarContent() {
 
   return (
     <>
-      <SidebarContent className="flex flex-col gap-4 py-6">
+      <div className="flex flex-col gap-4 py-6">
         <div className="px-4 mb-2">
           <h2 className="text-lg font-semibold text-primary">Menu</h2>
         </div>
@@ -72,7 +72,7 @@ function SidebarContent() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarContent>
+      </div>
       <SidebarFooter className="p-4 border-t">
         <SidebarTrigger className="w-full">
           <Button 
@@ -114,7 +114,9 @@ export function AppSidebar({ children }: AppSidebarProps) {
           side="right" 
           className="!w-[85vw] md:!w-[320px] bg-white border-l shadow-lg z-50"
         >
-          <SidebarContent />
+          <SidebarContent>
+            <SidebarNavigation />
+          </SidebarContent>
         </Sidebar>
       </div>
     </SidebarProvider>
