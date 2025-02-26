@@ -17,13 +17,14 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppSidebar />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/meals" element={<Meals />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppSidebar>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/meals" element={<Meals />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AppSidebar>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
