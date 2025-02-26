@@ -13,13 +13,14 @@ export const useMealPlanner = () => {
     localStorage.setItem('weeklyMeals', JSON.stringify(weeklyMeals));
   }, [weeklyMeals]);
 
-  const handleMealUpdate = (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
+  const handleMealUpdate = (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo, mealName: string) => {
     setWeeklyMeals(prev => ({
       ...prev,
       [day]: {
         ...prev[day],
         [mealType]: {
           ...prev[day][mealType],
+          meal: mealName,
           ingredients,
           macros
         }

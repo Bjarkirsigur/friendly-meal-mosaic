@@ -21,7 +21,7 @@ interface MealCardProps {
   macros?: MacroInfo;
   ingredients?: Ingredient[];
   className?: string;
-  onMealUpdate?: (ingredients: Ingredient[], macros: MacroInfo) => void;
+  onMealUpdate?: (ingredients: Ingredient[], macros: MacroInfo, mealName: string) => void;
   availableIngredients?: Ingredient[];
   macroVisibility: MacroInfo;
 }
@@ -41,16 +41,16 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     setIsSwitchDialogOpen(true);
   };
 
-  const handleSwitch = (selectedMeal: { ingredients: Ingredient[], macros: MacroInfo }) => {
+  const handleSwitch = (selectedMeal: Meal) => {
     if (onMealUpdate) {
-      onMealUpdate(selectedMeal.ingredients, selectedMeal.macros);
+      onMealUpdate(selectedMeal.ingredients, selectedMeal.macros, selectedMeal.meal);
     }
     setIsSwitchDialogOpen(false);
   };
 
   const handleSave = (newIngredients: Ingredient[], newMacros: MacroInfo) => {
-    if (onMealUpdate) {
-      onMealUpdate(newIngredients, newMacros);
+    if (onMealUpdate && meal) {
+      onMealUpdate(newIngredients, newMacros, meal);
     }
     setIsEditModalOpen(false);
   };
