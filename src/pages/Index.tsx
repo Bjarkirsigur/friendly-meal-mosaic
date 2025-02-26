@@ -70,8 +70,22 @@ const Index = () => {
     <div className="min-h-screen bg-secondary/30 px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 animate-fade-in">
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <h1 className="text-4xl font-bold text-primary">Weekly Meal Plan</h1>
+          <h1 className="text-4xl font-bold text-primary mb-6">Weekly Meal Plan</h1>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex justify-center gap-8 text-sm text-muted-foreground">
+              <div>
+                <span className="font-medium">{macroGoals.calories}</span> kcal
+              </div>
+              <div>
+                <span className="font-medium">{macroGoals.protein}g</span> protein
+              </div>
+              <div>
+                <span className="font-medium">{macroGoals.carbs}g</span> carbs
+              </div>
+              <div>
+                <span className="font-medium">{macroGoals.fat}g</span> fat
+              </div>
+            </div>
             <button
               onClick={() => setIsGoalsDialogOpen(true)}
               className="p-2 rounded-full hover:bg-secondary transition-colors duration-200"
@@ -79,27 +93,15 @@ const Index = () => {
               <Settings className="w-5 h-5 text-primary" />
             </button>
           </div>
-          <div className="flex justify-center gap-8 text-sm text-muted-foreground mb-4">
-            <div>
-              <span className="font-medium">{macroGoals.calories}</span> kcal
-            </div>
-            <div>
-              <span className="font-medium">{macroGoals.protein}g</span> protein
-            </div>
-            <div>
-              <span className="font-medium">{macroGoals.carbs}g</span> carbs
-            </div>
-            <div>
-              <span className="font-medium">{macroGoals.fat}g</span> fat
-            </div>
+          <div className="mt-4">
+            <Link 
+              to="/meals" 
+              className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              Browse Available Meals
+            </Link>
           </div>
-          <Link 
-            to="/meals" 
-            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-          >
-            <BookOpen className="w-4 h-4 mr-2" />
-            Browse Available Meals
-          </Link>
         </div>
 
         <div className="grid gap-6">
