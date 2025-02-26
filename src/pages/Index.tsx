@@ -26,7 +26,8 @@ const Index = () => {
     setDayMeals(prev => ({
       ...prev,
       [mealType]: {
-        ...prev[mealType],
+        ...(prev[mealType] || {}),
+        meal: prev[mealType]?.meal || '',
         ingredients,
         macros
       }
