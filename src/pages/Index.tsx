@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [weeklyMeals, setWeeklyMeals] = useState<Record<string, DayMeals>>(createInitialMeals);
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
   const [macroGoals, setMacroGoals] = useState<MacroInfo>({
     calories: 2000,
@@ -105,7 +106,7 @@ const Index = () => {
         </div>
 
         <div className="grid gap-6">
-          <WeekHeader />
+          <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
           {MEAL_TYPES.map((meal) => (
             <MealRow
               key={meal}
