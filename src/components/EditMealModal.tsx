@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Wand2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 interface Macros {
   calories: number;
@@ -35,6 +36,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
   const [totalMacros, setTotalMacros] = useState<Macros>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [openPopover, setOpenPopover] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const { toast } = useToast();
 
   const calculateMacrosForGrams = (ingredient: Ingredient, grams: number): Macros => {
     const ratio = grams / ingredient.grams;
@@ -53,6 +55,43 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
       carbs: Math.round((total.carbs + ingredient.macros.carbs) * 10) / 10,
       fat: Math.round((total.fat + ingredient.macros.fat) * 10) / 10,
     }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+  };
+
+  const adjustIngredientsToTarget = () => {
+    // Get current macros percentages
+    const currentTotal = calculateTotalMacros(ingredients);
+    const targetMacros = {
+      calories: 500, // Assuming target per meal is 1/4 of daily 2000 kcal
+      protein: 37.5, // 1/4 of 150g
+      carbs: 50,    // 1/4 of 200g
+      fat: 17.5     // 1/4 of 70g
+    };
+
+    // Calculate the average ratio needed
+    const ratios = {
+      calories: targetMacros.calories / currentTotal.calories,
+      protein: targetMacros.protein / currentTotal.protein,
+      carbs: targetMacros.carbs / currentTotal.carbs,
+      fat: targetMacros.fat / currentTotal.fat,
+    };
+
+    // Use the average ratio to adjust all ingredients proportionally
+    const avgRatio = (ratios.calories + ratios.protein + ratios.carbs + ratios.fat) / 4;
+
+    const adjustedIngredients = ingredients.map(ing => {
+      const newGrams = Math.round(ing.grams * avgRatio);
+      return {
+        ...ing,
+        grams: newGrams,
+        macros: calculateMacrosForGrams(ing, newGrams)
+      };
+    });
+
+    setIngredients(adjustedIngredients);
+    toast({
+      title: "Ingredients adjusted",
+      description: "Ingredient amounts have been adjusted to better match your macro goals.",
+    });
   };
 
   useEffect(() => {
@@ -101,6 +140,16 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
           <DialogTitle>Edit {meal}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 mt-4">
+          <div className="flex justify-end">
+            <Button
+              onClick={adjustIngredientsToTarget}
+              variant="outline"
+              className="mb-4"
+            >
+              <Wand2 className="w-4 h-4 mr-2" />
+              Adjust to Target Macros
+            </Button>
+          </div>
           <div className="grid grid-cols-4 gap-4 text-sm font-medium text-muted-foreground mb-2">
             <div>Ingredient</div>
             <div>Amount (g)</div>
