@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ReactNode } from "react";
@@ -19,8 +20,75 @@ interface AppSidebarProps {
   children: ReactNode;
 }
 
-export function AppSidebar({ children }: AppSidebarProps) {
+function SidebarContent() {
   const location = useLocation();
+  const { setOpen } = useSidebar();
+
+  const handleClick = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <SidebarContent className="flex flex-col gap-4 py-6">
+        <div className="px-4 mb-2">
+          <h2 className="text-lg font-semibold text-primary">Menu</h2>
+        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={location.pathname === '/'}>
+              <Link 
+                to="/" 
+                className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
+                onClick={handleClick}
+              >
+                <Calendar className="w-5 h-5 text-primary" />
+                <span>Today's Plan</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={location.pathname === '/week'}>
+              <Link 
+                to="/week" 
+                className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
+                onClick={handleClick}
+              >
+                <Calendar className="w-5 h-5 text-primary" />
+                <span>Week Planner</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={location.pathname === '/meals'}>
+              <Link 
+                to="/meals" 
+                className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
+                onClick={handleClick}
+              >
+                <BookOpen className="w-5 h-5 text-primary" />
+                <span>Meals</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter className="p-4 border-t">
+        <SidebarTrigger className="w-full">
+          <Button 
+            variant="secondary" 
+            className="w-full gap-2 py-6 text-base font-medium hover:bg-secondary/50"
+          >
+            <Menu className="w-5 h-5" />
+            <span>Close Menu</span>
+          </Button>
+        </SidebarTrigger>
+      </SidebarFooter>
+    </>
+  );
+}
+
+export function AppSidebar({ children }: AppSidebarProps) {
   const isMobile = useIsMobile();
 
   return (
@@ -34,7 +102,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
               className="h-10 w-10 rounded-full shadow-md hover:shadow-lg transition-all"
             >
               <SidebarTrigger>
-                <Menu className="h-5 w-5" />
+                <Menu className="h-5 h-5" />
               </SidebarTrigger>
             </Button>
           </div>
@@ -46,57 +114,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
           side="right" 
           className="!w-[85vw] md:!w-[320px] bg-white border-l shadow-lg z-50"
         >
-          <SidebarContent className="flex flex-col gap-4 py-6">
-            <div className="px-4 mb-2">
-              <h2 className="text-lg font-semibold text-primary">Menu</h2>
-            </div>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === '/'}>
-                  <Link 
-                    to="/" 
-                    className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
-                  >
-                    <Calendar className="w-5 h-5 text-primary" />
-                    <span>Today's Plan</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === '/week'}>
-                  <Link 
-                    to="/week" 
-                    className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
-                  >
-                    <Calendar className="w-5 h-5 text-primary" />
-                    <span>Week Planner</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={location.pathname === '/meals'}>
-                  <Link 
-                    to="/meals" 
-                    className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
-                  >
-                    <BookOpen className="w-5 h-5 text-primary" />
-                    <span>Meals</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter className="p-4 border-t">
-            <SidebarTrigger className="w-full">
-              <Button 
-                variant="secondary" 
-                className="w-full gap-2 py-6 text-base font-medium hover:bg-secondary/50"
-              >
-                <Menu className="w-5 h-5" />
-                <span>Close Menu</span>
-              </Button>
-            </SidebarTrigger>
-          </SidebarFooter>
+          <SidebarContent />
         </Sidebar>
       </div>
     </SidebarProvider>
