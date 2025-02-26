@@ -4,6 +4,10 @@ export interface MacroInfo {
   protein: number;
   carbs: number;
   fat: number;
+  showCalories?: boolean;
+  showProtein?: boolean;
+  showCarbs?: boolean;
+  showFat?: boolean;
 }
 
 export interface Ingredient {

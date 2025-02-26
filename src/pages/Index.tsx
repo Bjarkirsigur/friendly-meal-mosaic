@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 const Index = () => {
   const [weeklyMeals, setWeeklyMeals] = useState<Record<string, DayMeals>>(createInitialMeals);
@@ -19,7 +20,11 @@ const Index = () => {
     calories: 2000,
     protein: 150,
     carbs: 200,
-    fat: 70
+    fat: 70,
+    showCalories: true,
+    showProtein: true,
+    showCarbs: true,
+    showFat: true
   });
   const [tempGoals, setTempGoals] = useState<MacroInfo>(macroGoals);
   const { toast } = useToast();
@@ -74,18 +79,26 @@ const Index = () => {
           <h1 className="text-4xl font-bold text-primary mb-6">Weekly Meal Plan</h1>
           <div className="flex flex-col items-center gap-4">
             <div className="flex justify-center items-center gap-8 text-sm text-muted-foreground">
-              <div>
-                <span className="font-medium">{macroGoals.calories}</span> kcal
-              </div>
-              <div>
-                <span className="font-medium">{macroGoals.protein}g</span> protein
-              </div>
-              <div>
-                <span className="font-medium">{macroGoals.carbs}g</span> carbs
-              </div>
-              <div>
-                <span className="font-medium">{macroGoals.fat}g</span> fat
-              </div>
+              {macroGoals.showCalories && (
+                <div>
+                  <span className="font-medium">{macroGoals.calories}</span> kcal
+                </div>
+              )}
+              {macroGoals.showProtein && (
+                <div>
+                  <span className="font-medium">{macroGoals.protein}g</span> protein
+                </div>
+              )}
+              {macroGoals.showCarbs && (
+                <div>
+                  <span className="font-medium">{macroGoals.carbs}g</span> carbs
+                </div>
+              )}
+              {macroGoals.showFat && (
+                <div>
+                  <span className="font-medium">{macroGoals.fat}g</span> fat
+                </div>
+              )}
               <button
                 onClick={() => setIsGoalsDialogOpen(true)}
                 className="p-2 rounded-full hover:bg-secondary transition-colors duration-200"
@@ -126,9 +139,21 @@ const Index = () => {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <label htmlFor="calories" className="text-sm font-medium">
-                Daily Calories (kcal)
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="calories" className="text-sm font-medium">
+                  Daily Calories (kcal)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Show</span>
+                  <Switch
+                    id="show-calories"
+                    checked={tempGoals.showCalories}
+                    onCheckedChange={(checked) => 
+                      setTempGoals(prev => ({ ...prev, showCalories: checked }))
+                    }
+                  />
+                </div>
+              </div>
               <Input
                 id="calories"
                 type="number"
@@ -137,9 +162,21 @@ const Index = () => {
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="protein" className="text-sm font-medium">
-                Daily Protein (g)
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="protein" className="text-sm font-medium">
+                  Daily Protein (g)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Show</span>
+                  <Switch
+                    id="show-protein"
+                    checked={tempGoals.showProtein}
+                    onCheckedChange={(checked) => 
+                      setTempGoals(prev => ({ ...prev, showProtein: checked }))
+                    }
+                  />
+                </div>
+              </div>
               <Input
                 id="protein"
                 type="number"
@@ -148,9 +185,21 @@ const Index = () => {
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="carbs" className="text-sm font-medium">
-                Daily Carbs (g)
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="carbs" className="text-sm font-medium">
+                  Daily Carbs (g)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Show</span>
+                  <Switch
+                    id="show-carbs"
+                    checked={tempGoals.showCarbs}
+                    onCheckedChange={(checked) => 
+                      setTempGoals(prev => ({ ...prev, showCarbs: checked }))
+                    }
+                  />
+                </div>
+              </div>
               <Input
                 id="carbs"
                 type="number"
@@ -159,9 +208,21 @@ const Index = () => {
               />
             </div>
             <div className="grid gap-2">
-              <label htmlFor="fat" className="text-sm font-medium">
-                Daily Fat (g)
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="fat" className="text-sm font-medium">
+                  Daily Fat (g)
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Show</span>
+                  <Switch
+                    id="show-fat"
+                    checked={tempGoals.showFat}
+                    onCheckedChange={(checked) => 
+                      setTempGoals(prev => ({ ...prev, showFat: checked }))
+                    }
+                  />
+                </div>
+              </div>
               <Input
                 id="fat"
                 type="number"
