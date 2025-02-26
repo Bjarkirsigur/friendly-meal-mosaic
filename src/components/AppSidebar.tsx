@@ -27,7 +27,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
     <SidebarProvider defaultOpen={!isMobile}>
       <div className="min-h-screen flex w-full">
         <div className="flex-1 overflow-auto relative">
-          <div className="fixed top-4 right-4 z-50 md:block">
+          <div className="fixed top-4 right-4 z-[60] md:block">
             <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9">
               <SidebarTrigger>
                 <Menu className="h-4 w-4" />
@@ -40,7 +40,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
           variant="floating" 
           collapsible="offcanvas" 
           side="right" 
-          className="!w-[280px] md:!w-[320px]"
+          className="!w-[280px] md:!w-[320px] bg-background border-l shadow-xl z-50"
         >
           <SidebarContent className="flex flex-col gap-4 py-6">
             <SidebarMenu>
@@ -70,7 +70,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
-          <SidebarFooter className="p-4">
+          <SidebarFooter className="p-4 border-t">
             <SidebarTrigger className="w-full">
               <Button variant="outline" className="w-full gap-2">
                 <Menu className="w-4 h-4" />
