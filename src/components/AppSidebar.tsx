@@ -40,7 +40,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
           variant="floating" 
           collapsible="offcanvas" 
           side="right" 
-          className="!w-[280px] md:!w-[320px] bg-secondary/30 border-l shadow-xl z-50"
+          className="!w-[280px] md:!w-[320px] bg-secondary border-l shadow-xl z-50"
         >
           <SidebarContent className="flex flex-col gap-4 py-6">
             <SidebarMenu>
