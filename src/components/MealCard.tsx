@@ -77,7 +77,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
           </button>
         </div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-2">{title}</h3>
         {meal ? (
           <>
             <p className="text-foreground mb-2">{meal}</p>
