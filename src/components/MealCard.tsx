@@ -61,22 +61,23 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
   };
 
   return (
-    <>
-      <Card className={cn("p-4 h-40 transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in relative group", className)}>
-        <div className="absolute top-0 right-0 flex">
-          <button 
-            className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer"
-            onClick={handleSwitch}
-          >
-            <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
-          </button>
-          <button 
-            className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-bl-lg rounded-tr-md cursor-pointer"
-            onClick={handleEdit}
-          >
-            <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
-          </button>
-        </div>
+    <div className="relative group flex items-start">
+      <div className="flex flex-col gap-1 absolute -left-10">
+        <button 
+          className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
+          onClick={handleSwitch}
+        >
+          <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+        </button>
+        <button 
+          className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-md cursor-pointer"
+          onClick={handleEdit}
+        >
+          <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+        </button>
+      </div>
+
+      <Card className={cn("p-4 h-40 transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", className)}>
         {meal ? (
           <>
             <p className="text-foreground mb-2">{meal}</p>
@@ -116,7 +117,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           availableIngredients={availableIngredients}
         />
       )}
-    </>
+    </div>
   );
 };
 
