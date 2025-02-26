@@ -13,6 +13,7 @@ import {
 import { MEALS } from "@/data/mealsData";
 import { Input } from "@/components/ui/input";
 import { MacroInfo, Ingredient, Meal } from "@/types/meals";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface MealCardProps {
   title: string;
@@ -80,41 +81,54 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
         </button>
       </div>
 
-      <Card className={cn("p-4 h-40 transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", className)}>
+      <Card className={cn("overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", className)}>
         {meal ? (
           <>
-            <p className="text-foreground mb-2">{meal}</p>
-            {macros && (
-              <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground mt-3">
-                {macroVisibility.showCalories && (
-                  <div className="text-center">
-                    <p className="font-medium text-sm mb-0.5">{macros.calories}</p>
-                    <p>kcal</p>
-                  </div>
-                )}
-                {macroVisibility.showProtein && (
-                  <div className="text-center">
-                    <p className="font-medium text-sm mb-0.5">{macros.protein}g</p>
-                    <p>Protein</p>
-                  </div>
-                )}
-                {macroVisibility.showCarbs && (
-                  <div className="text-center">
-                    <p className="font-medium text-sm mb-0.5">{macros.carbs}g</p>
-                    <p>Carbs</p>
-                  </div>
-                )}
-                {macroVisibility.showFat && (
-                  <div className="text-center">
-                    <p className="font-medium text-sm mb-0.5">{macros.fat}g</p>
-                    <p>Fat</p>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="relative">
+              <AspectRatio ratio={16 / 9}>
+                <img
+                  src={`https://source.unsplash.com/featured/?${encodeURIComponent(meal.toLowerCase())},food`}
+                  alt={meal}
+                  className="object-cover w-full h-full"
+                />
+              </AspectRatio>
+            </div>
+            <div className="p-4">
+              <p className="text-foreground mb-2">{meal}</p>
+              {macros && (
+                <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground mt-3">
+                  {macroVisibility.showCalories && (
+                    <div className="text-center">
+                      <p className="font-medium text-sm mb-0.5">{macros.calories}</p>
+                      <p>kcal</p>
+                    </div>
+                  )}
+                  {macroVisibility.showProtein && (
+                    <div className="text-center">
+                      <p className="font-medium text-sm mb-0.5">{macros.protein}g</p>
+                      <p>Protein</p>
+                    </div>
+                  )}
+                  {macroVisibility.showCarbs && (
+                    <div className="text-center">
+                      <p className="font-medium text-sm mb-0.5">{macros.carbs}g</p>
+                      <p>Carbs</p>
+                    </div>
+                  )}
+                  {macroVisibility.showFat && (
+                    <div className="text-center">
+                      <p className="font-medium text-sm mb-0.5">{macros.fat}g</p>
+                      <p>Fat</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </>
         ) : (
-          <p className="text-muted-foreground italic">No meal planned</p>
+          <div className="p-4">
+            <p className="text-muted-foreground italic">No meal planned</p>
+          </div>
         )}
       </Card>
 
