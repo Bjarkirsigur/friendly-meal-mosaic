@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, Shuffle } from "lucide-react";
@@ -158,7 +157,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       )}
 
       <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
-        <DialogContent className="max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] md:max-h-[80vh] w-[95vw] md:w-full overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Choose a Meal</DialogTitle>
           </DialogHeader>

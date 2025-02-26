@@ -8,6 +8,8 @@ import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import MacroGoalsDisplay from "@/components/MacroGoalsDisplay";
 import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { useMealPlanner } from "@/hooks/useMealPlanner";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const WeekPlanner = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -21,12 +23,13 @@ const WeekPlanner = () => {
   } = useMacroGoals();
 
   const { weeklyMeals, handleMealUpdate } = useMealPlanner();
+  const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-secondary/30">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl font-bold text-primary mb-6">Weekly Meal Plan</h1>
+    <div className="min-h-screen bg-secondary/30 -mx-4">
+      <div className="w-full px-4">
+        <div className="text-center mb-8 animate-fade-in">
+          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4 md:mb-6">Weekly Meal Plan</h1>
           <div className="flex flex-col items-center gap-4">
             <MacroGoalsDisplay 
               macroGoals={macroGoals}
@@ -35,19 +38,39 @@ const WeekPlanner = () => {
           </div>
         </div>
 
-        <div className="grid gap-6">
-          <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
-          {MEAL_TYPES.map((meal) => (
-            <MealRow
-              key={meal}
-              mealType={meal as MealType}
-              weeklyMeals={weeklyMeals}
-              onMealUpdate={handleMealUpdate}
-              availableIngredients={getAllAvailableIngredients()}
-              macroVisibility={macroGoals}
-            />
-          ))}
-        </div>
+        {isMobile ? (
+          <ScrollArea className="w-full">
+            <div className="min-w-[800px] px-4 pb-8">
+              <div className="grid gap-6">
+                <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
+                {MEAL_TYPES.map((meal) => (
+                  <MealRow
+                    key={meal}
+                    mealType={meal as MealType}
+                    weeklyMeals={weeklyMeals}
+                    onMealUpdate={handleMealUpdate}
+                    availableIngredients={getAllAvailableIngredients()}
+                    macroVisibility={macroGoals}
+                  />
+                ))}
+              </div>
+            </div>
+          </ScrollArea>
+        ) : (
+          <div className="grid gap-6">
+            <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
+            {MEAL_TYPES.map((meal) => (
+              <MealRow
+                key={meal}
+                mealType={meal as MealType}
+                weeklyMeals={weeklyMeals}
+                onMealUpdate={handleMealUpdate}
+                availableIngredients={getAllAvailableIngredients()}
+                macroVisibility={macroGoals}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <MacroGoalsDialog
