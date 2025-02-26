@@ -1,43 +1,16 @@
 
-import MealCard from "@/components/MealCard";
 import { Link } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 import { useState } from "react";
-
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
-
-// Import the meals data from the Meals page to use as available ingredients
-import { MEALS as AVAILABLE_MEALS } from "./Meals";
-
-// Flatten all ingredients from available meals into a single array
-const getAllAvailableIngredients = () => {
-  const ingredients: any[] = [];
-  Object.values(AVAILABLE_MEALS).forEach(mealCategory => {
-    mealCategory.forEach(meal => {
-      meal.ingredients.forEach(ingredient => {
-        if (!ingredients.find(i => i.name === ingredient.name)) {
-          ingredients.push(ingredient);
-        }
-      });
-    });
-  });
-  return ingredients;
-};
+import WeekHeader from "../components/WeekHeader";
+import MealRow from "../components/MealRow";
+import { MEAL_TYPES, getAllAvailableIngredients, createInitialMeals } from "../utils/mealUtils";
+import { Ingredient, MacroInfo, MealType, DayMeals } from "../types/meals";
 
 const Index = () => {
-  const [weeklyMeals, setWeeklyMeals] = useState(() => {
-    const initialMeals: any = {};
-    DAYS.forEach(day => {
-      initialMeals[day] = {};
-      MEALS.forEach(mealType => {
-        initialMeals[day][mealType] = AVAILABLE_MEALS[mealType as keyof typeof AVAILABLE_MEALS]?.[0] || null;
-      });
-    });
-    return initialMeals;
-  });
+  const [weeklyMeals, setWeeklyMeals] = useState<Record<string, DayMeals>>(createInitialMeals);
 
-  const handleMealUpdate = (day: string, mealType: string, ingredients: any[], macros: any) => {
+  const handleMealUpdate = (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
     setWeeklyMeals(prev => ({
       ...prev,
       [day]: {
@@ -67,33 +40,15 @@ const Index = () => {
         </div>
 
         <div className="grid gap-6">
-          {/* Header Row */}
-          <div className="grid grid-cols-[120px_repeat(7,1fr)] gap-4 items-center">
-            <div className="text-muted-foreground font-medium" />
-            {DAYS.map((day) => (
-              <div key={day} className="text-center">
-                <h2 className="text-primary font-semibold">{day}</h2>
-              </div>
-            ))}
-          </div>
-
-          {/* Meal Rows */}
-          {MEALS.map((meal) => (
-            <div key={meal} className="grid grid-cols-[120px_repeat(7,1fr)] gap-4 items-center">
-              <div className="text-muted-foreground font-medium">{meal}</div>
-              {DAYS.map((day) => (
-                <MealCard
-                  key={`${day}-${meal}`}
-                  title={`${day} ${meal}`}
-                  meal={weeklyMeals[day][meal]?.meal}
-                  macros={weeklyMeals[day][meal]?.macros}
-                  ingredients={weeklyMeals[day][meal]?.ingredients}
-                  className="w-full"
-                  onMealUpdate={(ingredients, macros) => handleMealUpdate(day, meal, ingredients, macros)}
-                  availableIngredients={getAllAvailableIngredients()}
-                />
-              ))}
-            </div>
+          <WeekHeader />
+          {MEAL_TYPES.map((meal) => (
+            <MealRow
+              key={meal}
+              mealType={meal as MealType}
+              weeklyMeals={weeklyMeals}
+              onMealUpdate={handleMealUpdate}
+              availableIngredients={getAllAvailableIngredients()}
+            />
           ))}
         </div>
       </div>
