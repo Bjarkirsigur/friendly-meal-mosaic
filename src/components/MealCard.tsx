@@ -61,8 +61,8 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
   };
 
   return (
-    <div className="relative group flex items-start">
-      <div className="flex flex-col gap-1 absolute -left-10">
+    <div className="flex flex-col gap-2">
+      <div className="flex gap-1 justify-end">
         <button 
           className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
           onClick={handleSwitch}
