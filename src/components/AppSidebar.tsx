@@ -1,12 +1,15 @@
 
-import { BookOpen, Menu } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BookOpen, Calendar, Menu } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarProvider,
   SidebarTrigger,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ReactNode } from "react";
@@ -16,6 +19,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ children }: AppSidebarProps) {
+  const location = useLocation();
+
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
@@ -31,13 +36,32 @@ export function AppSidebar({ children }: AppSidebarProps) {
         </div>
         <Sidebar variant="floating" collapsible="offcanvas" side="right">
           <SidebarContent className="flex flex-col gap-4">
-            <Link 
-              to="/meals" 
-              className="flex items-center gap-2 px-4 py-2 text-primary hover:text-primary/80 hover:bg-secondary/50 rounded-lg transition-colors"
-            >
-              <BookOpen className="w-4 h-4" />
-              Meals
-            </Link>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={location.pathname === '/'}>
+                  <Link to="/" className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>Today's Plan</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={location.pathname === '/week'}>
+                  <Link to="/week" className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>Week Planner</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={location.pathname === '/meals'}>
+                  <Link to="/meals" className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    <span>Meals</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
             <SidebarTrigger>
