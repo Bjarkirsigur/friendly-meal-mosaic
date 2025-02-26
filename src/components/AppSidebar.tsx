@@ -24,13 +24,17 @@ export function AppSidebar({ children }: AppSidebarProps) {
   const isMobile = useIsMobile();
 
   return (
-    <SidebarProvider defaultOpen={!isMobile}>
-      <div className="min-h-screen flex w-full">
+    <SidebarProvider defaultOpen={false}>
+      <div className="min-h-screen flex w-full bg-secondary/30">
         <div className="flex-1 overflow-auto relative">
-          <div className="fixed top-4 right-4 z-[60] md:block">
-            <Button variant="outline" size="icon" className="h-8 w-8 md:h-9 md:w-9">
+          <div className="fixed top-4 right-4 z-[60]">
+            <Button 
+              variant="secondary" 
+              size="icon" 
+              className="h-10 w-10 rounded-full shadow-md hover:shadow-lg transition-all"
+            >
               <SidebarTrigger>
-                <Menu className="h-4 w-4" />
+                <Menu className="h-5 w-5" />
               </SidebarTrigger>
             </Button>
           </div>
@@ -40,30 +44,42 @@ export function AppSidebar({ children }: AppSidebarProps) {
           variant="floating" 
           collapsible="offcanvas" 
           side="right" 
-          className="!w-[280px] md:!w-[320px] bg-secondary border-l shadow-xl z-50"
+          className="!w-[85vw] md:!w-[320px] bg-white border-l shadow-lg z-50"
         >
           <SidebarContent className="flex flex-col gap-4 py-6">
+            <div className="px-4 mb-2">
+              <h2 className="text-lg font-semibold text-primary">Menu</h2>
+            </div>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={location.pathname === '/'}>
-                  <Link to="/" className="flex items-center gap-2 text-base">
-                    <Calendar className="w-5 h-5" />
+                  <Link 
+                    to="/" 
+                    className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
+                  >
+                    <Calendar className="w-5 h-5 text-primary" />
                     <span>Today's Plan</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={location.pathname === '/week'}>
-                  <Link to="/week" className="flex items-center gap-2 text-base">
-                    <Calendar className="w-5 h-5" />
+                  <Link 
+                    to="/week" 
+                    className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
+                  >
+                    <Calendar className="w-5 h-5 text-primary" />
                     <span>Week Planner</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={location.pathname === '/meals'}>
-                  <Link to="/meals" className="flex items-center gap-2 text-base">
-                    <BookOpen className="w-5 h-5" />
+                  <Link 
+                    to="/meals" 
+                    className="flex items-center gap-3 text-base px-4 py-2 hover:bg-secondary/50 transition-colors"
+                  >
+                    <BookOpen className="w-5 h-5 text-primary" />
                     <span>Meals</span>
                   </Link>
                 </SidebarMenuButton>
@@ -72,8 +88,11 @@ export function AppSidebar({ children }: AppSidebarProps) {
           </SidebarContent>
           <SidebarFooter className="p-4 border-t">
             <SidebarTrigger className="w-full">
-              <Button variant="outline" className="w-full gap-2">
-                <Menu className="w-4 h-4" />
+              <Button 
+                variant="secondary" 
+                className="w-full gap-2 py-6 text-base font-medium hover:bg-secondary/50"
+              >
+                <Menu className="w-5 h-5" />
                 <span>Close Menu</span>
               </Button>
             </SidebarTrigger>
