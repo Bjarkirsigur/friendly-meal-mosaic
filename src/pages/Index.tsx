@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { BookOpen, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useState } from "react";
 import WeekHeader from "../components/WeekHeader";
 import MealRow from "../components/MealRow";
@@ -72,7 +71,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary/30 px-4 py-8 md:px-8">
+    <div className="min-h-screen bg-secondary/30">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold text-primary mb-6">Weekly Meal Plan</h1>
@@ -105,15 +104,6 @@ const Index = () => {
                 <Settings className="w-5 h-5 text-primary" />
               </button>
             </div>
-          </div>
-          <div className="mt-4">
-            <Link 
-              to="/meals" 
-              className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
-            >
-              <BookOpen className="w-4 h-4 mr-2" />
-              Browse Available Meals
-            </Link>
           </div>
         </div>
 

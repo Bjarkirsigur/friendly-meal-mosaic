@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Meals from "./pages/Meals";
 import NotFound from "./pages/NotFound";
+import { AppSidebar } from "./components/AppSidebar";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AppSidebar />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/meals" element={<Meals />} />
