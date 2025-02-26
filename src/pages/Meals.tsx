@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MEALS } from "@/data/mealsData";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const Meals = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -54,42 +55,53 @@ const Meals = () => {
               <h2 className="text-2xl font-semibold text-primary mb-6">{category}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {meals.map((meal, index) => (
-                  <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
-                    <h3 className="font-medium mb-4">{meal.meal}</h3>
-                    <div className="mb-4">
-                      <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
-                      <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
-                        {meal.ingredients.map((ingredient, idx) => (
-                          <li key={idx} className="group cursor-pointer hover:text-foreground">
-                            {ingredient.name} ({ingredient.grams}g)
-                            <div className="hidden group-hover:block pl-4 pt-1 text-xs">
-                              <div className="grid grid-cols-4 gap-2">
-                                <span>{ingredient.macros.calories} kcal</span>
-                                <span>{ingredient.macros.protein}g protein</span>
-                                <span>{ingredient.macros.carbs}g carbs</span>
-                                <span>{ingredient.macros.fat}g fat</span>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="relative">
+                      <AspectRatio ratio={16 / 9}>
+                        <img
+                          src={`https://source.unsplash.com/featured/?${encodeURIComponent(meal.meal.toLowerCase())},food`}
+                          alt={meal.meal}
+                          className="object-cover w-full h-full"
+                        />
+                      </AspectRatio>
                     </div>
-                    <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
-                      <div className="text-center">
-                        <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
-                        <p>kcal</p>
+                    <div className="p-6">
+                      <h3 className="font-medium mb-4">{meal.meal}</h3>
+                      <div className="mb-4">
+                        <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
+                        <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                          {meal.ingredients.map((ingredient, idx) => (
+                            <li key={idx} className="group cursor-pointer hover:text-foreground">
+                              {ingredient.name} ({ingredient.grams}g)
+                              <div className="hidden group-hover:block pl-4 pt-1 text-xs">
+                                <div className="grid grid-cols-4 gap-2">
+                                  <span>{ingredient.macros.calories} kcal</span>
+                                  <span>{ingredient.macros.protein}g protein</span>
+                                  <span>{ingredient.macros.carbs}g carbs</span>
+                                  <span>{ingredient.macros.fat}g fat</span>
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <div className="text-center">
-                        <p className="font-medium text-sm mb-0.5">{meal.macros.protein}g</p>
-                        <p>Protein</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="font-medium text-sm mb-0.5">{meal.macros.carbs}g</p>
-                        <p>Carbs</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="font-medium text-sm mb-0.5">{meal.macros.fat}g</p>
-                        <p>Fat</p>
+                      <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
+                        <div className="text-center">
+                          <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
+                          <p>kcal</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-medium text-sm mb-0.5">{meal.macros.protein}g</p>
+                          <p>Protein</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-medium text-sm mb-0.5">{meal.macros.carbs}g</p>
+                          <p>Carbs</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-medium text-sm mb-0.5">{meal.macros.fat}g</p>
+                          <p>Fat</p>
+                        </div>
                       </div>
                     </div>
                   </Card>
