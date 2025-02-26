@@ -1,9 +1,12 @@
-
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
-// Using the same meal data structure as Index page but with added ingredients and their macros
 const MEALS = {
   Breakfast: [
     {
@@ -150,16 +153,38 @@ const MEALS = {
 };
 
 const Meals = () => {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newMeal, setNewMeal] = useState({
+    name: "",
+    ingredients: [] as { name: string; grams: number; macros: { calories: number; protein: number; carbs: number; fat: number; } }[]
+  });
+  const { toast } = useToast();
+
+  const handleCreateMeal = () => {
+    toast({
+      title: "Meal Created",
+      description: "Your new meal has been added to the list.",
+    });
+    setIsCreateDialogOpen(false);
+    setNewMeal({ name: "", ingredients: [] });
+  };
+
   return (
     <div className="min-h-screen bg-secondary/30 px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
-        <Link 
-          to="/" 
-          className="inline-flex items-center text-primary hover:text-primary/80 mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Meal Plan
-        </Link>
+        <div className="flex items-center justify-between mb-8">
+          <Link 
+            to="/" 
+            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Meal Plan
+          </Link>
+          <Button onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Meal
+          </Button>
+        </div>
 
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold text-primary mb-4">Available Meals</h1>
@@ -216,6 +241,35 @@ const Meals = () => {
             </section>
           ))}
         </div>
+
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Create New Meal</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div>
+                <label htmlFor="mealName" className="block text-sm font-medium text-foreground mb-2">
+                  Meal Name
+                </label>
+                <Input
+                  id="mealName"
+                  value={newMeal.name}
+                  onChange={(e) => setNewMeal({ ...newMeal, name: e.target.value })}
+                  placeholder="Enter meal name"
+                />
+              </div>
+              <div className="flex justify-end space-x-2 mt-6">
+                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateMeal}>
+                  Create Meal
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
