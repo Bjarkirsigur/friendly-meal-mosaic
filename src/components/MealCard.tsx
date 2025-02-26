@@ -37,6 +37,10 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     }
   };
 
+  const handleEmptyCardClick = () => {
+    setIsSwitchDialogOpen(true);
+  };
+
   const handleSwitch = (selectedMeal: { ingredients: Ingredient[], macros: MacroInfo }) => {
     if (onMealUpdate) {
       onMealUpdate(selectedMeal.ingredients, selectedMeal.macros);
@@ -66,22 +70,31 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-1 justify-end">
-        <button 
-          className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
-          onClick={() => setIsSwitchDialogOpen(true)}
-        >
-          <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
-        </button>
-        <button 
-          className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-md cursor-pointer"
-          onClick={handleEdit}
-        >
-          <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
-        </button>
-      </div>
+      {meal && (
+        <div className="flex gap-1 justify-end">
+          <button 
+            className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
+            onClick={() => setIsSwitchDialogOpen(true)}
+          >
+            <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+          </button>
+          <button 
+            className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-md cursor-pointer"
+            onClick={handleEdit}
+          >
+            <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+          </button>
+        </div>
+      )}
 
-      <Card className={cn("overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", className)}>
+      <Card 
+        className={cn(
+          "overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", 
+          !meal && "cursor-pointer hover:bg-secondary/50",
+          className
+        )}
+        onClick={() => !meal && handleEmptyCardClick()}
+      >
         {meal ? (
           <>
             <div className="relative w-full">
@@ -127,7 +140,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           </>
         ) : (
           <div className="min-h-[200px] p-4 flex items-center justify-center">
-            <p className="text-muted-foreground italic">No meal planned</p>
+            <p className="text-muted-foreground italic">Click to add a meal</p>
           </div>
         )}
       </Card>
