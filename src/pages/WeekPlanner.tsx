@@ -2,14 +2,14 @@
 import { useState } from "react";
 import WeekHeader from "../components/WeekHeader";
 import MealRow from "../components/MealRow";
-import { MEAL_TYPES, getAllAvailableIngredients, createInitialMeals } from "../utils/mealUtils";
-import { Ingredient, MacroInfo, MealType, DayMeals } from "../types/meals";
+import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
+import { MealType } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import MacroGoalsDisplay from "@/components/MacroGoalsDisplay";
 import { useMacroGoals } from "@/hooks/useMacroGoals";
+import { useMealPlanner } from "@/hooks/useMealPlanner";
 
-const Index = () => {
-  const [weeklyMeals, setWeeklyMeals] = useState<Record<string, DayMeals>>(createInitialMeals);
+const WeekPlanner = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const {
     isGoalsDialogOpen,
@@ -20,19 +20,7 @@ const Index = () => {
     handleUpdateGoals
   } = useMacroGoals();
 
-  const handleMealUpdate = (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
-    setWeeklyMeals(prev => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        [mealType]: {
-          ...prev[day][mealType],
-          ingredients,
-          macros
-        }
-      }
-    }));
-  };
+  const { weeklyMeals, handleMealUpdate } = useMealPlanner();
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -73,4 +61,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default WeekPlanner;

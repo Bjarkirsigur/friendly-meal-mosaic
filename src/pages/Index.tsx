@@ -1,16 +1,16 @@
 
 import { useState } from "react";
 import MealRow from "../components/MealRow";
-import { MEAL_TYPES, getAllAvailableIngredients, createInitialMeals } from "../utils/mealUtils";
-import { Ingredient, MacroInfo, MealType, DayMeals } from "../types/meals";
+import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
+import { MealType } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import MacroGoalsDisplay from "@/components/MacroGoalsDisplay";
 import { useMacroGoals } from "@/hooks/useMacroGoals";
+import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
-  const [dayMeals, setDayMeals] = useState<DayMeals>(createInitialMeals()[format(currentDate, 'EEEE')]);
   const {
     isGoalsDialogOpen,
     setIsGoalsDialogOpen,
@@ -20,21 +20,8 @@ const Index = () => {
     handleUpdateGoals
   } = useMacroGoals();
 
+  const { weeklyMeals, handleMealUpdate } = useMealPlanner();
   const currentDayName = format(currentDate, 'EEEE');
-
-  const handleMealUpdate = (_day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
-    setDayMeals(prev => {
-      const currentMeal = prev[mealType as MealType];
-      return {
-        ...prev,
-        [mealType]: {
-          meal: currentMeal?.meal || '',
-          ingredients,
-          macros
-        }
-      };
-    });
-  };
 
   return (
     <div className="min-h-screen bg-[#E8F3E8] -mx-4 px-4">
@@ -55,7 +42,7 @@ const Index = () => {
             <MealRow
               key={meal}
               mealType={meal as MealType}
-              weeklyMeals={{ [currentDayName]: dayMeals }}
+              weeklyMeals={{ [currentDayName]: weeklyMeals[currentDayName] }}
               onMealUpdate={handleMealUpdate}
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
