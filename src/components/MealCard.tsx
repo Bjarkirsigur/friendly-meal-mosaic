@@ -84,7 +84,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       <Card className={cn("overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", className)}>
         {meal ? (
           <>
-            <div className="relative">
+            <div className="relative w-full">
               <AspectRatio ratio={16 / 9}>
                 <img
                   src={`https://source.unsplash.com/featured/?${encodeURIComponent(meal.toLowerCase())},food`}
@@ -126,7 +126,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             </div>
           </>
         ) : (
-          <div className="p-4">
+          <div className="min-h-[200px] p-4 flex items-center justify-center">
             <p className="text-muted-foreground italic">No meal planned</p>
           </div>
         )}
