@@ -7,7 +7,6 @@ import {
   SidebarFooter,
   SidebarProvider,
   SidebarTrigger,
-  SidebarRail,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ReactNode } from "react";
@@ -20,6 +19,16 @@ export function AppSidebar({ children }: AppSidebarProps) {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
+        <div className="flex-1 overflow-auto relative">
+          <div className="fixed top-4 right-4 z-50">
+            <Button variant="outline" size="icon">
+              <SidebarTrigger>
+                <Menu className="h-4 w-4" />
+              </SidebarTrigger>
+            </Button>
+          </div>
+          {children}
+        </div>
         <Sidebar variant="floating" collapsible="offcanvas" side="right">
           <SidebarContent className="flex flex-col gap-4">
             <Link 
@@ -36,16 +45,6 @@ export function AppSidebar({ children }: AppSidebarProps) {
             </SidebarTrigger>
           </SidebarFooter>
         </Sidebar>
-        <div className="flex-1 overflow-auto relative">
-          <div className="fixed top-4 right-4 z-50">
-            <Button variant="outline" size="icon">
-              <SidebarTrigger>
-                <Menu className="h-4 w-4" />
-              </SidebarTrigger>
-            </Button>
-          </div>
-          {children}
-        </div>
       </div>
     </SidebarProvider>
   );
