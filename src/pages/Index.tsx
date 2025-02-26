@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { BookOpen, Settings } from "lucide-react";
 import { useState } from "react";
@@ -127,6 +126,7 @@ const Index = () => {
               weeklyMeals={weeklyMeals}
               onMealUpdate={handleMealUpdate}
               availableIngredients={getAllAvailableIngredients()}
+              macroVisibility={macroGoals}
             />
           ))}
         </div>

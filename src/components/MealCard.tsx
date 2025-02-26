@@ -32,9 +32,10 @@ interface MealCardProps {
   className?: string;
   onMealUpdate?: (ingredients: Ingredient[], macros: MacroInfo) => void;
   availableIngredients?: Ingredient[];
+  macroVisibility: MacroInfo;
 }
 
-const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, availableIngredients }: MealCardProps) => {
+const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, availableIngredients, macroVisibility }: MealCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
 
@@ -81,22 +82,30 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             <p className="text-foreground mb-2">{meal}</p>
             {macros && (
               <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground mt-3">
-                <div className="text-center">
-                  <p className="font-medium text-sm mb-0.5">{macros.calories}</p>
-                  <p>kcal</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-sm mb-0.5">{macros.protein}g</p>
-                  <p>Protein</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-sm mb-0.5">{macros.carbs}g</p>
-                  <p>Carbs</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-sm mb-0.5">{macros.fat}g</p>
-                  <p>Fat</p>
-                </div>
+                {macroVisibility.showCalories && (
+                  <div className="text-center">
+                    <p className="font-medium text-sm mb-0.5">{macros.calories}</p>
+                    <p>kcal</p>
+                  </div>
+                )}
+                {macroVisibility.showProtein && (
+                  <div className="text-center">
+                    <p className="font-medium text-sm mb-0.5">{macros.protein}g</p>
+                    <p>Protein</p>
+                  </div>
+                )}
+                {macroVisibility.showCarbs && (
+                  <div className="text-center">
+                    <p className="font-medium text-sm mb-0.5">{macros.carbs}g</p>
+                    <p>Carbs</p>
+                  </div>
+                )}
+                {macroVisibility.showFat && (
+                  <div className="text-center">
+                    <p className="font-medium text-sm mb-0.5">{macros.fat}g</p>
+                    <p>Fat</p>
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -113,6 +122,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           ingredients={ingredients}
           onSave={handleSave}
           availableIngredients={availableIngredients}
+          macroVisibility={macroVisibility}
         />
       )}
 
@@ -134,22 +144,30 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                     >
                       <p className="font-medium text-lg">{availableMeal.meal}</p>
                       <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
-                        <div className="text-center">
-                          <p className="font-medium">{availableMeal.macros.calories}</p>
-                          <p>kcal</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium">{availableMeal.macros.protein}g</p>
-                          <p>Protein</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium">{availableMeal.macros.carbs}g</p>
-                          <p>Carbs</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium">{availableMeal.macros.fat}g</p>
-                          <p>Fat</p>
-                        </div>
+                        {macroVisibility.showCalories && (
+                          <div className="text-center">
+                            <p className="font-medium">{availableMeal.macros.calories}</p>
+                            <p>kcal</p>
+                          </div>
+                        )}
+                        {macroVisibility.showProtein && (
+                          <div className="text-center">
+                            <p className="font-medium">{availableMeal.macros.protein}g</p>
+                            <p>Protein</p>
+                          </div>
+                        )}
+                        {macroVisibility.showCarbs && (
+                          <div className="text-center">
+                            <p className="font-medium">{availableMeal.macros.carbs}g</p>
+                            <p>Carbs</p>
+                          </div>
+                        )}
+                        {macroVisibility.showFat && (
+                          <div className="text-center">
+                            <p className="font-medium">{availableMeal.macros.fat}g</p>
+                            <p>Fat</p>
+                          </div>
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         <p className="font-medium mb-1">Ingredients:</p>

@@ -8,9 +8,10 @@ interface MealRowProps {
   weeklyMeals: Record<string, DayMeals>;
   onMealUpdate: (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => void;
   availableIngredients: Ingredient[];
+  macroVisibility: MacroInfo;
 }
 
-const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients }: MealRowProps) => {
+const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, macroVisibility }: MealRowProps) => {
   return (
     <div className="grid grid-cols-[120px_repeat(7,1fr)] gap-4 items-center">
       <div className="text-muted-foreground font-medium">{mealType}</div>
@@ -24,6 +25,7 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients }: 
           className="w-full"
           onMealUpdate={(ingredients, macros) => onMealUpdate(day, mealType, ingredients, macros)}
           availableIngredients={availableIngredients}
+          macroVisibility={macroVisibility}
         />
       ))}
     </div>

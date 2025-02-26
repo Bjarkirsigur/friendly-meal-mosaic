@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -22,6 +21,13 @@ interface Ingredient {
   macros: Macros;
 }
 
+interface MacroInfo {
+  showCalories: boolean;
+  showProtein: boolean;
+  showCarbs: boolean;
+  showFat: boolean;
+}
+
 interface EditMealModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -29,9 +35,10 @@ interface EditMealModalProps {
   ingredients: Ingredient[];
   onSave: (ingredients: Ingredient[], totalMacros: Macros) => void;
   availableIngredients: Ingredient[];
+  macroVisibility: MacroInfo;
 }
 
-const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients, onSave, availableIngredients }: EditMealModalProps) => {
+const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients, onSave, availableIngredients, macroVisibility }: EditMealModalProps) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialIngredients);
   const [totalMacros, setTotalMacros] = useState<Macros>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [openPopover, setOpenPopover] = useState<number | null>(null);
@@ -58,16 +65,14 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
   };
 
   const adjustIngredientsToTarget = () => {
-    // Get current macros percentages
     const currentTotal = calculateTotalMacros(ingredients);
     const targetMacros = {
-      calories: 500, // Assuming target per meal is 1/4 of daily 2000 kcal
-      protein: 37.5, // 1/4 of 150g
-      carbs: 50,    // 1/4 of 200g
-      fat: 17.5     // 1/4 of 70g
+      calories: 500,
+      protein: 37.5,
+      carbs: 50,
+      fat: 17.5
     };
 
-    // Calculate the average ratio needed
     const ratios = {
       calories: targetMacros.calories / currentTotal.calories,
       protein: targetMacros.protein / currentTotal.protein,
@@ -75,7 +80,6 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
       fat: targetMacros.fat / currentTotal.fat,
     };
 
-    // Use the average ratio to adjust all ingredients proportionally
     const avgRatio = (ratios.calories + ratios.protein + ratios.carbs + ratios.fat) / 4;
 
     const adjustedIngredients = ingredients.map(ing => {
@@ -211,20 +215,20 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
                 className="w-24"
               />
               <div className="text-sm text-muted-foreground">
-                <div>{ingredient.macros.calories} kcal</div>
-                <div>{ingredient.macros.protein}g protein</div>
-                <div>{ingredient.macros.carbs}g carbs</div>
-                <div>{ingredient.macros.fat}g fat</div>
+                {macroVisibility.showCalories && <div>{ingredient.macros.calories} kcal</div>}
+                {macroVisibility.showProtein && <div>{ingredient.macros.protein}g protein</div>}
+                {macroVisibility.showCarbs && <div>{ingredient.macros.carbs}g carbs</div>}
+                {macroVisibility.showFat && <div>{ingredient.macros.fat}g fat</div>}
               </div>
             </div>
           ))}
           <div className="border-t pt-4 mt-4">
             <div className="font-medium mb-2">Total Macros:</div>
             <div className="grid grid-cols-4 gap-4 text-sm">
-              <div>{totalMacros.calories} kcal</div>
-              <div>{totalMacros.protein}g protein</div>
-              <div>{totalMacros.carbs}g carbs</div>
-              <div>{totalMacros.fat}g fat</div>
+              {macroVisibility.showCalories && <div>{totalMacros.calories} kcal</div>}
+              {macroVisibility.showProtein && <div>{totalMacros.protein}g protein</div>}
+              {macroVisibility.showCarbs && <div>{totalMacros.carbs}g carbs</div>}
+              {macroVisibility.showFat && <div>{totalMacros.fat}g fat</div>}
             </div>
           </div>
           <div className="flex justify-end space-x-2 mt-6">
