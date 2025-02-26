@@ -7,6 +7,7 @@ import {
   SidebarFooter,
   SidebarProvider,
   SidebarTrigger,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 
@@ -33,6 +34,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
               <Menu className="w-4 h-4" />
             </SidebarTrigger>
           </SidebarFooter>
+          <SidebarRail />
         </Sidebar>
         <div className="flex-1 overflow-auto">
           {children}
