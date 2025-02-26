@@ -1,24 +1,42 @@
-
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
-// Using the same meal data structure as Index page but with added ingredients
+// Using the same meal data structure as Index page but with added ingredients and their macros
 const MEALS = {
   Breakfast: [
     {
       meal: "Oatmeal with fruits",
-      ingredients: ["Rolled oats", "Mixed berries", "Banana", "Honey", "Almond milk"],
+      ingredients: [
+        { name: "Rolled oats", macros: { calories: 150, protein: 5, carbs: 27, fat: 3 } },
+        { name: "Mixed berries", macros: { calories: 45, protein: 1, carbs: 11, fat: 0 } },
+        { name: "Banana", macros: { calories: 105, protein: 1, carbs: 27, fat: 0 } },
+        { name: "Honey", macros: { calories: 30, protein: 0, carbs: 8, fat: 0 } },
+        { name: "Almond milk", macros: { calories: 20, protein: 1, carbs: 1, fat: 1.5 } }
+      ],
       macros: { calories: 350, protein: 12, carbs: 60, fat: 8 }
     },
     {
       meal: "Greek yogurt parfait",
-      ingredients: ["Greek yogurt", "Granola", "Mixed berries", "Honey", "Chia seeds"],
+      ingredients: [
+        { name: "Greek yogurt", macros: { calories: 130, protein: 13, carbs: 5, fat: 4 } },
+        { name: "Granola", macros: { calories: 120, protein: 3, carbs: 20, fat: 4 } },
+        { name: "Mixed berries", macros: { calories: 45, protein: 1, carbs: 11, fat: 0 } },
+        { name: "Honey", macros: { calories: 30, protein: 0, carbs: 8, fat: 0 } },
+        { name: "Chia seeds", macros: { calories: 60, protein: 3, carbs: 5, fat: 4 } }
+      ],
       macros: { calories: 300, protein: 15, carbs: 45, fat: 10 }
     },
     {
       meal: "Scrambled eggs with toast",
-      ingredients: ["Eggs", "Whole grain bread", "Butter", "Salt", "Black pepper", "Milk"],
+      ingredients: [
+        { name: "Eggs", macros: { calories: 140, protein: 12, carbs: 0, fat: 10 } },
+        { name: "Whole grain bread", macros: { calories: 80, protein: 4, carbs: 15, fat: 1 } },
+        { name: "Butter", macros: { calories: 102, protein: 0, carbs: 0, fat: 12 } },
+        { name: "Salt", macros: { calories: 0, protein: 0, carbs: 0, fat: 0 } },
+        { name: "Black pepper", macros: { calories: 0, protein: 0, carbs: 0, fat: 0 } },
+        { name: "Milk", macros: { calories: 30, protein: 1, carbs: 2, fat: 1 } }
+      ],
       macros: { calories: 400, protein: 20, carbs: 35, fat: 15 }
     }
   ],
@@ -104,7 +122,17 @@ const Meals = () => {
                       <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
                       <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
                         {meal.ingredients.map((ingredient, idx) => (
-                          <li key={idx}>{ingredient}</li>
+                          <li key={idx} className="group cursor-pointer hover:text-foreground">
+                            {ingredient.name}
+                            <div className="hidden group-hover:block pl-4 pt-1 text-xs">
+                              <div className="grid grid-cols-4 gap-2">
+                                <span>{ingredient.macros.calories} kcal</span>
+                                <span>{ingredient.macros.protein}g protein</span>
+                                <span>{ingredient.macros.carbs}g carbs</span>
+                                <span>{ingredient.macros.fat}g fat</span>
+                              </div>
+                            </div>
+                          </li>
                         ))}
                       </ul>
                     </div>
