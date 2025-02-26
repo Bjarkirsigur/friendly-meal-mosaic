@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, Shuffle } from "lucide-react";
@@ -10,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { MEALS } from "@/data/mealsData";
 
 interface MacroInfo {
   calories: number;
@@ -44,16 +44,9 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     }
   };
 
-  const handleSwitch = (selectedIngredient: Ingredient) => {
+  const handleSwitch = (selectedMeal: { ingredients: Ingredient[], macros: MacroInfo }) => {
     if (onMealUpdate) {
-      const newIngredients = [selectedIngredient];
-      const newMacros = {
-        calories: selectedIngredient.macros.calories,
-        protein: selectedIngredient.macros.protein,
-        carbs: selectedIngredient.macros.carbs,
-        fat: selectedIngredient.macros.fat,
-      };
-      onMealUpdate(newIngredients, newMacros);
+      onMealUpdate(selectedMeal.ingredients, selectedMeal.macros);
     }
     setIsSwitchDialogOpen(false);
   };
@@ -128,33 +121,50 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           <DialogHeader>
             <DialogTitle>Choose a Meal</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {availableIngredients?.map((ingredient, index) => (
-              <button
-                key={index}
-                onClick={() => handleSwitch(ingredient)}
-                className="flex flex-col gap-2 p-4 hover:bg-secondary/50 rounded-lg transition-colors duration-200"
-              >
-                <p className="font-medium">{ingredient.name}</p>
-                <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
-                  <div className="text-center">
-                    <p className="font-medium">{ingredient.macros.calories}</p>
-                    <p>kcal</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium">{ingredient.macros.protein}g</p>
-                    <p>Protein</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium">{ingredient.macros.carbs}g</p>
-                    <p>Carbs</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium">{ingredient.macros.fat}g</p>
-                    <p>Fat</p>
-                  </div>
+          <div className="grid gap-6 py-4">
+            {Object.entries(MEALS).map(([category, meals]) => (
+              <div key={category} className="space-y-4">
+                <h3 className="font-semibold text-lg">{category}</h3>
+                <div className="grid gap-4">
+                  {meals.map((availableMeal, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSwitch(availableMeal)}
+                      className="flex flex-col gap-3 p-4 hover:bg-secondary/50 rounded-lg transition-colors duration-200 text-left"
+                    >
+                      <p className="font-medium text-lg">{availableMeal.meal}</p>
+                      <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
+                        <div className="text-center">
+                          <p className="font-medium">{availableMeal.macros.calories}</p>
+                          <p>kcal</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-medium">{availableMeal.macros.protein}g</p>
+                          <p>Protein</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-medium">{availableMeal.macros.carbs}g</p>
+                          <p>Carbs</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-medium">{availableMeal.macros.fat}g</p>
+                          <p>Fat</p>
+                        </div>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        <p className="font-medium mb-1">Ingredients:</p>
+                        <ul className="list-disc pl-4 space-y-1">
+                          {availableMeal.ingredients.map((ingredient, idx) => (
+                            <li key={idx}>
+                              {ingredient.name} ({ingredient.grams}g)
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </DialogContent>
