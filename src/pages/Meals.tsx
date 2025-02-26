@@ -3,61 +3,73 @@ import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
-// Using the same meal data structure as Index page
+// Using the same meal data structure as Index page but with added ingredients
 const MEALS = {
   Breakfast: [
     {
       meal: "Oatmeal with fruits",
+      ingredients: ["Rolled oats", "Mixed berries", "Banana", "Honey", "Almond milk"],
       macros: { calories: 350, protein: 12, carbs: 60, fat: 8 }
     },
     {
       meal: "Greek yogurt parfait",
+      ingredients: ["Greek yogurt", "Granola", "Mixed berries", "Honey", "Chia seeds"],
       macros: { calories: 300, protein: 15, carbs: 45, fat: 10 }
     },
     {
       meal: "Scrambled eggs with toast",
+      ingredients: ["Eggs", "Whole grain bread", "Butter", "Salt", "Black pepper", "Milk"],
       macros: { calories: 400, protein: 20, carbs: 35, fat: 15 }
     }
   ],
   Lunch: [
     {
       meal: "Chicken salad",
+      ingredients: ["Grilled chicken breast", "Mixed greens", "Cherry tomatoes", "Cucumber", "Olive oil", "Balsamic vinegar"],
       macros: { calories: 450, protein: 35, carbs: 25, fat: 22 }
     },
     {
       meal: "Quinoa bowl",
+      ingredients: ["Quinoa", "Black beans", "Corn", "Avocado", "Red pepper", "Lime juice", "Cilantro"],
       macros: { calories: 480, protein: 25, carbs: 65, fat: 18 }
     },
     {
       meal: "Turkey sandwich",
+      ingredients: ["Whole grain bread", "Turkey breast", "Lettuce", "Tomato", "Mayo", "Mustard"],
       macros: { calories: 420, protein: 28, carbs: 48, fat: 16 }
     }
   ],
   Dinner: [
     {
       meal: "Salmon with rice",
+      ingredients: ["Salmon fillet", "Brown rice", "Broccoli", "Lemon", "Olive oil", "Garlic"],
       macros: { calories: 550, protein: 40, carbs: 45, fat: 25 }
     },
     {
       meal: "Grilled chicken with vegetables",
+      ingredients: ["Chicken breast", "Sweet potato", "Brussels sprouts", "Olive oil", "Herbs", "Garlic"],
       macros: { calories: 480, protein: 45, carbs: 30, fat: 20 }
     },
     {
       meal: "Pasta with meatballs",
+      ingredients: ["Whole grain pasta", "Ground beef", "Tomato sauce", "Onion", "Garlic", "Parmesan cheese"],
       macros: { calories: 600, protein: 35, carbs: 70, fat: 22 }
     }
   ],
   Snacks: [
     {
       meal: "Greek yogurt",
+      ingredients: ["Greek yogurt", "Honey", "Almonds"],
       macros: { calories: 150, protein: 15, carbs: 10, fat: 5 }
     },
     {
       meal: "Apple with peanut butter",
+      ingredients: ["Apple", "Natural peanut butter"],
       macros: { calories: 200, protein: 8, carbs: 25, fat: 12 }
     },
     {
       meal: "Protein bar",
+      ingredients: ["Protein blend", "Nuts", "Dried fruits", "Natural sweeteners"],
       macros: { calories: 180, protein: 20, carbs: 15, fat: 8 }
     }
   ]
@@ -88,6 +100,14 @@ const Meals = () => {
                 {meals.map((meal, index) => (
                   <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
                     <h3 className="font-medium mb-4">{meal.meal}</h3>
+                    <div className="mb-4">
+                      <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
+                      <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                        {meal.ingredients.map((ingredient, idx) => (
+                          <li key={idx}>{ingredient}</li>
+                        ))}
+                      </ul>
+                    </div>
                     <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
                       <div className="text-center">
                         <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
