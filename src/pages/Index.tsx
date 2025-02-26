@@ -23,15 +23,17 @@ const Index = () => {
   const currentDayName = format(currentDate, 'EEEE');
 
   const handleMealUpdate = (_day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
-    setDayMeals(prev => ({
-      ...prev,
-      [mealType]: {
-        ...(prev[mealType] || {}),
-        meal: prev[mealType]?.meal || '',
-        ingredients,
-        macros
-      }
-    }));
+    setDayMeals(prev => {
+      const currentMeal = prev[mealType as MealType];
+      return {
+        ...prev,
+        [mealType]: {
+          meal: currentMeal?.meal || '',
+          ingredients,
+          macros
+        }
+      };
+    });
   };
 
   return (

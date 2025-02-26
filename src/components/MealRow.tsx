@@ -13,15 +13,15 @@ interface MealRowProps {
 
 const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, macroVisibility }: MealRowProps) => {
   return (
-    <div className="grid grid-cols-[120px_repeat(7,1fr)] gap-4 items-center">
-      <div className="text-muted-foreground font-medium">{mealType}</div>
-      {DAYS.map((day) => (
+    <div className="flex gap-4 items-center">
+      <div className="text-muted-foreground font-medium w-[120px]">{mealType}</div>
+      {Object.entries(weeklyMeals).map(([day, dayMeals]) => (
         <MealCard
           key={`${day}-${mealType}`}
           title={`${day} ${mealType}`}
-          meal={weeklyMeals[day][mealType]?.meal}
-          macros={weeklyMeals[day][mealType]?.macros}
-          ingredients={weeklyMeals[day][mealType]?.ingredients}
+          meal={dayMeals?.[mealType]?.meal}
+          macros={dayMeals?.[mealType]?.macros}
+          ingredients={dayMeals?.[mealType]?.ingredients}
           className="w-full"
           onMealUpdate={(ingredients, macros) => onMealUpdate(day, mealType, ingredients, macros)}
           availableIngredients={availableIngredients}
