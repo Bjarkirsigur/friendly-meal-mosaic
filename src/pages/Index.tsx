@@ -2,31 +2,55 @@
 import MealCard from "@/components/MealCard";
 import { Link } from "react-router-dom";
 import { BookOpen } from "lucide-react";
+import { useState } from "react";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
 
-// Example meal data with macros - in a real app this would come from a database
-const EXAMPLE_MEALS = {
-  Breakfast: {
-    meal: "Oatmeal with fruits",
-    macros: { calories: 350, protein: 12, carbs: 60, fat: 8 }
-  },
-  Lunch: {
-    meal: "Chicken salad",
-    macros: { calories: 450, protein: 35, carbs: 25, fat: 22 }
-  },
-  Dinner: {
-    meal: "Salmon with rice",
-    macros: { calories: 550, protein: 40, carbs: 45, fat: 25 }
-  },
-  Snacks: {
-    meal: "Greek yogurt",
-    macros: { calories: 150, protein: 15, carbs: 10, fat: 5 }
-  }
+// Import the meals data from the Meals page to use as available ingredients
+import { MEALS as AVAILABLE_MEALS } from "./Meals";
+
+// Flatten all ingredients from available meals into a single array
+const getAllAvailableIngredients = () => {
+  const ingredients: any[] = [];
+  Object.values(AVAILABLE_MEALS).forEach(mealCategory => {
+    mealCategory.forEach(meal => {
+      meal.ingredients.forEach(ingredient => {
+        if (!ingredients.find(i => i.name === ingredient.name)) {
+          ingredients.push(ingredient);
+        }
+      });
+    });
+  });
+  return ingredients;
 };
 
 const Index = () => {
+  const [weeklyMeals, setWeeklyMeals] = useState(() => {
+    const initialMeals: any = {};
+    DAYS.forEach(day => {
+      initialMeals[day] = {};
+      MEALS.forEach(mealType => {
+        initialMeals[day][mealType] = AVAILABLE_MEALS[mealType as keyof typeof AVAILABLE_MEALS]?.[0] || null;
+      });
+    });
+    return initialMeals;
+  });
+
+  const handleMealUpdate = (day: string, mealType: string, ingredients: any[], macros: any) => {
+    setWeeklyMeals(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        [mealType]: {
+          ...prev[day][mealType],
+          ingredients,
+          macros
+        }
+      }
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-secondary/30 px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -61,9 +85,12 @@ const Index = () => {
                 <MealCard
                   key={`${day}-${meal}`}
                   title={`${day} ${meal}`}
-                  meal={EXAMPLE_MEALS[meal as keyof typeof EXAMPLE_MEALS]?.meal}
-                  macros={EXAMPLE_MEALS[meal as keyof typeof EXAMPLE_MEALS]?.macros}
+                  meal={weeklyMeals[day][meal]?.meal}
+                  macros={weeklyMeals[day][meal]?.macros}
+                  ingredients={weeklyMeals[day][meal]?.ingredients}
                   className="w-full"
+                  onMealUpdate={(ingredients, macros) => handleMealUpdate(day, meal, ingredients, macros)}
+                  availableIngredients={getAllAvailableIngredients()}
                 />
               ))}
             </div>
