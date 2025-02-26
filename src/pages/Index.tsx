@@ -72,7 +72,7 @@ const Index = () => {
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold text-primary mb-6">Weekly Meal Plan</h1>
           <div className="flex flex-col items-center gap-4">
-            <div className="flex justify-center gap-8 text-sm text-muted-foreground">
+            <div className="flex justify-center items-center gap-8 text-sm text-muted-foreground">
               <div>
                 <span className="font-medium">{macroGoals.calories}</span> kcal
               </div>
@@ -85,13 +85,13 @@ const Index = () => {
               <div>
                 <span className="font-medium">{macroGoals.fat}g</span> fat
               </div>
+              <button
+                onClick={() => setIsGoalsDialogOpen(true)}
+                className="p-2 rounded-full hover:bg-secondary transition-colors duration-200"
+              >
+                <Settings className="w-5 h-5 text-primary" />
+              </button>
             </div>
-            <button
-              onClick={() => setIsGoalsDialogOpen(true)}
-              className="p-2 rounded-full hover:bg-secondary transition-colors duration-200"
-            >
-              <Settings className="w-5 h-5 text-primary" />
-            </button>
           </div>
           <div className="mt-4">
             <Link 
