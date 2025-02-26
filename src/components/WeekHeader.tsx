@@ -1,8 +1,9 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DAYS } from "../utils/mealUtils";
-import { format, addWeeks, startOfWeek, addDays } from "date-fns";
+import { format, addWeeks, startOfWeek, addDays, isBefore, startOfDay } from "date-fns";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface WeekHeaderProps {
   currentDate: Date;
@@ -11,6 +12,7 @@ interface WeekHeaderProps {
 
 const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
   const startOfCurrentWeek = startOfWeek(currentDate, { weekStartsOn: 1 }); // Start week on Monday
+  const today = new Date(2025, 1, 26); // February 26, 2025
 
   const getDayDate = (dayIndex: number) => {
     return addDays(startOfCurrentWeek, dayIndex);
@@ -22,6 +24,10 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
 
   const handleNextWeek = () => {
     onWeekChange(addWeeks(currentDate, 1));
+  };
+
+  const isPastDay = (date: Date) => {
+    return isBefore(startOfDay(date), startOfDay(today));
   };
 
   return (
@@ -49,14 +55,25 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
       </div>
       <div className="grid grid-cols-[120px_repeat(7,1fr)] gap-4 items-center">
         <div className="text-muted-foreground font-medium" />
-        {DAYS.map((day, index) => (
-          <div key={day} className="text-center">
-            <h2 className="text-primary font-semibold">{day}</h2>
-            <div className="text-sm text-muted-foreground">
-              {format(getDayDate(index), 'd')}
+        {DAYS.map((day, index) => {
+          const dayDate = getDayDate(index);
+          const isFinished = isPastDay(dayDate);
+          
+          return (
+            <div 
+              key={day} 
+              className={cn(
+                "text-center",
+                isFinished && "opacity-50"
+              )}
+            >
+              <h2 className="text-primary font-semibold">{day}</h2>
+              <div className="text-sm text-muted-foreground">
+                {format(dayDate, 'd')}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
