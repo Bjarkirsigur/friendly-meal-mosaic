@@ -4,6 +4,26 @@ import MealCard from "@/components/MealCard";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
 
+// Example meal data with macros - in a real app this would come from a database
+const EXAMPLE_MEALS = {
+  Breakfast: {
+    meal: "Oatmeal with fruits",
+    macros: { calories: 350, protein: 12, carbs: 60, fat: 8 }
+  },
+  Lunch: {
+    meal: "Chicken salad",
+    macros: { calories: 450, protein: 35, carbs: 25, fat: 22 }
+  },
+  Dinner: {
+    meal: "Salmon with rice",
+    macros: { calories: 550, protein: 40, carbs: 45, fat: 25 }
+  },
+  Snacks: {
+    meal: "Greek yogurt",
+    macros: { calories: 150, protein: 15, carbs: 10, fat: 5 }
+  }
+};
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-secondary/30 px-4 py-8 md:px-8">
@@ -32,6 +52,8 @@ const Index = () => {
                 <MealCard
                   key={`${day}-${meal}`}
                   title={`${day} ${meal}`}
+                  meal={EXAMPLE_MEALS[meal as keyof typeof EXAMPLE_MEALS]?.meal}
+                  macros={EXAMPLE_MEALS[meal as keyof typeof EXAMPLE_MEALS]?.macros}
                   className="w-full"
                 />
               ))}
