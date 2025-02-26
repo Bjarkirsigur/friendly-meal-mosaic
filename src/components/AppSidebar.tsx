@@ -20,7 +20,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
-        <Sidebar variant="floating" collapsible="offcanvas">
+        <Sidebar variant="floating" collapsible="offcanvas" side="right">
           <SidebarContent className="flex flex-col gap-4">
             <Link 
               to="/meals" 
