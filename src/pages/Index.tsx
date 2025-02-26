@@ -1,5 +1,7 @@
 
 import MealCard from "@/components/MealCard";
+import { Link } from "react-router-dom";
+import { BookOpen } from "lucide-react";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Snacks"];
@@ -30,7 +32,14 @@ const Index = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 animate-fade-in">
           <h1 className="text-4xl font-bold text-primary mb-4">Weekly Meal Plan</h1>
-          <p className="text-muted-foreground">Plan your meals for the week ahead</p>
+          <p className="text-muted-foreground mb-4">Plan your meals for the week ahead</p>
+          <Link 
+            to="/meals" 
+            className="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+          >
+            <BookOpen className="w-4 h-4 mr-2" />
+            Browse Available Meals
+          </Link>
         </div>
 
         <div className="grid gap-6">
