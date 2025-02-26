@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, Shuffle } from "lucide-react";
@@ -10,19 +11,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { MEALS } from "@/data/mealsData";
-
-interface MacroInfo {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-}
-
-interface Ingredient {
-  name: string;
-  grams: number;
-  macros: MacroInfo;
-}
+import { Input } from "@/components/ui/input";
+import { MacroInfo, Ingredient, Meal } from "@/types/meals";
 
 interface MealCardProps {
   title: string;
@@ -38,6 +28,7 @@ interface MealCardProps {
 const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, availableIngredients, macroVisibility }: MealCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleEdit = () => {
     if (meal && ingredients && availableIngredients) {
@@ -57,6 +48,19 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       onMealUpdate(newIngredients, newMacros);
     }
     setIsEditModalOpen(false);
+  };
+
+  const filterMeals = (meals: Record<string, Meal[]>) => {
+    const filteredEntries = Object.entries(meals).map(([category, categoryMeals]) => {
+      const filteredMeals = categoryMeals.filter(meal =>
+        meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        meal.ingredients.some(ing => 
+          ing.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+      return [category, filteredMeals] as [string, Meal[]];
+    });
+    return filteredEntries.filter(([_, meals]) => meals.length > 0);
   };
 
   return (
@@ -131,8 +135,14 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           <DialogHeader>
             <DialogTitle>Choose a Meal</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-6 py-4">
-            {Object.entries(MEALS).map(([category, meals]) => (
+          <div className="space-y-6 py-4">
+            <Input
+              placeholder="Search meals or ingredients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full mb-4"
+            />
+            {filterMeals(MEALS).map(([category, meals]) => (
               <div key={category} className="space-y-4">
                 <h3 className="font-semibold text-lg">{category}</h3>
                 <div className="grid gap-4">
