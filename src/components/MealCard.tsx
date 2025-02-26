@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Edit2, RefreshCw } from "lucide-react";
+import { Edit2, Shuffle } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
 
@@ -68,7 +68,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer"
             onClick={handleSwitch}
           >
-            <RefreshCw className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+            <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
           </button>
           <button 
             className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-bl-lg rounded-tr-md cursor-pointer"
