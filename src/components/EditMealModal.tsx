@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -34,6 +34,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialIngredients);
   const [totalMacros, setTotalMacros] = useState<Macros>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
   const [openPopover, setOpenPopover] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
 
   const calculateMacrosForGrams = (ingredient: Ingredient, grams: number): Macros => {
     const ratio = grams / ingredient.grams;
@@ -86,7 +87,12 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
       return ing;
     }));
     setOpenPopover(null);
+    setSearch("");
   };
+
+  const filteredIngredients = availableIngredients.filter(ing => 
+    ing.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -103,7 +109,10 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
           </div>
           {ingredients.map((ingredient, index) => (
             <div key={index} className="grid grid-cols-4 gap-4 items-center">
-              <Popover open={openPopover === index} onOpenChange={(open) => setOpenPopover(open ? index : null)}>
+              <Popover open={openPopover === index} onOpenChange={(open) => {
+                setOpenPopover(open ? index : null);
+                if (!open) setSearch("");
+              }}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -115,26 +124,33 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search ingredients..." />
-                    <CommandEmpty>No ingredient found.</CommandEmpty>
-                    <CommandGroup>
-                      {availableIngredients.map((ing) => (
-                        <CommandItem
-                          key={ing.name}
-                          onSelect={() => handleIngredientChange(index, ing.name)}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              ingredient.name === ing.name ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                          {ing.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
+                <PopoverContent className="w-[300px] p-0" align="start">
+                  <Command shouldFilter={false}>
+                    <CommandInput 
+                      placeholder="Search ingredients..." 
+                      value={search}
+                      onValueChange={setSearch}
+                    />
+                    <CommandList>
+                      <CommandEmpty>No ingredient found.</CommandEmpty>
+                      <CommandGroup className="max-h-[200px] overflow-y-auto">
+                        {filteredIngredients.map((ing) => (
+                          <CommandItem
+                            key={ing.name}
+                            onSelect={() => handleIngredientChange(index, ing.name)}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                ingredient.name === ing.name ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {ing.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
                   </Command>
                 </PopoverContent>
               </Popover>
