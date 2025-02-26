@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -43,51 +44,106 @@ const MEALS = {
   Lunch: [
     {
       meal: "Chicken salad",
-      ingredients: ["Grilled chicken breast", "Mixed greens", "Cherry tomatoes", "Cucumber", "Olive oil", "Balsamic vinegar"],
+      ingredients: [
+        { name: "Grilled chicken breast", macros: { calories: 165, protein: 31, carbs: 0, fat: 3.6 } },
+        { name: "Mixed greens", macros: { calories: 10, protein: 1, carbs: 2, fat: 0 } },
+        { name: "Cherry tomatoes", macros: { calories: 27, protein: 1, carbs: 6, fat: 0 } },
+        { name: "Cucumber", macros: { calories: 8, protein: 0.3, carbs: 2, fat: 0 } },
+        { name: "Olive oil", macros: { calories: 120, protein: 0, carbs: 0, fat: 14 } },
+        { name: "Balsamic vinegar", macros: { calories: 14, protein: 0, carbs: 3, fat: 0 } }
+      ],
       macros: { calories: 450, protein: 35, carbs: 25, fat: 22 }
     },
     {
       meal: "Quinoa bowl",
-      ingredients: ["Quinoa", "Black beans", "Corn", "Avocado", "Red pepper", "Lime juice", "Cilantro"],
+      ingredients: [
+        { name: "Quinoa", macros: { calories: 222, protein: 8, carbs: 39, fat: 4 } },
+        { name: "Black beans", macros: { calories: 132, protein: 8, carbs: 24, fat: 0.5 } },
+        { name: "Corn", macros: { calories: 85, protein: 3, carbs: 19, fat: 1 } },
+        { name: "Avocado", macros: { calories: 120, protein: 1.5, carbs: 6, fat: 11 } },
+        { name: "Red pepper", macros: { calories: 30, protein: 1, carbs: 6, fat: 0 } },
+        { name: "Lime juice", macros: { calories: 4, protein: 0, carbs: 1, fat: 0 } },
+        { name: "Cilantro", macros: { calories: 1, protein: 0.1, carbs: 0.2, fat: 0 } }
+      ],
       macros: { calories: 480, protein: 25, carbs: 65, fat: 18 }
     },
     {
       meal: "Turkey sandwich",
-      ingredients: ["Whole grain bread", "Turkey breast", "Lettuce", "Tomato", "Mayo", "Mustard"],
+      ingredients: [
+        { name: "Whole grain bread", macros: { calories: 160, protein: 8, carbs: 30, fat: 2 } },
+        { name: "Turkey breast", macros: { calories: 125, protein: 26, carbs: 0, fat: 2 } },
+        { name: "Lettuce", macros: { calories: 5, protein: 0.5, carbs: 1, fat: 0 } },
+        { name: "Tomato", macros: { calories: 22, protein: 1, carbs: 5, fat: 0 } },
+        { name: "Mayo", macros: { calories: 94, protein: 0, carbs: 0, fat: 10 } },
+        { name: "Mustard", macros: { calories: 15, protein: 1, carbs: 1, fat: 1 } }
+      ],
       macros: { calories: 420, protein: 28, carbs: 48, fat: 16 }
     }
   ],
   Dinner: [
     {
       meal: "Salmon with rice",
-      ingredients: ["Salmon fillet", "Brown rice", "Broccoli", "Lemon", "Olive oil", "Garlic"],
+      ingredients: [
+        { name: "Salmon fillet", macros: { calories: 367, protein: 34, carbs: 0, fat: 22 } },
+        { name: "Brown rice", macros: { calories: 216, protein: 5, carbs: 45, fat: 2 } },
+        { name: "Broccoli", macros: { calories: 55, protein: 4, carbs: 11, fat: 0.6 } },
+        { name: "Lemon", macros: { calories: 12, protein: 0.2, carbs: 4, fat: 0 } },
+        { name: "Olive oil", macros: { calories: 120, protein: 0, carbs: 0, fat: 14 } },
+        { name: "Garlic", macros: { calories: 13, protein: 0.6, carbs: 3, fat: 0 } }
+      ],
       macros: { calories: 550, protein: 40, carbs: 45, fat: 25 }
     },
     {
       meal: "Grilled chicken with vegetables",
-      ingredients: ["Chicken breast", "Sweet potato", "Brussels sprouts", "Olive oil", "Herbs", "Garlic"],
+      ingredients: [
+        { name: "Chicken breast", macros: { calories: 165, protein: 31, carbs: 0, fat: 3.6 } },
+        { name: "Sweet potato", macros: { calories: 103, protein: 2, carbs: 24, fat: 0 } },
+        { name: "Brussels sprouts", macros: { calories: 38, protein: 3, carbs: 8, fat: 0 } },
+        { name: "Olive oil", macros: { calories: 120, protein: 0, carbs: 0, fat: 14 } },
+        { name: "Herbs", macros: { calories: 5, protein: 0.3, carbs: 1, fat: 0 } },
+        { name: "Garlic", macros: { calories: 13, protein: 0.6, carbs: 3, fat: 0 } }
+      ],
       macros: { calories: 480, protein: 45, carbs: 30, fat: 20 }
     },
     {
       meal: "Pasta with meatballs",
-      ingredients: ["Whole grain pasta", "Ground beef", "Tomato sauce", "Onion", "Garlic", "Parmesan cheese"],
+      ingredients: [
+        { name: "Whole grain pasta", macros: { calories: 200, protein: 7, carbs: 41, fat: 1.3 } },
+        { name: "Ground beef", macros: { calories: 250, protein: 26, carbs: 0, fat: 15 } },
+        { name: "Tomato sauce", macros: { calories: 70, protein: 2, carbs: 13, fat: 1 } },
+        { name: "Onion", macros: { calories: 44, protein: 1.2, carbs: 10, fat: 0.1 } },
+        { name: "Garlic", macros: { calories: 13, protein: 0.6, carbs: 3, fat: 0 } },
+        { name: "Parmesan cheese", macros: { calories: 110, protein: 10, carbs: 1, fat: 7 } }
+      ],
       macros: { calories: 600, protein: 35, carbs: 70, fat: 22 }
     }
   ],
   Snacks: [
     {
       meal: "Greek yogurt",
-      ingredients: ["Greek yogurt", "Honey", "Almonds"],
+      ingredients: [
+        { name: "Greek yogurt", macros: { calories: 130, protein: 13, carbs: 5, fat: 4 } },
+        { name: "Honey", macros: { calories: 30, protein: 0, carbs: 8, fat: 0 } },
+        { name: "Almonds", macros: { calories: 164, protein: 6, carbs: 6, fat: 14 } }
+      ],
       macros: { calories: 150, protein: 15, carbs: 10, fat: 5 }
     },
     {
       meal: "Apple with peanut butter",
-      ingredients: ["Apple", "Natural peanut butter"],
+      ingredients: [
+        { name: "Apple", macros: { calories: 95, protein: 0.5, carbs: 25, fat: 0.3 } },
+        { name: "Natural peanut butter", macros: { calories: 190, protein: 7, carbs: 7, fat: 16 } }
+      ],
       macros: { calories: 200, protein: 8, carbs: 25, fat: 12 }
     },
     {
       meal: "Protein bar",
-      ingredients: ["Protein blend", "Nuts", "Dried fruits", "Natural sweeteners"],
+      ingredients: [
+        { name: "Protein blend", macros: { calories: 120, protein: 20, carbs: 2, fat: 2 } },
+        { name: "Nuts", macros: { calories: 180, protein: 6, carbs: 6, fat: 16 } },
+        { name: "Dried fruits", macros: { calories: 100, protein: 1, carbs: 24, fat: 0 } },
+        { name: "Natural sweeteners", macros: { calories: 20, protein: 0, carbs: 5, fat: 0 } }
+      ],
       macros: { calories: 180, protein: 20, carbs: 15, fat: 8 }
     }
   ]
