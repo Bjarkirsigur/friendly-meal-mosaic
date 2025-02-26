@@ -1,6 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Edit2 } from "lucide-react";
 
 interface MacroInfo {
   calories: number;
@@ -18,7 +19,10 @@ interface MealCardProps {
 
 const MealCard = ({ title, meal, macros, className }: MealCardProps) => {
   return (
-    <Card className={cn("p-4 h-40 transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in", className)}>
+    <Card className={cn("p-4 h-40 transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in relative group", className)}>
+      <div className="absolute top-0 right-0 w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-bl-lg rounded-tr-md cursor-pointer">
+        <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+      </div>
       <h3 className="text-sm font-medium text-muted-foreground mb-2">{title}</h3>
       {meal ? (
         <>
