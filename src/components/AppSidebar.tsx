@@ -36,7 +36,7 @@ export function AppSidebar({ children }: AppSidebarProps) {
               className="flex items-center gap-2 px-4 py-2 text-primary hover:text-primary/80 hover:bg-secondary/50 rounded-lg transition-colors"
             >
               <BookOpen className="w-4 h-4" />
-              Browse Available Meals
+              Meals
             </Link>
           </SidebarContent>
           <SidebarFooter>
