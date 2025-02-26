@@ -1,7 +1,6 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
@@ -120,11 +119,10 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
                   <Command>
                     <CommandInput placeholder="Search ingredients..." />
                     <CommandEmpty>No ingredient found.</CommandEmpty>
-                    <CommandGroup className="max-h-60 overflow-auto">
+                    <CommandGroup>
                       {availableIngredients.map((ing) => (
                         <CommandItem
                           key={ing.name}
-                          value={ing.name}
                           onSelect={() => handleIngredientChange(index, ing.name)}
                         >
                           <Check
