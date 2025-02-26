@@ -4,6 +4,10 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Check, ChevronsUpDown } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Macros {
   calories: number;
@@ -30,6 +34,7 @@ interface EditMealModalProps {
 const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients, onSave, availableIngredients }: EditMealModalProps) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialIngredients);
   const [totalMacros, setTotalMacros] = useState<Macros>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+  const [openPopover, setOpenPopover] = useState<number | null>(null);
 
   const calculateMacrosForGrams = (ingredient: Ingredient, grams: number): Macros => {
     const ratio = grams / ingredient.grams;
@@ -81,6 +86,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
       }
       return ing;
     }));
+    setOpenPopover(null);
   };
 
   return (
@@ -98,21 +104,42 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
           </div>
           {ingredients.map((ingredient, index) => (
             <div key={index} className="grid grid-cols-4 gap-4 items-center">
-              <Select
-                value={ingredient.name}
-                onValueChange={(value) => handleIngredientChange(index, value)}
-              >
-                <SelectTrigger>
-                  <SelectValue>{ingredient.name}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {availableIngredients.map((ing) => (
-                    <SelectItem key={ing.name} value={ing.name}>
-                      {ing.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={openPopover === index} onOpenChange={(open) => setOpenPopover(open ? index : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openPopover === index}
+                    className="justify-between"
+                  >
+                    {ingredient.name}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search ingredients..." />
+                    <CommandEmpty>No ingredient found.</CommandEmpty>
+                    <CommandGroup className="max-h-60 overflow-auto">
+                      {availableIngredients.map((ing) => (
+                        <CommandItem
+                          key={ing.name}
+                          value={ing.name}
+                          onSelect={() => handleIngredientChange(index, ing.name)}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              ingredient.name === ing.name ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {ing.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               <Input
                 type="number"
                 value={ingredient.grams}
