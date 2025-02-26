@@ -24,21 +24,21 @@ const MealCard = ({ title, meal, macros, className }: MealCardProps) => {
         <>
           <p className="text-foreground mb-2">{meal}</p>
           {macros && (
-            <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground">
-              <div>
-                <p className="font-medium">{macros.calories}</p>
+            <div className="grid grid-cols-4 gap-4 text-xs text-muted-foreground mt-3">
+              <div className="text-center">
+                <p className="font-medium text-sm mb-0.5">{macros.calories}</p>
                 <p>kcal</p>
               </div>
-              <div>
-                <p className="font-medium">{macros.protein}g</p>
+              <div className="text-center">
+                <p className="font-medium text-sm mb-0.5">{macros.protein}g</p>
                 <p>Protein</p>
               </div>
-              <div>
-                <p className="font-medium">{macros.carbs}g</p>
+              <div className="text-center">
+                <p className="font-medium text-sm mb-0.5">{macros.carbs}g</p>
                 <p>Carbs</p>
               </div>
-              <div>
-                <p className="font-medium">{macros.fat}g</p>
+              <div className="text-center">
+                <p className="font-medium text-sm mb-0.5">{macros.fat}g</p>
                 <p>Fat</p>
               </div>
             </div>
