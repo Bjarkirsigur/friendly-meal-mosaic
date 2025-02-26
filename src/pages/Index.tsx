@@ -9,8 +9,8 @@ import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { format } from "date-fns";
 
 const Index = () => {
-  const [weeklyMeals, setWeeklyMeals] = useState<Record<string, DayMeals>>(createInitialMeals);
   const [currentDate] = useState(new Date());
+  const [dayMeals, setDayMeals] = useState<DayMeals>(createInitialMeals()[format(currentDate, 'EEEE')]);
   const {
     isGoalsDialogOpen,
     setIsGoalsDialogOpen,
@@ -22,16 +22,13 @@ const Index = () => {
 
   const currentDayName = format(currentDate, 'EEEE');
 
-  const handleMealUpdate = (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
-    setWeeklyMeals(prev => ({
+  const handleMealUpdate = (_day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo) => {
+    setDayMeals(prev => ({
       ...prev,
-      [day]: {
-        ...prev[day],
-        [mealType]: {
-          ...prev[day][mealType],
-          ingredients,
-          macros
-        }
+      [mealType]: {
+        ...prev[mealType],
+        ingredients,
+        macros
       }
     }));
   };
@@ -55,7 +52,7 @@ const Index = () => {
             <MealRow
               key={meal}
               mealType={meal as MealType}
-              weeklyMeals={{ [currentDayName]: weeklyMeals[currentDayName] }}
+              weeklyMeals={{ [currentDayName]: dayMeals }}
               onMealUpdate={handleMealUpdate}
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
