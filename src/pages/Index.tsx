@@ -10,7 +10,7 @@ import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
 import { Settings } from "lucide-react";
 import MealCard from "@/components/MealCard";
-import { Card } from "./ui/card";
+import { Card } from "@/components/ui/card";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
