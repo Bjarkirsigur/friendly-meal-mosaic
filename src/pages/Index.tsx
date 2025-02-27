@@ -4,7 +4,6 @@ import MealRow from "../components/MealRow";
 import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
 import { MealType, MacroInfo } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
-import MacroGoalsDisplay from "@/components/MacroGoalsDisplay";
 import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
@@ -64,10 +63,6 @@ const Index = () => {
           <h1 className="text-4xl font-bold text-primary mb-6">Today's Meal Plan</h1>
           <p className="text-lg text-muted-foreground mb-6">{format(currentDate, 'MMMM d, yyyy')}</p>
           <div className="flex flex-col items-center gap-4">
-            <MacroGoalsDisplay 
-              macroGoals={macroGoals}
-              onSettingsClick={() => setIsGoalsDialogOpen(true)}
-            />
             <div className="w-full max-w-xl bg-white/50 rounded-lg p-4 mt-2">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm text-muted-foreground">Daily Totals:</p>
