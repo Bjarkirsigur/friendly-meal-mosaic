@@ -18,7 +18,7 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, ma
   return (
     <div className="flex gap-1 items-center">
       <div className="text-muted-foreground font-medium w-[40px] text-xs shrink-0">{mealType}</div>
-      <div className="flex gap-1 w-full overflow-x-auto pb-1">
+      <div className="flex gap-2 w-full overflow-x-auto pb-1">
         {Object.entries(weeklyMeals).map(([day, dayMeals]) => (
           <MealCard
             key={`${day}-${mealType}`}
@@ -26,7 +26,7 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, ma
             meal={dayMeals?.[mealType]?.meal}
             macros={dayMeals?.[mealType]?.macros}
             ingredients={dayMeals?.[mealType]?.ingredients}
-            className="w-[50px] shrink-0"
+            className="w-[120px] shrink-0"
             onMealUpdate={(ingredients, macros, mealName) => onMealUpdate(day, mealType, ingredients, macros, mealName)}
             availableIngredients={availableIngredients}
             macroVisibility={macroVisibility}
