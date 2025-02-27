@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
 import { Settings } from "lucide-react";
 import MealCard from "@/components/MealCard";
+import { Card } from "./ui/card";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -88,105 +89,135 @@ const Index = () => {
         {/* Meal and Snack Layout - 2-column grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto pb-24">
           {/* Breakfast */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-4">
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
             <MealCard
               title={`${currentDayName} Breakfast`}
               meal={weeklyMeals[currentDayName]?.["Breakfast"]?.meal}
               macros={weeklyMeals[currentDayName]?.["Breakfast"]?.macros}
               ingredients={weeklyMeals[currentDayName]?.["Breakfast"]?.ingredients}
-              className="w-full h-full"
+              className="w-full"
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
               }
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
+            <Card className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20">
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+              </div>
+            </Card>
           </div>
           
           {/* Morning Snack */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-4">
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Morning Snack</p>
             <MealCard
               title={`${currentDayName} Morning Snack`}
               meal={weeklyMeals[currentDayName]?.["Morning Snack"]?.meal}
               macros={weeklyMeals[currentDayName]?.["Morning Snack"]?.macros}
               ingredients={weeklyMeals[currentDayName]?.["Morning Snack"]?.ingredients}
-              className="w-full h-full"
+              className="w-full"
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Morning Snack", ingredients, macros, mealName)
               }
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
+            <Card className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20">
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+              </div>
+            </Card>
           </div>
           
           {/* Lunch */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-4">
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
             <MealCard
               title={`${currentDayName} Lunch`}
               meal={weeklyMeals[currentDayName]?.["Lunch"]?.meal}
               macros={weeklyMeals[currentDayName]?.["Lunch"]?.macros}
               ingredients={weeklyMeals[currentDayName]?.["Lunch"]?.ingredients}
-              className="w-full h-full"
+              className="w-full"
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
               }
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
+            <Card className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20">
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+              </div>
+            </Card>
           </div>
           
           {/* Afternoon Snack */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-4">
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Afternoon Snack</p>
             <MealCard
               title={`${currentDayName} Afternoon Snack`}
               meal={weeklyMeals[currentDayName]?.["Afternoon Snack"]?.meal}
               macros={weeklyMeals[currentDayName]?.["Afternoon Snack"]?.macros}
               ingredients={weeklyMeals[currentDayName]?.["Afternoon Snack"]?.ingredients}
-              className="w-full h-full"
+              className="w-full"
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Afternoon Snack", ingredients, macros, mealName)
               }
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
+            <Card className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20">
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+              </div>
+            </Card>
           </div>
           
           {/* Dinner */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-4">
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
             <MealCard
               title={`${currentDayName} Dinner`}
               meal={weeklyMeals[currentDayName]?.["Dinner"]?.meal}
               macros={weeklyMeals[currentDayName]?.["Dinner"]?.macros}
               ingredients={weeklyMeals[currentDayName]?.["Dinner"]?.ingredients}
-              className="w-full h-full"
+              className="w-full"
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
               }
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
+            <Card className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20">
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+              </div>
+            </Card>
           </div>
           
           {/* Evening Snack */}
-          <div className="flex flex-col">
+          <div className="flex flex-col space-y-4">
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Evening Snack</p>
             <MealCard
               title={`${currentDayName} Evening Snack`}
               meal={weeklyMeals[currentDayName]?.["Evening Snack"]?.meal}
               macros={weeklyMeals[currentDayName]?.["Evening Snack"]?.macros}
               ingredients={weeklyMeals[currentDayName]?.["Evening Snack"]?.ingredients}
-              className="w-full h-full"
+              className="w-full"
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Evening Snack", ingredients, macros, mealName)
               }
               availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
+            <Card className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20">
+              <div className="h-full flex items-center justify-center">
+                <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
