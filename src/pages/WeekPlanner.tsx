@@ -2,7 +2,7 @@
 import { useState } from "react";
 import WeekHeader from "../components/WeekHeader";
 import MealRow from "../components/MealRow";
-import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
+import { MEAL_TYPES } from "../utils/mealUtils";
 import { MealType } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import MacroGoalsDisplay from "@/components/MacroGoalsDisplay";
@@ -49,7 +49,6 @@ const WeekPlanner = () => {
                     mealType={meal as MealType}
                     weeklyMeals={weeklyMeals}
                     onMealUpdate={handleMealUpdate}
-                    availableIngredients={getAllAvailableIngredients()}
                     macroVisibility={macroGoals}
                   />
                 ))}
@@ -65,7 +64,6 @@ const WeekPlanner = () => {
                 mealType={meal as MealType}
                 weeklyMeals={weeklyMeals}
                 onMealUpdate={handleMealUpdate}
-                availableIngredients={getAllAvailableIngredients()}
                 macroVisibility={macroGoals}
               />
             ))}

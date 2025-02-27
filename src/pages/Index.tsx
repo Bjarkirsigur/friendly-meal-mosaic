@@ -1,7 +1,6 @@
 
 import { useState, useMemo } from "react";
-import MealRow from "../components/MealRow";
-import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
+import { MEAL_TYPES } from "../utils/mealUtils";
 import { MealType, MacroInfo } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import { useMacroGoals } from "@/hooks/useMacroGoals";
@@ -141,7 +140,6 @@ const Index = () => {
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
               }
-              availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
             <Card 
@@ -185,7 +183,6 @@ const Index = () => {
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Morning Snack", ingredients, macros, mealName)
               }
-              availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
             <Card 
@@ -229,7 +226,6 @@ const Index = () => {
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
               }
-              availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
             <Card 
@@ -273,7 +269,6 @@ const Index = () => {
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Afternoon Snack", ingredients, macros, mealName)
               }
-              availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
             <Card 
@@ -317,7 +312,6 @@ const Index = () => {
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
               }
-              availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
             <Card 
@@ -361,7 +355,6 @@ const Index = () => {
               onMealUpdate={(ingredients, macros, mealName) => 
                 handleMealUpdate(currentDayName, "Evening Snack", ingredients, macros, mealName)
               }
-              availableIngredients={getAllAvailableIngredients()}
               macroVisibility={macroGoals}
             />
             <Card 

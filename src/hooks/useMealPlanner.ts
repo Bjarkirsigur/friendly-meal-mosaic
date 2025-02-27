@@ -111,8 +111,8 @@ export const useMealPlanner = () => {
           .from('meal_plans')
           .update({
             meal_name: meal?.meal || null,
-            ingredients: meal?.ingredients || null,
-            macros: meal?.macros || null,
+            ingredients: meal?.ingredients ? JSON.parse(JSON.stringify(meal.ingredients)) : null,
+            macros: meal?.macros ? JSON.parse(JSON.stringify(meal.macros)) : null,
             drinks_and_accompaniments: drinksItems ? { items: drinksItems } : null,
             updated_at: new Date().toISOString()
           })
@@ -123,15 +123,15 @@ export const useMealPlanner = () => {
         // Insert new meal plan
         const { error: insertError } = await supabase
           .from('meal_plans')
-          .insert({
+          .insert([{
             user_id: user.id,
             day_name: day,
             meal_type: mealType,
             meal_name: meal?.meal || null,
-            ingredients: meal?.ingredients || null,
-            macros: meal?.macros || null,
+            ingredients: meal?.ingredients ? JSON.parse(JSON.stringify(meal.ingredients)) : null,
+            macros: meal?.macros ? JSON.parse(JSON.stringify(meal.macros)) : null,
             drinks_and_accompaniments: drinksItems ? { items: drinksItems } : null
-          });
+          }]);
         
         if (insertError) throw insertError;
       }
