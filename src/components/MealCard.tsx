@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Edit2, Shuffle } from "lucide-react";
+import { Edit2, Shuffle, Book } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
 import {
@@ -116,9 +116,19 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           <>
             <MealImage meal={meal} />
             <div className="p-4">
-              <p className="text-foreground mb-2">{meal}</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-foreground">{meal}</p>
+                {currentMealDetails?.recipe && (
+                  <Book className="w-4 h-4 text-primary/50" />
+                )}
+              </div>
               {macros && (
                 <MacroDisplay macros={macroVisibility} className="text-xs text-muted-foreground mt-3" />
+              )}
+              {currentMealDetails?.recipe && (
+                <div className="mt-3 text-xs text-muted-foreground">
+                  <p className="line-clamp-2">{currentMealDetails.recipe.split('\n')[0]}...</p>
+                </div>
               )}
             </div>
           </>
@@ -177,7 +187,12 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                       onClick={() => handleSwitch(availableMeal)}
                       className="flex flex-col gap-3 p-4 hover:bg-secondary/50 rounded-lg transition-colors duration-200 text-left"
                     >
-                      <p className="font-medium text-lg">{availableMeal.meal}</p>
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-lg">{availableMeal.meal}</p>
+                        {availableMeal.recipe && (
+                          <Book className="w-4 h-4 text-primary/50" />
+                        )}
+                      </div>
                       <MacroDisplay macros={availableMeal.macros} className="text-xs text-muted-foreground" />
                       <div className="text-sm text-muted-foreground">
                         <p className="font-medium mb-1">Ingredients:</p>
@@ -189,6 +204,12 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                           ))}
                         </ul>
                       </div>
+                      {availableMeal.recipe && (
+                        <div className="text-sm text-muted-foreground">
+                          <p className="font-medium mb-1">Recipe:</p>
+                          <p className="whitespace-pre-line">{availableMeal.recipe}</p>
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
