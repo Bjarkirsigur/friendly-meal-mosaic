@@ -20,6 +20,7 @@ export interface Meal {
   meal: string;
   ingredients: Ingredient[];
   macros: MacroInfo;
+  recipe?: string;
 }
 
 export type MealType = "Breakfast" | "Lunch" | "Dinner" | "Snacks";
