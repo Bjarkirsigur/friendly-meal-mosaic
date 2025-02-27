@@ -1,5 +1,5 @@
 
-import { BookOpen, Calendar, LayoutGrid } from "lucide-react";
+import { BookOpen, Calendar, LayoutGrid, Apple } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
@@ -60,6 +60,17 @@ export function AppSidebar({ children }: AppSidebarProps) {
           >
             <BookOpen className="w-6 h-6" />
             <span className="text-xs mt-1">Meals</span>
+          </Link>
+
+          <Link 
+            to="/ingredients" 
+            className={cn(
+              "flex flex-col items-center justify-center p-3 transition-colors",
+              location.pathname === '/ingredients' ? "text-primary" : "text-muted-foreground hover:text-primary"
+            )}
+          >
+            <Apple className="w-6 h-6" />
+            <span className="text-xs mt-1">Ingredients</span>
           </Link>
         </nav>
       </div>
