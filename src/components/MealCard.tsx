@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Edit2, Shuffle, Book } from "lucide-react";
+import { Edit2, Shuffle, Book, X } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
 import {
@@ -45,6 +45,23 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     setIsSwitchDialogOpen(true);
   };
 
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onMealUpdate) {
+      // Pass empty ingredients and macros to effectively remove the meal
+      onMealUpdate([], {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        showCalories: true,
+        showProtein: true,
+        showCarbs: true,
+        showFat: true
+      }, "");
+    }
+  };
+
   const handleSwitch = (selectedMeal: Meal) => {
     if (onMealUpdate) {
       onMealUpdate(selectedMeal.ingredients, selectedMeal.macros, selectedMeal.meal);
@@ -86,6 +103,12 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     <div className="flex flex-col gap-2">
       {meal && (
         <div className="flex gap-1 justify-end">
+          <button 
+            className="w-8 h-8 bg-secondary/50 hover:bg-destructive hover:text-white transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
+            onClick={handleRemove}
+          >
+            <X className="w-4 h-4" />
+          </button>
           <button 
             className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
             onClick={(e) => {
