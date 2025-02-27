@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import WeekHeader from "../components/WeekHeader";
-import WeekMealRow from "../components/WeekMealRow";
+import MealRow from "../components/MealRow";
 import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
 import { MealType } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
@@ -25,22 +25,6 @@ const WeekPlanner = () => {
   const { weeklyMeals, handleMealUpdate } = useMealPlanner();
   const isMobile = useIsMobile();
 
-  const weekContent = (
-    <div className="grid gap-6">
-      <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
-      {MEAL_TYPES.map((meal) => (
-        <WeekMealRow
-          key={meal}
-          mealType={meal as MealType}
-          weeklyMeals={weeklyMeals}
-          onMealUpdate={handleMealUpdate}
-          availableIngredients={getAllAvailableIngredients()}
-          macroVisibility={macroGoals}
-        />
-      ))}
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-secondary/30 -mx-4">
       <div className="w-full px-4">
@@ -57,11 +41,35 @@ const WeekPlanner = () => {
         {isMobile ? (
           <ScrollArea className="w-full">
             <div className="min-w-[800px] px-4 pb-8">
-              {weekContent}
+              <div className="grid gap-6">
+                <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
+                {MEAL_TYPES.map((meal) => (
+                  <MealRow
+                    key={meal}
+                    mealType={meal as MealType}
+                    weeklyMeals={weeklyMeals}
+                    onMealUpdate={handleMealUpdate}
+                    availableIngredients={getAllAvailableIngredients()}
+                    macroVisibility={macroGoals}
+                  />
+                ))}
+              </div>
             </div>
           </ScrollArea>
         ) : (
-          weekContent
+          <div className="grid gap-6">
+            <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
+            {MEAL_TYPES.map((meal) => (
+              <MealRow
+                key={meal}
+                mealType={meal as MealType}
+                weeklyMeals={weeklyMeals}
+                onMealUpdate={handleMealUpdate}
+                availableIngredients={getAllAvailableIngredients()}
+                macroVisibility={macroGoals}
+              />
+            ))}
+          </div>
         )}
       </div>
 
