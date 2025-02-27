@@ -58,12 +58,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#E8F3E8] -mx-4 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl font-bold text-primary mb-6">Today's Meal Plan</h1>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8 animate-fade-in pt-8">
+          <h1 className="text-4xl font-bold text-[#2F4F4F] mb-2">Today's Meal Plan</h1>
           <p className="text-lg text-muted-foreground mb-6">{format(currentDate, 'MMMM d, yyyy')}</p>
           <div className="flex flex-col items-center gap-4">
-            <div className="w-full max-w-xl bg-white/50 rounded-lg p-4 mt-2">
+            <div className="w-full max-w-xl bg-white/95 rounded-xl shadow-sm p-4 mt-2">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm text-muted-foreground">Daily Totals:</p>
                 <button
@@ -84,17 +84,91 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="grid gap-6">
-          {MEAL_TYPES.map((meal) => (
-            <MealRow
-              key={meal}
-              mealType={meal as MealType}
-              weeklyMeals={{ [currentDayName]: weeklyMeals[currentDayName] }}
-              onMealUpdate={handleMealUpdate}
-              availableIngredients={getAllAvailableIngredients()}
-              macroVisibility={macroGoals}
-            />
-          ))}
+        {/* Meal and Snack Layout */}
+        <div className="grid gap-6 max-w-2xl mx-auto">
+          {/* Breakfast */}
+          <div>
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
+            <div 
+              onClick={() => handleMealCardClick(currentDayName, "Breakfast")}
+              className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+            >
+              {!weeklyMeals[currentDayName]?.["Breakfast"]?.meal && 
+                <p className="text-muted-foreground italic">Click to add a meal</p>
+              }
+            </div>
+          </div>
+          
+          {/* Morning Snack */}
+          <div className="flex justify-end">
+            <div className="w-3/4">
+              <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
+              <div 
+                onClick={() => handleMealCardClick(currentDayName, "Snacks")}
+                className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+              >
+                {!weeklyMeals[currentDayName]?.["Snacks"]?.meal && 
+                  <p className="text-muted-foreground italic">Click to add a meal</p>
+                }
+              </div>
+            </div>
+          </div>
+          
+          {/* Lunch */}
+          <div>
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
+            <div 
+              onClick={() => handleMealCardClick(currentDayName, "Lunch")}
+              className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+            >
+              {!weeklyMeals[currentDayName]?.["Lunch"]?.meal && 
+                <p className="text-muted-foreground italic">Click to add a meal</p>
+              }
+            </div>
+          </div>
+          
+          {/* Afternoon Snack */}
+          <div className="flex justify-end">
+            <div className="w-3/4">
+              <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
+              <div 
+                onClick={() => handleMealCardClick(currentDayName, "Snacks")}
+                className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+              >
+                {!weeklyMeals[currentDayName]?.["Snacks"]?.meal && 
+                  <p className="text-muted-foreground italic">Click to add a meal</p>
+                }
+              </div>
+            </div>
+          </div>
+          
+          {/* Dinner */}
+          <div>
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
+            <div 
+              onClick={() => handleMealCardClick(currentDayName, "Dinner")}
+              className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+            >
+              {!weeklyMeals[currentDayName]?.["Dinner"]?.meal && 
+                <p className="text-muted-foreground italic">Click to add a meal</p>
+              }
+            </div>
+          </div>
+          
+          {/* Evening Snack */}
+          <div className="flex justify-end">
+            <div className="w-3/4">
+              <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
+              <div 
+                onClick={() => handleMealCardClick(currentDayName, "Snacks")}
+                className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
+              >
+                {!weeklyMeals[currentDayName]?.["Snacks"]?.meal && 
+                  <p className="text-muted-foreground italic">Click to add a meal</p>
+                }
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -107,6 +181,19 @@ const Index = () => {
       />
     </div>
   );
+
+  // Helper function to handle meal card clicks
+  function handleMealCardClick(day: string, mealType: MealType) {
+    // If there's already a meal, we could show details or edit
+    if (weeklyMeals[day]?.[mealType]?.meal) {
+      // Show meal details or edit functionality
+      console.log("Meal exists:", weeklyMeals[day][mealType]);
+    } else {
+      // Open meal selection dialog
+      console.log("Would open meal selection for", mealType);
+      // You would implement your meal selection UI here
+    }
+  }
 };
 
 export default Index;
