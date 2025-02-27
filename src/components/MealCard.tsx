@@ -272,44 +272,51 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
                       <div key={availableMeal.id} className="border border-border rounded-lg overflow-hidden">
                         <button
                           onClick={() => handleSwitch(availableMeal)}
-                          className="w-full flex flex-col gap-3 p-4 hover:bg-secondary/30 transition-colors duration-200 text-left"
+                          className="w-full flex flex-col gap-3 hover:bg-secondary/30 transition-colors duration-200 text-left"
                         >
-                          <div className="flex items-center justify-between">
-                            <p className="font-medium text-lg">{availableMeal.meal}</p>
-                            <button 
-                              className="p-1 rounded-full hover:bg-secondary"
-                              onClick={(e) => toggleMealExpand(availableMeal.id || '', e)}
-                            >
-                              {expandedMeals[availableMeal.id || ''] ? (
-                                <ChevronUp className="w-4 h-4" />
-                              ) : (
-                                <ChevronDown className="w-4 h-4" />
-                              )}
-                            </button>
+                          {/* Add meal image */}
+                          <div className="w-full h-32 overflow-hidden">
+                            <MealImage meal={availableMeal.meal} className="w-full h-full object-cover" />
                           </div>
                           
-                          {(availableMeal.prepTime !== undefined || availableMeal.difficulty) && (
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                              {availableMeal.prepTime !== undefined && (
-                                <div className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
-                                  <span>{availableMeal.prepTime} min</span>
-                                </div>
-                              )}
-                              {availableMeal.difficulty && (
-                                <div className="flex items-center gap-1">
-                                  <BarChart2 className="w-3 h-3" />
-                                  <span>{availableMeal.difficulty}</span>
-                                </div>
-                              )}
+                          <div className="p-4">
+                            <div className="flex items-center justify-between">
+                              <p className="font-medium text-lg">{availableMeal.meal}</p>
+                              <button 
+                                className="p-1 rounded-full hover:bg-secondary"
+                                onClick={(e) => toggleMealExpand(availableMeal.id || '', e)}
+                              >
+                                {expandedMeals[availableMeal.id || ''] ? (
+                                  <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4" />
+                                )}
+                              </button>
                             </div>
-                          )}
-                          
-                          <MacroDisplay 
-                            macros={availableMeal.macros}
-                            visibilitySettings={macroVisibility}
-                            className="text-xs text-muted-foreground" 
-                          />
+                            
+                            {(availableMeal.prepTime !== undefined || availableMeal.difficulty) && (
+                              <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
+                                {availableMeal.prepTime !== undefined && (
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    <span>{availableMeal.prepTime} min</span>
+                                  </div>
+                                )}
+                                {availableMeal.difficulty && (
+                                  <div className="flex items-center gap-1">
+                                    <BarChart2 className="w-3 h-3" />
+                                    <span>{availableMeal.difficulty}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            
+                            <MacroDisplay 
+                              macros={availableMeal.macros}
+                              visibilitySettings={macroVisibility}
+                              className="text-xs text-muted-foreground mt-2" 
+                            />
+                          </div>
                         </button>
                         {expandedMeals[availableMeal.id || ''] && (
                           <div className="bg-secondary/10 p-4 border-t border-border">
