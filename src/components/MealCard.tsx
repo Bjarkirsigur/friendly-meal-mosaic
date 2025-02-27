@@ -34,6 +34,9 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Extract meal type from title (e.g., "Monday Breakfast" -> "Breakfast")
+  const mealType = title.split(" ").pop() || "";
+
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (meal && ingredients && availableIngredients) {
@@ -84,17 +87,38 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     }
   };
 
-  const filterMeals = (meals: Record<string, Meal[]>) => {
-    const filteredEntries = Object.entries(meals).map(([category, categoryMeals]) => {
-      const filteredMeals = categoryMeals.filter(meal =>
-        meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        meal.ingredients.some(ing => 
-          ing.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-      return [category, filteredMeals] as [string, Meal[]];
-    });
-    return filteredEntries.filter(([_, meals]) => meals.length > 0);
+  // Filter meals based on the meal type
+  const filterMealsByType = (meals: Record<string, Meal[]>) => {
+    // For each meal type, determine what categories to show
+    const mealTypeToCategories: Record<string, string[]> = {
+      "Breakfast": ["Breakfast"],
+      "Lunch": ["Lunch"],
+      "Dinner": ["Dinner"],
+      "Morning Snack": ["Snacks"],
+      "Afternoon Snack": ["Snacks"],
+      "Evening Snack": ["Snacks"]
+    };
+
+    // Get the relevant categories for this meal type
+    const relevantCategories = mealTypeToCategories[mealType] || Object.keys(meals);
+
+    // Filter entries to only include relevant categories
+    return Object.entries(meals)
+      .filter(([category]) => relevantCategories.includes(category))
+      .map(([category, categoryMeals]) => {
+        // Further filter by search term if provided
+        const filteredMeals = searchTerm 
+          ? categoryMeals.filter(meal =>
+              meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              meal.ingredients.some(ing => 
+                ing.name.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+            )
+          : categoryMeals;
+        
+        return [category, filteredMeals] as [string, Meal[]];
+      })
+      .filter(([_, meals]) => meals.length > 0);
   };
 
   const currentMealDetails = meal ? MEALS[title]?.find(m => m.meal === meal) : null;
@@ -195,7 +219,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
         <DialogContent className="max-h-[90vh] md:max-h-[80vh] w-[95vw] md:w-full overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Choose a Meal</DialogTitle>
+            <DialogTitle>Choose a {mealType}</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
             <Input
@@ -204,7 +228,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full mb-4"
             />
-            {filterMeals(MEALS).map(([category, meals]) => (
+            {filterMealsByType(MEALS).map(([category, meals]) => (
               <div key={category} className="space-y-4">
                 <h3 className="font-semibold text-lg">{category}</h3>
                 <div className="grid gap-4">
