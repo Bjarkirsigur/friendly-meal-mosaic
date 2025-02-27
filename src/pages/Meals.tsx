@@ -1,14 +1,16 @@
+
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MEALS } from "@/data/mealsData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Textarea } from "@/components/ui/textarea";
+import { useMeals } from "@/hooks/useMeals";
 
 interface NewIngredient {
   name: string;
@@ -24,6 +26,34 @@ interface NewIngredient {
     showFat: boolean;
   };
 }
+
+// Real meal image mappings
+const MEAL_IMAGES: Record<string, string> = {
+  "Protein smoothie": "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Greek yogurt parfait": "https://images.unsplash.com/photo-1488477181946-6428a0bfcd9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Grilled chicken quinoa bowl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Baked salmon with roasted vegetables": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Oatmeal with berries": "https://images.unsplash.com/photo-1495214783159-3503fd1b572d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Avocado toast": "https://images.unsplash.com/photo-1588137378633-dea1dcdd0904?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Chicken salad": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Vegetable stir fry": "https://images.unsplash.com/photo-1512058564366-18510be2db19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Spaghetti bolognese": "https://images.unsplash.com/photo-1588013273468-315fd88ea34c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Fruit salad": "https://images.unsplash.com/photo-1568158879083-c42860933ed7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Turkey sandwich": "https://images.unsplash.com/photo-1554433607-66b5efe9d304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Vegetable soup": "https://images.unsplash.com/photo-1547592166-23ac45744acd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Caesar salad": "https://images.unsplash.com/photo-1551248429-40975aa4de74?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+};
+
+// Helper function to get image URL for a meal
+export const getMealImageUrl = (mealName: string): string => {
+  // Check if we have a specific image for this meal
+  if (MEAL_IMAGES[mealName]) {
+    return MEAL_IMAGES[mealName];
+  }
+  
+  // Default to a generic Unsplash food image
+  return `https://source.unsplash.com/featured/?${encodeURIComponent(mealName.toLowerCase())},food`;
+};
 
 const Meals = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -48,6 +78,7 @@ const Meals = () => {
     }
   });
   const { toast } = useToast();
+  const { meals, loading } = useMeals();
 
   const handleAddIngredient = () => {
     if (tempIngredient.name && tempIngredient.grams > 0) {
@@ -138,6 +169,24 @@ const Meals = () => {
     });
   };
 
+  // Group meals by category
+  const mealsByCategory: Record<string, any[]> = {};
+
+  if (!loading && meals.length > 0) {
+    meals.forEach(meal => {
+      const category = meal.meal_type || "Other";
+      if (!mealsByCategory[category]) {
+        mealsByCategory[category] = [];
+      }
+      mealsByCategory[category].push(meal);
+    });
+  } else {
+    // Fallback to static data if API data is not available
+    Object.entries(MEALS).forEach(([category, meals]) => {
+      mealsByCategory[category] = meals;
+    });
+  }
+
   return (
     <div className="min-h-screen bg-secondary/30 px-4 py-8 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -161,7 +210,7 @@ const Meals = () => {
         </div>
 
         <div className="grid gap-12">
-          {Object.entries(MEALS).map(([category, meals]) => (
+          {Object.entries(mealsByCategory).map(([category, meals]) => (
             <section key={category} className="animate-fade-in">
               <h2 className="text-2xl font-semibold text-primary mb-6">{category}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -170,7 +219,7 @@ const Meals = () => {
                     <div className="relative">
                       <AspectRatio ratio={16 / 9}>
                         <img
-                          src={`https://source.unsplash.com/featured/?${encodeURIComponent(meal.meal.toLowerCase())},food`}
+                          src={getMealImageUrl(meal.meal)}
                           alt={meal.meal}
                           className="object-cover w-full h-full"
                         />
@@ -181,7 +230,7 @@ const Meals = () => {
                       <div className="mb-4">
                         <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
                         <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
-                          {meal.ingredients.map((ingredient, idx) => (
+                          {meal.ingredients.map((ingredient: any, idx: number) => (
                             <li key={idx} className="group cursor-pointer hover:text-foreground">
                               {ingredient.name} ({ingredient.grams}g)
                               <div className="hidden group-hover:block pl-4 pt-1 text-xs">

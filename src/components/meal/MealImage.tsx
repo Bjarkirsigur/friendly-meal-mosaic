@@ -1,5 +1,6 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { getMealImageUrl } from "@/pages/Meals";
 
 interface MealImageProps {
   meal: string;
@@ -10,7 +11,7 @@ export const MealImage = ({ meal, className }: MealImageProps) => {
   return (
     <AspectRatio ratio={16 / 9}>
       <img
-        src={`https://source.unsplash.com/featured/?${encodeURIComponent(meal.toLowerCase())},food`}
+        src={getMealImageUrl(meal)}
         alt={meal}
         className={className || "object-cover w-full h-full"}
       />
