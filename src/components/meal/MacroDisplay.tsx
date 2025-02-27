@@ -32,7 +32,7 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.calories}
-            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.calories}</span>}
+            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.calories}</span>}
           </p>
           <p className="text-sm text-muted-foreground mb-2">kcal</p>
           {goals && (
@@ -49,7 +49,7 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.protein}
-            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.protein}</span>}
+            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.protein}</span>}
           </p>
           <p className="text-sm text-muted-foreground mb-2">Protein</p>
           {goals && (
@@ -66,7 +66,7 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.carbs}
-            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.carbs}</span>}
+            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.carbs}</span>}
           </p>
           <p className="text-sm text-muted-foreground mb-2">Carbs</p>
           {goals && (
@@ -83,7 +83,7 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.fat}
-            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.fat}</span>}
+            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.fat}</span>}
           </p>
           <p className="text-sm text-muted-foreground mb-2">Fat</p>
           {goals && (
