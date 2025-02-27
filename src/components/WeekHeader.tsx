@@ -72,7 +72,7 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
     }, initialMacros);
   };
 
-  // Function to render macro summary for a day
+  // Function to render macro summary for a day - more compact version
   const renderDailyMacroSummary = (day: string) => {
     const macros = calculateDailyMacros(day);
     
@@ -83,48 +83,48 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
     const fatPercent = macroGoals.fat ? Math.round((macros.fat / macroGoals.fat) * 100) : 0;
     
     return (
-      <div className="text-xs text-muted-foreground mt-1 flex items-center justify-center space-x-2">
+      <div className="text-[10px] text-muted-foreground mt-1 flex flex-wrap items-center justify-center gap-1">
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`px-1.5 py-0.5 rounded-md ${caloriePercent > 100 ? 'bg-destructive/20' : caloriePercent > 0 ? 'bg-secondary' : ''}`}>
-              {macros.calories} kcal
+            <div className={`px-1 py-0.5 rounded ${caloriePercent > 100 ? 'bg-destructive/20' : caloriePercent > 0 ? 'bg-secondary' : ''}`}>
+              {macros.calories}C
             </div>
           </TooltipTrigger>
-          <TooltipContent>
-            <p>{caloriePercent}% of calorie goal</p>
+          <TooltipContent side="bottom" className="text-xs p-2">
+            <p>{macros.calories} kcal ({caloriePercent}% of goal)</p>
           </TooltipContent>
         </Tooltip>
         
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`px-1.5 py-0.5 rounded-md ${proteinPercent > 100 ? 'bg-destructive/20' : proteinPercent > 0 ? 'bg-secondary' : ''}`}>
-              {macros.protein}g P
+            <div className={`px-1 py-0.5 rounded ${proteinPercent > 100 ? 'bg-destructive/20' : proteinPercent > 0 ? 'bg-secondary' : ''}`}>
+              {macros.protein}P
             </div>
           </TooltipTrigger>
-          <TooltipContent>
-            <p>{proteinPercent}% of protein goal</p>
+          <TooltipContent side="bottom" className="text-xs p-2">
+            <p>{macros.protein}g protein ({proteinPercent}% of goal)</p>
           </TooltipContent>
         </Tooltip>
         
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`px-1.5 py-0.5 rounded-md ${carbsPercent > 100 ? 'bg-destructive/20' : carbsPercent > 0 ? 'bg-secondary' : ''}`}>
-              {macros.carbs}g C
+            <div className={`px-1 py-0.5 rounded ${carbsPercent > 100 ? 'bg-destructive/20' : carbsPercent > 0 ? 'bg-secondary' : ''}`}>
+              {macros.carbs}C
             </div>
           </TooltipTrigger>
-          <TooltipContent>
-            <p>{carbsPercent}% of carbs goal</p>
+          <TooltipContent side="bottom" className="text-xs p-2">
+            <p>{macros.carbs}g carbs ({carbsPercent}% of goal)</p>
           </TooltipContent>
         </Tooltip>
         
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className={`px-1.5 py-0.5 rounded-md ${fatPercent > 100 ? 'bg-destructive/20' : fatPercent > 0 ? 'bg-secondary' : ''}`}>
-              {macros.fat}g F
+            <div className={`px-1 py-0.5 rounded ${fatPercent > 100 ? 'bg-destructive/20' : fatPercent > 0 ? 'bg-secondary' : ''}`}>
+              {macros.fat}F
             </div>
           </TooltipTrigger>
-          <TooltipContent>
-            <p>{fatPercent}% of fat goal</p>
+          <TooltipContent side="bottom" className="text-xs p-2">
+            <p>{macros.fat}g fat ({fatPercent}% of goal)</p>
           </TooltipContent>
         </Tooltip>
       </div>
@@ -142,7 +142,7 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <div className="grid grid-cols-7 gap-4">
+      <div className="grid grid-cols-7 gap-2">
         {Array.from({ length: 7 }, (_, i) => i + 1).map((day) => (
           <div key={day} className="text-center">
             <div className="font-medium">{getWeekDayName(day)}</div>
