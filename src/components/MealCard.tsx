@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Edit2, Shuffle, Book, X } from "lucide-react";
+import { Edit2, Shuffle, Book, X, ChevronDown, ChevronUp } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
 import {
@@ -35,6 +35,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllMeals, setShowAllMeals] = useState(false);
+  const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
 
   // Extract meal type from title (e.g., "Monday Breakfast" -> "Breakfast")
   const mealType = title.split(" ").pop() || "";
@@ -93,6 +94,14 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
 
   const toggleAllMeals = () => {
     setShowAllMeals(!showAllMeals);
+  };
+
+  const toggleMealExpand = (mealName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedMeals(prev => ({
+      ...prev,
+      [mealName]: !prev[mealName]
+    }));
   };
 
   // Filter meals based on the meal type
@@ -274,39 +283,51 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                 <h3 className="font-semibold text-lg">{category}</h3>
                 <div className="grid gap-4">
                   {meals.map((availableMeal, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSwitch(availableMeal)}
-                      className="flex flex-col gap-3 p-4 hover:bg-secondary/50 rounded-lg transition-colors duration-200 text-left"
-                    >
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium text-lg">{availableMeal.meal}</p>
-                        {availableMeal.recipe && (
-                          <Book className="w-4 h-4 text-primary/50" />
-                        )}
-                      </div>
-                      <MacroDisplay 
-                        macros={availableMeal.macros}
-                        visibilitySettings={macroVisibility}
-                        className="text-xs text-muted-foreground" 
-                      />
-                      <div className="text-sm text-muted-foreground">
-                        <p className="font-medium mb-1">Ingredients:</p>
-                        <ul className="list-disc pl-4 space-y-1">
-                          {availableMeal.ingredients.map((ingredient, idx) => (
-                            <li key={idx}>
-                              {ingredient.name} ({ingredient.grams}g)
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      {availableMeal.recipe && (
-                        <div className="text-sm text-muted-foreground">
-                          <p className="font-medium mb-1">Recipe:</p>
-                          <p className="whitespace-pre-line">{availableMeal.recipe}</p>
+                    <div key={index} className="border border-border rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => handleSwitch(availableMeal)}
+                        className="w-full flex flex-col gap-3 p-4 hover:bg-secondary/30 transition-colors duration-200 text-left"
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium text-lg">{availableMeal.meal}</p>
+                          <button 
+                            className="p-1 rounded-full hover:bg-secondary"
+                            onClick={(e) => toggleMealExpand(availableMeal.meal, e)}
+                          >
+                            {expandedMeals[availableMeal.meal] ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                        <MacroDisplay 
+                          macros={availableMeal.macros}
+                          visibilitySettings={macroVisibility}
+                          className="text-xs text-muted-foreground" 
+                        />
+                      </button>
+                      {expandedMeals[availableMeal.meal] && (
+                        <div className="bg-secondary/10 p-4 border-t border-border">
+                          <div className="text-sm text-muted-foreground">
+                            <p className="font-medium mb-1">Ingredients:</p>
+                            <ul className="list-disc pl-4 space-y-1">
+                              {availableMeal.ingredients.map((ingredient, idx) => (
+                                <li key={idx}>
+                                  {ingredient.name} ({ingredient.grams}g)
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          {availableMeal.recipe && (
+                            <div className="text-sm text-muted-foreground mt-4">
+                              <p className="font-medium mb-1">Recipe:</p>
+                              <p className="whitespace-pre-line">{availableMeal.recipe}</p>
+                            </div>
+                          )}
                         </div>
                       )}
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
