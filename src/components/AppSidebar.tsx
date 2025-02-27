@@ -3,6 +3,7 @@ import { BookOpen, Calendar, LayoutGrid } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import UserButton from "./UserButton";
 
 interface AppSidebarProps {
   children: ReactNode;
@@ -13,6 +14,14 @@ export function AppSidebar({ children }: AppSidebarProps) {
 
   return (
     <div className="min-h-screen flex flex-col w-full bg-secondary/30">
+      {/* Top Navigation Bar with User Button */}
+      <div className="bg-white border-b py-2 px-4 shadow-sm">
+        <div className="flex justify-between items-center max-w-7xl mx-auto">
+          <h1 className="text-lg font-semibold text-primary">Meal Planner</h1>
+          <UserButton />
+        </div>
+      </div>
+      
       <div className="flex-1 overflow-auto pb-16">
         {children}
       </div>
