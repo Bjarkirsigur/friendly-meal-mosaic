@@ -4,7 +4,12 @@ import { cn } from "@/lib/utils";
 import { Edit2, Shuffle } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
-import { Dialog } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MEALS } from "@/data/mealsData";
 import { Input } from "@/components/ui/input";
 import { MacroInfo, Ingredient, Meal } from "@/types/meals";
