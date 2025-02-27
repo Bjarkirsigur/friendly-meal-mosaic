@@ -23,11 +23,13 @@ export interface Meal {
   recipe?: string;
 }
 
-export type MealType = "Breakfast" | "Lunch" | "Dinner" | "Snacks";
+export type MealType = "Breakfast" | "Morning Snack" | "Lunch" | "Afternoon Snack" | "Dinner" | "Evening Snack";
 
 export interface DayMeals {
   Breakfast: Meal | null;
   Lunch: Meal | null;
   Dinner: Meal | null;
-  Snacks: Meal | null;
+  "Morning Snack": Meal | null;
+  "Afternoon Snack": Meal | null;
+  "Evening Snack": Meal | null;
 }
