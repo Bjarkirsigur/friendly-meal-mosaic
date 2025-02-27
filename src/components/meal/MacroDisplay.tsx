@@ -32,8 +32,12 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.calories}
-            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.calories}</span>}
           </p>
+          {goals && (
+            <p className="text-sm text-muted-foreground -mt-0.5 mb-1">
+              {goals.calories}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground mb-2">kcal</p>
           {goals && (
             <div className="w-full px-2">
@@ -49,8 +53,12 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.protein}
-            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.protein}</span>}
           </p>
+          {goals && (
+            <p className="text-sm text-muted-foreground -mt-0.5 mb-1">
+              {goals.protein}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground mb-2">Protein</p>
           {goals && (
             <div className="w-full px-2">
@@ -66,8 +74,12 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.carbs}
-            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.carbs}</span>}
           </p>
+          {goals && (
+            <p className="text-sm text-muted-foreground -mt-0.5 mb-1">
+              {goals.carbs}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground mb-2">Carbs</p>
           {goals && (
             <div className="w-full px-2">
@@ -83,8 +95,12 @@ export const MacroDisplay = ({
         <div className="text-center">
           <p className={`font-semibold ${textSizeClass} mb-0.5`}>
             {macros.fat}
-            {goals && <span className="text-muted-foreground text-sm ml-1">{goals.fat}</span>}
           </p>
+          {goals && (
+            <p className="text-sm text-muted-foreground -mt-0.5 mb-1">
+              {goals.fat}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground mb-2">Fat</p>
           {goals && (
             <div className="w-full px-2">
