@@ -1,7 +1,7 @@
 
 import { useState, useMemo } from "react";
 import MealRow from "../components/MealRow";
-import { getAllAvailableIngredients } from "../utils/mealUtils";
+import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
 import { MealType, MacroInfo } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
 import { useMacroGoals } from "@/hooks/useMacroGoals";
@@ -9,9 +9,6 @@ import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
 import { Settings } from "lucide-react";
-
-// Define the order of meals with snacks in between
-const ORDERED_MEAL_TYPES: MealType[] = ["Breakfast", "Snacks", "Lunch", "Snacks", "Dinner"];
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -44,16 +41,8 @@ const Index = () => {
       return initialMacros;
     }
 
-    // Use a set to avoid counting Snacks twice
-    const processedMeals = new Set<string>();
-    
-    return ORDERED_MEAL_TYPES.reduce((total, mealType) => {
-      // Skip if we've already counted this meal type (for duplicate Snacks entries)
-      if (processedMeals.has(mealType)) return total;
-      
-      const meal = weeklyMeals[currentDayName][mealType];
-      processedMeals.add(mealType);
-      
+    return MEAL_TYPES.reduce((total, mealType) => {
+      const meal = weeklyMeals[currentDayName][mealType as MealType];
       if (meal?.macros) {
         return {
           ...total,
@@ -96,27 +85,16 @@ const Index = () => {
         </div>
 
         <div className="grid gap-6">
-          {ORDERED_MEAL_TYPES.map((meal, index) => {
-            // For Morning Snack and Afternoon Snack, customize the display
-            let displayName = meal;
-            if (meal === "Snacks" && index === 1) {
-              displayName = "Morning Snack";
-            } else if (meal === "Snacks" && index === 3) {
-              displayName = "Afternoon Snack";
-            }
-            
-            return (
-              <MealRow
-                key={`${meal}-${index}`}
-                mealType={meal}
-                displayName={displayName}
-                weeklyMeals={{ [currentDayName]: weeklyMeals[currentDayName] }}
-                onMealUpdate={handleMealUpdate}
-                availableIngredients={getAllAvailableIngredients()}
-                macroVisibility={macroGoals}
-              />
-            );
-          })}
+          {MEAL_TYPES.map((meal) => (
+            <MealRow
+              key={meal}
+              mealType={meal as MealType}
+              weeklyMeals={{ [currentDayName]: weeklyMeals[currentDayName] }}
+              onMealUpdate={handleMealUpdate}
+              availableIngredients={getAllAvailableIngredients()}
+              macroVisibility={macroGoals}
+            />
+          ))}
         </div>
       </div>
 
