@@ -9,6 +9,7 @@ import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
+import { Settings } from "lucide-react";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -68,7 +69,15 @@ const Index = () => {
               onSettingsClick={() => setIsGoalsDialogOpen(true)}
             />
             <div className="w-full max-w-xl bg-white/50 rounded-lg p-4 mt-2">
-              <p className="text-sm text-muted-foreground mb-3">Daily Totals:</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm text-muted-foreground">Daily Totals:</p>
+                <button
+                  onClick={() => setIsGoalsDialogOpen(true)}
+                  className="p-2 rounded-full hover:bg-secondary transition-colors duration-200"
+                >
+                  <Settings className="w-5 h-5 text-primary" />
+                </button>
+              </div>
               <MacroDisplay 
                 macros={totalDailyMacros}
                 visibilitySettings={macroGoals}
