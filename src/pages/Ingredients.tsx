@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useIngredients } from "@/hooks/useIngredients";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
 export default function Ingredients() {
@@ -13,6 +12,39 @@ export default function Ingredients() {
   const filteredIngredients = ingredients.filter(ingredient =>
     ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Helper function to get a fallback image based on ingredient name
+  const getFallbackImage = (name: string) => {
+    // Default categories
+    const proteinFoods = ["chicken", "beef", "fish", "salmon", "tuna", "egg", "turkey", "tofu", "protein"];
+    const dairyFoods = ["milk", "yogurt", "cheese", "cream", "butter"];
+    const fruitFoods = ["apple", "banana", "orange", "berry", "fruit", "berries"];
+    const vegetableFoods = ["broccoli", "spinach", "lettuce", "carrot", "vegetable", "tomato", "pepper"];
+    const grainFoods = ["rice", "oat", "bread", "pasta", "grain", "cereal", "wheat"];
+    const nutsFoods = ["almond", "walnut", "peanut", "cashew", "nut"];
+    const oilsFoods = ["oil", "olive"];
+    
+    const nameLower = name.toLowerCase();
+    
+    if (proteinFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=1470&auto=format&fit=crop";
+    } else if (dairyFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=1470&auto=format&fit=crop";
+    } else if (fruitFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?q=80&w=1470&auto=format&fit=crop";
+    } else if (vegetableFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1590779033100-9f60a05a013d?q=80&w=1374&auto=format&fit=crop";
+    } else if (grainFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=1470&auto=format&fit=crop";
+    } else if (nutsFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1573851552153-816785fecb2f?q=80&w=1470&auto=format&fit=crop";
+    } else if (oilsFoods.some(food => nameLower.includes(food))) {
+      return "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=1470&auto=format&fit=crop";
+    }
+    
+    // Default fallback
+    return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1470&auto=format&fit=crop";
+  };
 
   return (
     <div className="container py-6 space-y-6">
@@ -46,11 +78,18 @@ export default function Ingredients() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredIngredients.map((ingredient) => (
             <Card key={ingredient.id} className="overflow-hidden h-full flex flex-col">
-              <div className="aspect-video w-full overflow-hidden">
+              <div className="aspect-video w-full overflow-hidden bg-secondary/20">
                 <img 
-                  src={ingredient.image_url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c"} 
+                  src={ingredient.image_url || getFallbackImage(ingredient.name)} 
                   alt={ingredient.name} 
                   className="w-full h-full object-cover transition-transform hover:scale-105"
+                  onError={(e) => {
+                    // If image fails to load, set source to fallback
+                    const target = e.target as HTMLImageElement;
+                    if (target.src !== getFallbackImage(ingredient.name)) {
+                      target.src = getFallbackImage(ingredient.name);
+                    }
+                  }}
                 />
               </div>
               <CardContent className="flex-1 p-4">
