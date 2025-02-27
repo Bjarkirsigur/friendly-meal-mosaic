@@ -16,6 +16,7 @@ import { MacroInfo, Ingredient, Meal } from "@/types/meals";
 import { MealImage } from "./meal/MealImage";
 import { MacroDisplay } from "./meal/MacroDisplay";
 import { MealDetails } from "./meal/MealDetails";
+import { Button } from "@/components/ui/button";
 
 interface MealCardProps {
   title: string;
@@ -33,6 +34,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
   const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAllMeals, setShowAllMeals] = useState(false);
 
   // Extract meal type from title (e.g., "Monday Breakfast" -> "Breakfast")
   const mealType = title.split(" ").pop() || "";
@@ -46,6 +48,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
 
   const handleEmptyCardClick = () => {
     setIsSwitchDialogOpen(true);
+    setShowAllMeals(false); // Reset to default view when opening dialog
   };
 
   const handleRemove = (e: React.MouseEvent) => {
@@ -70,6 +73,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       onMealUpdate(selectedMeal.ingredients, selectedMeal.macros, selectedMeal.meal);
     }
     setIsSwitchDialogOpen(false);
+    setShowAllMeals(false); // Reset state for next time
   };
 
   const handleSave = (newIngredients: Ingredient[], newMacros: MacroInfo) => {
@@ -87,41 +91,64 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     }
   };
 
+  const toggleAllMeals = () => {
+    setShowAllMeals(!showAllMeals);
+  };
+
   // Filter meals based on the meal type
   const filterMealsByType = (meals: Record<string, Meal[]>) => {
-    // Define which category to show for each meal type
-    let categoryToShow: string;
-    
-    if (mealType === "Breakfast") {
-      categoryToShow = "Breakfast";
-    } else if (mealType === "Lunch") {
-      categoryToShow = "Lunch";
-    } else if (mealType === "Dinner") {
-      categoryToShow = "Dinner";
-    } else if (mealType.includes("Snack")) {
-      categoryToShow = "Snacks"; 
-    } else {
-      // Default case - shouldn't happen with our current structure
-      categoryToShow = "";
-    }
-
-    // Only filter to the relevant category
-    return Object.entries(meals)
-      .filter(([category]) => category === categoryToShow)
-      .map(([category, categoryMeals]) => {
-        // Further filter by search term if provided
-        const filteredMeals = searchTerm 
-          ? categoryMeals.filter(meal =>
-              meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              meal.ingredients.some(ing => 
-                ing.name.toLowerCase().includes(searchTerm.toLowerCase())
+    if (showAllMeals) {
+      // Show all categories when showAllMeals is true
+      return Object.entries(meals)
+        .map(([category, categoryMeals]) => {
+          // Apply search filter if provided
+          const filteredMeals = searchTerm 
+            ? categoryMeals.filter(meal =>
+                meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                meal.ingredients.some(ing => 
+                  ing.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
               )
-            )
-          : categoryMeals;
-        
-        return [category, filteredMeals] as [string, Meal[]];
-      })
-      .filter(([_, meals]) => meals.length > 0);
+            : categoryMeals;
+          
+          return [category, filteredMeals] as [string, Meal[]];
+        })
+        .filter(([_, meals]) => meals.length > 0);
+    } else {
+      // Define which category to show for each meal type
+      let categoryToShow: string;
+      
+      if (mealType === "Breakfast") {
+        categoryToShow = "Breakfast";
+      } else if (mealType === "Lunch") {
+        categoryToShow = "Lunch";
+      } else if (mealType === "Dinner") {
+        categoryToShow = "Dinner";
+      } else if (mealType.includes("Snack")) {
+        categoryToShow = "Snacks"; 
+      } else {
+        // Default case - shouldn't happen with our current structure
+        categoryToShow = "";
+      }
+
+      // Only filter to the relevant category
+      return Object.entries(meals)
+        .filter(([category]) => category === categoryToShow)
+        .map(([category, categoryMeals]) => {
+          // Further filter by search term if provided
+          const filteredMeals = searchTerm 
+            ? categoryMeals.filter(meal =>
+                meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                meal.ingredients.some(ing => 
+                  ing.name.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+              )
+            : categoryMeals;
+          
+          return [category, filteredMeals] as [string, Meal[]];
+        })
+        .filter(([_, meals]) => meals.length > 0);
+    }
   };
 
   const currentMealDetails = meal ? MEALS[title]?.find(m => m.meal === meal) : null;
@@ -141,6 +168,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             onClick={(e) => {
               e.stopPropagation();
               setIsSwitchDialogOpen(true);
+              setShowAllMeals(false); // Reset to default view
             }}
           >
             <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
@@ -225,12 +253,22 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             <DialogTitle>Choose a {mealType}</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
-            <Input
-              placeholder="Search meals or ingredients..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full mb-4"
-            />
+            <div className="flex flex-col sm:flex-row gap-3 w-full mb-4">
+              <Input
+                placeholder="Search meals or ingredients..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+              <Button 
+                variant={showAllMeals ? "default" : "outline"} 
+                className="whitespace-nowrap"
+                onClick={toggleAllMeals}
+              >
+                {showAllMeals ? "Show Relevant" : "Show All Meals"}
+              </Button>
+            </div>
+            
             {filterMealsByType(MEALS).map(([category, meals]) => (
               <div key={category} className="space-y-4">
                 <h3 className="font-semibold text-lg">{category}</h3>
