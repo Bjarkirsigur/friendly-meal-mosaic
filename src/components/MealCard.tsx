@@ -123,7 +123,11 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                 )}
               </div>
               {macros && (
-                <MacroDisplay macros={macroVisibility} className="text-xs text-muted-foreground mt-3" />
+                <MacroDisplay 
+                  macros={macros} 
+                  visibilitySettings={macroVisibility}
+                  className="text-xs text-muted-foreground mt-3" 
+                />
               )}
               {currentMealDetails?.recipe && (
                 <div className="mt-3 text-xs text-muted-foreground">
@@ -193,7 +197,11 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                           <Book className="w-4 h-4 text-primary/50" />
                         )}
                       </div>
-                      <MacroDisplay macros={availableMeal.macros} className="text-xs text-muted-foreground" />
+                      <MacroDisplay 
+                        macros={availableMeal.macros}
+                        visibilitySettings={macroVisibility}
+                        className="text-xs text-muted-foreground" 
+                      />
                       <div className="text-sm text-muted-foreground">
                         <p className="font-medium mb-1">Ingredients:</p>
                         <ul className="list-disc pl-4 space-y-1">
