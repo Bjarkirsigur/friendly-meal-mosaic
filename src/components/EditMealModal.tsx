@@ -16,8 +16,7 @@ interface EditMealModalProps {
   onClose: () => void;
   meal: string;
   ingredients: Ingredient[];
-  onSave: (ingredients: Ingredient[], totalMacros: MacroInfo) => void;
-  availableIngredients?: Ingredient[];
+  onSave: (ingredients: Ingredient[], totalMacros: MacroInfo, mealName?: string) => void;
   macroVisibility: MacroInfo;
 }
 
@@ -26,6 +25,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
   const [totalMacros, setTotalMacros] = useState<MacroInfo>({ calories: 0, protein: 0, carbs: 0, fat: 0, showCalories: true, showProtein: true, showCarbs: true, showFat: true });
   const [openPopover, setOpenPopover] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [mealName, setMealName] = useState(meal);
   const { toast } = useToast();
   const { ingredients: dbIngredients, loading: loadingIngredients } = useIngredients();
 
@@ -66,10 +66,10 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
     };
 
     const ratios = {
-      calories: targetMacros.calories / currentTotal.calories,
-      protein: targetMacros.protein / currentTotal.protein,
-      carbs: targetMacros.carbs / currentTotal.carbs,
-      fat: targetMacros.fat / currentTotal.fat,
+      calories: targetMacros.calories / (currentTotal.calories || 1),
+      protein: targetMacros.protein / (currentTotal.protein || 1),
+      carbs: targetMacros.carbs / (currentTotal.carbs || 1),
+      fat: targetMacros.fat / (currentTotal.fat || 1),
     };
 
     const avgRatio = (ratios.calories + ratios.protein + ratios.carbs + ratios.fat) / 4;
@@ -122,22 +122,72 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
     setSearch("");
   };
 
+  const addNewIngredient = () => {
+    if (dbIngredients.length > 0) {
+      const newIngredient = dbIngredients[0];
+      setIngredients([...ingredients, {
+        ...newIngredient,
+        grams: 100,
+        macros: calculateMacrosForGrams(newIngredient, 100)
+      }]);
+    } else {
+      toast({
+        title: "No ingredients available",
+        description: "Please add ingredients in the Ingredients section first.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const removeIngredient = (index: number) => {
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  };
+
+  const handleSave = () => {
+    if (ingredients.length === 0) {
+      toast({
+        title: "No ingredients",
+        description: "Please add at least one ingredient to the meal.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    onSave(ingredients, totalMacros, mealName);
+    onClose();
+  };
+
   const filteredIngredients = dbIngredients.filter(ing => 
     ing.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) onClose();
+    }}>
       <DialogContent className="max-w-xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit {meal}</DialogTitle>
+          <DialogTitle>Edit Meal</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 mt-4">
+          <div className="grid gap-2">
+            <label htmlFor="meal-name" className="text-sm font-medium">
+              Meal Name
+            </label>
+            <Input
+              id="meal-name"
+              value={mealName}
+              onChange={(e) => setMealName(e.target.value)}
+              placeholder="Enter meal name"
+            />
+          </div>
+
           <div className="flex justify-end">
             <Button
               onClick={adjustIngredientsToTarget}
               variant="outline"
               className="mb-2"
+              disabled={ingredients.length === 0}
             >
               <Wand2 className="w-4 h-4 mr-2" />
               Adjust to Target Macros
@@ -146,8 +196,14 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
           <div className="grid grid-cols-12 gap-4 text-sm font-medium text-muted-foreground mb-2">
             <div className="col-span-4">Ingredient</div>
             <div className="col-span-2">Amount (g)</div>
-            <div className="col-span-6">Macros per serving</div>
+            <div className="col-span-5">Macros per serving</div>
+            <div className="col-span-1"></div>
           </div>
+          {ingredients.length === 0 && (
+            <div className="text-center py-4 text-muted-foreground">
+              No ingredients added yet. Add ingredients from your library below.
+            </div>
+          )}
           {ingredients.map((ingredient, index) => (
             <div key={index} className="grid grid-cols-12 gap-4 items-center">
               <div className="col-span-4">
@@ -206,11 +262,22 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
                   className="w-full"
                 />
               </div>
-              <div className="col-span-6 text-sm text-muted-foreground">
+              <div className="col-span-5 text-sm text-muted-foreground">
                 {macroVisibility.showCalories && <div>{ingredient.macros.calories} kcal</div>}
                 {macroVisibility.showProtein && <div>{ingredient.macros.protein}g protein</div>}
                 {macroVisibility.showCarbs && <div>{ingredient.macros.carbs}g carbs</div>}
                 {macroVisibility.showFat && <div>{ingredient.macros.fat}g fat</div>}
+              </div>
+              <div className="col-span-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0 text-destructive"
+                  onClick={() => removeIngredient(index)}
+                >
+                  <span className="sr-only">Remove</span>
+                  &times;
+                </Button>
               </div>
             </div>
           ))}
@@ -218,19 +285,18 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
             <Button 
               variant="outline" 
               className="w-full" 
-              onClick={() => {
-                if (dbIngredients.length > 0) {
-                  const newIngredient = dbIngredients[0];
-                  setIngredients([...ingredients, {
-                    ...newIngredient,
-                    grams: 100,
-                    macros: calculateMacrosForGrams(newIngredient, 100)
-                  }]);
-                }
-              }}
+              onClick={addNewIngredient}
             >
               + Add Ingredient
             </Button>
+            {loadingIngredients && (
+              <p className="text-sm text-muted-foreground mt-2 text-center">Loading ingredients...</p>
+            )}
+            {!loadingIngredients && dbIngredients.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-2 text-center">
+                No ingredients available. Please add ingredients in the Ingredients section first.
+              </p>
+            )}
           </div>
           <div className="border-t pt-4 mt-4">
             <div className="font-medium mb-2">Total Macros:</div>
@@ -243,7 +309,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
           </div>
           <div className="flex justify-end space-x-2 mt-6">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button onClick={() => onSave(ingredients, totalMacros)}>Save Changes</Button>
+            <Button onClick={handleSave}>Save Changes</Button>
           </div>
         </div>
       </DialogContent>

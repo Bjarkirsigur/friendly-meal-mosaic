@@ -11,13 +11,14 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import BarcodeScanner from "@/components/BarcodeScanner";
 import { fetchProductByBarcode } from "@/services/foodApi";
+import { Ingredient } from "@/types/meals";
 
 export default function Ingredients() {
   const { ingredients, loading, addIngredient } = useIngredients();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [newIngredient, setNewIngredient] = useState({
+  const [newIngredient, setNewIngredient] = useState<Omit<Ingredient, 'id' | 'is_default' | 'user_id'>>({
     name: "",
     grams: 100,
     macros: {
@@ -131,19 +132,39 @@ export default function Ingredients() {
       // Attempt to fetch product data from the food API
       const productData = await fetchProductByBarcode(barcode);
       
+      // Type assertion for the product data
+      const typedData = productData as {
+        name: string;
+        grams: number;
+        macros: {
+          calories: number;
+          protein: number;
+          carbs: number;
+          fat: number;
+        };
+        image_url?: string;
+      };
+      
       // Update the form with product data
       setNewIngredient({
-        ...newIngredient,
-        ...productData,
+        name: typedData.name,
+        grams: typedData.grams,
+        image_url: typedData.image_url || "",
         macros: {
-          ...newIngredient.macros,
-          ...productData.macros
+          calories: typedData.macros.calories,
+          protein: typedData.macros.protein,
+          carbs: typedData.macros.carbs,
+          fat: typedData.macros.fat,
+          showCalories: true,
+          showProtein: true,
+          showCarbs: true,
+          showFat: true
         }
       });
       
       toast({
         title: "Product found",
-        description: `Found data for ${productData.name}`
+        description: `Found data for ${typedData.name}`
       });
     } catch (error) {
       toast({
@@ -181,18 +202,38 @@ export default function Ingredients() {
     try {
       const productData = await fetchProductByBarcode(barcodeInput);
       
-      setNewIngredient({
-        ...newIngredient,
-        ...productData,
+      // Type assertion for the product data
+      const typedData = productData as {
+        name: string;
+        grams: number;
         macros: {
-          ...newIngredient.macros,
-          ...productData.macros
+          calories: number;
+          protein: number;
+          carbs: number;
+          fat: number;
+        };
+        image_url?: string;
+      };
+      
+      setNewIngredient({
+        name: typedData.name,
+        grams: typedData.grams,
+        image_url: typedData.image_url || "",
+        macros: {
+          calories: typedData.macros.calories,
+          protein: typedData.macros.protein,
+          carbs: typedData.macros.carbs,
+          fat: typedData.macros.fat,
+          showCalories: true,
+          showProtein: true,
+          showCarbs: true,
+          showFat: true
         }
       });
       
       toast({
         title: "Product found",
-        description: `Found data for ${productData.name}`
+        description: `Found data for ${typedData.name}`
       });
     } catch (error) {
       toast({
