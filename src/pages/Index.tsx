@@ -86,12 +86,12 @@ const Index = () => {
         </div>
 
         {/* Meal and Snack Layout */}
-        <div className="grid gap-12 max-w-2xl mx-auto">
+        <div className="grid gap-16 max-w-2xl mx-auto">
           {/* Breakfast */}
           <div className="flex justify-start">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
-              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Breakfast"]?.meal ? "h-[160px]" : "h-[80px]"}`}>
+              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Breakfast"]?.meal ? "h-[140px]" : "h-[60px]"}`}>
                 <MealCard
                   title={`${currentDayName} Breakfast`}
                   meal={weeklyMeals[currentDayName]?.["Breakfast"]?.meal}
@@ -112,7 +112,7 @@ const Index = () => {
           <div className="flex justify-end">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
-              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Snacks"]?.meal ? "h-[160px]" : "h-[80px]"}`}>
+              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Snacks"]?.meal ? "h-[140px]" : "h-[60px]"}`}>
                 <MealCard
                   title={`${currentDayName} Snacks`}
                   meal={weeklyMeals[currentDayName]?.["Snacks"]?.meal}
@@ -133,7 +133,7 @@ const Index = () => {
           <div className="flex justify-start">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
-              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Lunch"]?.meal ? "h-[160px]" : "h-[80px]"}`}>
+              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Lunch"]?.meal ? "h-[140px]" : "h-[60px]"}`}>
                 <MealCard
                   title={`${currentDayName} Lunch`}
                   meal={weeklyMeals[currentDayName]?.["Lunch"]?.meal}
@@ -154,7 +154,7 @@ const Index = () => {
           <div className="flex justify-end">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
-              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Snacks"]?.meal ? "h-[160px]" : "h-[80px]"}`}>
+              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Snacks"]?.meal ? "h-[140px]" : "h-[60px]"}`}>
                 <MealCard
                   title={`${currentDayName} Snacks`}
                   meal={weeklyMeals[currentDayName]?.["Snacks"]?.meal}
@@ -175,7 +175,7 @@ const Index = () => {
           <div className="flex justify-start">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
-              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Dinner"]?.meal ? "h-[160px]" : "h-[80px]"}`}>
+              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Dinner"]?.meal ? "h-[140px]" : "h-[60px]"}`}>
                 <MealCard
                   title={`${currentDayName} Dinner`}
                   meal={weeklyMeals[currentDayName]?.["Dinner"]?.meal}
@@ -196,7 +196,7 @@ const Index = () => {
           <div className="flex justify-end">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
-              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Snacks"]?.meal ? "h-[160px]" : "h-[80px]"}`}>
+              <div className={`transition-all duration-300 ${weeklyMeals[currentDayName]?.["Snacks"]?.meal ? "h-[140px]" : "h-[60px]"}`}>
                 <MealCard
                   title={`${currentDayName} Snacks`}
                   meal={weeklyMeals[currentDayName]?.["Snacks"]?.meal}
