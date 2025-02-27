@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import WeekPlanner from "./pages/WeekPlanner";
 import Meals from "./pages/Meals";
+import Ingredients from "./pages/Ingredients";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AppSidebar } from "./components/AppSidebar";
@@ -60,6 +61,20 @@ const App = () => (
                     <div className="max-w-7xl mx-auto">
                       <ProtectedRoute>
                         <Meals />
+                      </ProtectedRoute>
+                    </div>
+                  </div>
+                </AppSidebar>
+              }
+            />
+            <Route
+              path="/ingredients"
+              element={
+                <AppSidebar>
+                  <div className="py-8 px-4 h-full">
+                    <div className="max-w-7xl mx-auto">
+                      <ProtectedRoute>
+                        <Ingredients />
                       </ProtectedRoute>
                     </div>
                   </div>

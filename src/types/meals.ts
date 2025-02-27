@@ -17,6 +17,7 @@ export interface Ingredient {
   macros: MacroInfo;
   is_default?: boolean;
   user_id?: string;
+  image_url?: string;
 }
 
 export type DifficultyLevel = "Easy" | "Medium" | "Hard";
@@ -57,6 +58,7 @@ export interface DbIngredient {
   is_default: boolean;
   user_id?: string;
   created_at?: string;
+  image_url?: string;
 }
 
 export interface DbMeal {

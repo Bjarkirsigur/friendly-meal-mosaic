@@ -37,7 +37,8 @@ export const useIngredients = () => {
             showFat: true
           },
           is_default: ingredient.is_default,
-          user_id: ingredient.user_id
+          user_id: ingredient.user_id,
+          image_url: ingredient.image_url
         }));
         
         setIngredients(mappedIngredients);
@@ -67,7 +68,8 @@ export const useIngredients = () => {
           carbs: newIngredient.macros.carbs,
           fat: newIngredient.macros.fat,
           user_id: user.id,
-          is_default: false
+          is_default: false,
+          image_url: newIngredient.image_url
         }])
         .select();
       
@@ -90,7 +92,8 @@ export const useIngredients = () => {
             showFat: true
           },
           is_default: ingredientDb.is_default,
-          user_id: ingredientDb.user_id
+          user_id: ingredientDb.user_id,
+          image_url: ingredientDb.image_url
         };
         
         setIngredients(prev => [...prev, ingredient]);
@@ -115,6 +118,7 @@ export const useIngredients = () => {
       const updateData: Record<string, any> = {};
       if (updatedIngredient.name) updateData.name = updatedIngredient.name;
       if (updatedIngredient.grams) updateData.grams = updatedIngredient.grams;
+      if (updatedIngredient.image_url) updateData.image_url = updatedIngredient.image_url;
       if (updatedIngredient.macros) {
         if (updatedIngredient.macros.calories !== undefined) updateData.calories = updatedIngredient.macros.calories;
         if (updatedIngredient.macros.protein !== undefined) updateData.protein = updatedIngredient.macros.protein;
