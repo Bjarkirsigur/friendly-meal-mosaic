@@ -88,21 +88,23 @@ const Index = () => {
         {/* Meal and Snack Layout */}
         <div className="grid gap-6 max-w-2xl mx-auto">
           {/* Breakfast */}
-          <div>
-            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
-            <div className="h-[160px]">
-              <MealCard
-                title={`${currentDayName} Breakfast`}
-                meal={weeklyMeals[currentDayName]?.["Breakfast"]?.meal}
-                macros={weeklyMeals[currentDayName]?.["Breakfast"]?.macros}
-                ingredients={weeklyMeals[currentDayName]?.["Breakfast"]?.ingredients}
-                className="w-full h-full"
-                onMealUpdate={(ingredients, macros, mealName) => 
-                  handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
-                }
-                availableIngredients={getAllAvailableIngredients()}
-                macroVisibility={macroGoals}
-              />
+          <div className="flex justify-start">
+            <div className="w-3/4">
+              <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
+              <div className="h-[160px]">
+                <MealCard
+                  title={`${currentDayName} Breakfast`}
+                  meal={weeklyMeals[currentDayName]?.["Breakfast"]?.meal}
+                  macros={weeklyMeals[currentDayName]?.["Breakfast"]?.macros}
+                  ingredients={weeklyMeals[currentDayName]?.["Breakfast"]?.ingredients}
+                  className="w-full h-full"
+                  onMealUpdate={(ingredients, macros, mealName) => 
+                    handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
+                  }
+                  availableIngredients={getAllAvailableIngredients()}
+                  macroVisibility={macroGoals}
+                />
+              </div>
             </div>
           </div>
           
@@ -128,21 +130,23 @@ const Index = () => {
           </div>
           
           {/* Lunch */}
-          <div>
-            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
-            <div className="h-[160px]">
-              <MealCard
-                title={`${currentDayName} Lunch`}
-                meal={weeklyMeals[currentDayName]?.["Lunch"]?.meal}
-                macros={weeklyMeals[currentDayName]?.["Lunch"]?.macros}
-                ingredients={weeklyMeals[currentDayName]?.["Lunch"]?.ingredients}
-                className="w-full h-full"
-                onMealUpdate={(ingredients, macros, mealName) => 
-                  handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
-                }
-                availableIngredients={getAllAvailableIngredients()}
-                macroVisibility={macroGoals}
-              />
+          <div className="flex justify-start">
+            <div className="w-3/4">
+              <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
+              <div className="h-[160px]">
+                <MealCard
+                  title={`${currentDayName} Lunch`}
+                  meal={weeklyMeals[currentDayName]?.["Lunch"]?.meal}
+                  macros={weeklyMeals[currentDayName]?.["Lunch"]?.macros}
+                  ingredients={weeklyMeals[currentDayName]?.["Lunch"]?.ingredients}
+                  className="w-full h-full"
+                  onMealUpdate={(ingredients, macros, mealName) => 
+                    handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
+                  }
+                  availableIngredients={getAllAvailableIngredients()}
+                  macroVisibility={macroGoals}
+                />
+              </div>
             </div>
           </div>
           
@@ -168,21 +172,23 @@ const Index = () => {
           </div>
           
           {/* Dinner */}
-          <div>
-            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
-            <div className="h-[160px]">
-              <MealCard
-                title={`${currentDayName} Dinner`}
-                meal={weeklyMeals[currentDayName]?.["Dinner"]?.meal}
-                macros={weeklyMeals[currentDayName]?.["Dinner"]?.macros}
-                ingredients={weeklyMeals[currentDayName]?.["Dinner"]?.ingredients}
-                className="w-full h-full"
-                onMealUpdate={(ingredients, macros, mealName) => 
-                  handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
-                }
-                availableIngredients={getAllAvailableIngredients()}
-                macroVisibility={macroGoals}
-              />
+          <div className="flex justify-start">
+            <div className="w-3/4">
+              <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
+              <div className="h-[160px]">
+                <MealCard
+                  title={`${currentDayName} Dinner`}
+                  meal={weeklyMeals[currentDayName]?.["Dinner"]?.meal}
+                  macros={weeklyMeals[currentDayName]?.["Dinner"]?.macros}
+                  ingredients={weeklyMeals[currentDayName]?.["Dinner"]?.ingredients}
+                  className="w-full h-full"
+                  onMealUpdate={(ingredients, macros, mealName) => 
+                    handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
+                  }
+                  availableIngredients={getAllAvailableIngredients()}
+                  macroVisibility={macroGoals}
+                />
+              </div>
             </div>
           </div>
           
