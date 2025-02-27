@@ -9,6 +9,7 @@ import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
 import { Settings } from "lucide-react";
+import MealCard from "@/components/MealCard";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -89,13 +90,19 @@ const Index = () => {
           {/* Breakfast */}
           <div>
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
-            <div 
-              onClick={() => handleMealCardClick(currentDayName, "Breakfast")}
-              className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
-            >
-              {!weeklyMeals[currentDayName]?.["Breakfast"]?.meal && 
-                <p className="text-muted-foreground italic">Click to add a meal</p>
-              }
+            <div className="h-[160px]">
+              <MealCard
+                title={`${currentDayName} Breakfast`}
+                meal={weeklyMeals[currentDayName]?.["Breakfast"]?.meal}
+                macros={weeklyMeals[currentDayName]?.["Breakfast"]?.macros}
+                ingredients={weeklyMeals[currentDayName]?.["Breakfast"]?.ingredients}
+                className="w-full h-full"
+                onMealUpdate={(ingredients, macros, mealName) => 
+                  handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
+                }
+                availableIngredients={getAllAvailableIngredients()}
+                macroVisibility={macroGoals}
+              />
             </div>
           </div>
           
@@ -103,13 +110,19 @@ const Index = () => {
           <div className="flex justify-end">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
-              <div 
-                onClick={() => handleMealCardClick(currentDayName, "Snacks")}
-                className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
-              >
-                {!weeklyMeals[currentDayName]?.["Snacks"]?.meal && 
-                  <p className="text-muted-foreground italic">Click to add a meal</p>
-                }
+              <div className="h-[160px]">
+                <MealCard
+                  title={`${currentDayName} Snacks`}
+                  meal={weeklyMeals[currentDayName]?.["Snacks"]?.meal}
+                  macros={weeklyMeals[currentDayName]?.["Snacks"]?.macros}
+                  ingredients={weeklyMeals[currentDayName]?.["Snacks"]?.ingredients}
+                  className="w-full h-full"
+                  onMealUpdate={(ingredients, macros, mealName) => 
+                    handleMealUpdate(currentDayName, "Snacks", ingredients, macros, mealName)
+                  }
+                  availableIngredients={getAllAvailableIngredients()}
+                  macroVisibility={macroGoals}
+                />
               </div>
             </div>
           </div>
@@ -117,13 +130,19 @@ const Index = () => {
           {/* Lunch */}
           <div>
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
-            <div 
-              onClick={() => handleMealCardClick(currentDayName, "Lunch")}
-              className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
-            >
-              {!weeklyMeals[currentDayName]?.["Lunch"]?.meal && 
-                <p className="text-muted-foreground italic">Click to add a meal</p>
-              }
+            <div className="h-[160px]">
+              <MealCard
+                title={`${currentDayName} Lunch`}
+                meal={weeklyMeals[currentDayName]?.["Lunch"]?.meal}
+                macros={weeklyMeals[currentDayName]?.["Lunch"]?.macros}
+                ingredients={weeklyMeals[currentDayName]?.["Lunch"]?.ingredients}
+                className="w-full h-full"
+                onMealUpdate={(ingredients, macros, mealName) => 
+                  handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
+                }
+                availableIngredients={getAllAvailableIngredients()}
+                macroVisibility={macroGoals}
+              />
             </div>
           </div>
           
@@ -131,13 +150,19 @@ const Index = () => {
           <div className="flex justify-end">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
-              <div 
-                onClick={() => handleMealCardClick(currentDayName, "Snacks")}
-                className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
-              >
-                {!weeklyMeals[currentDayName]?.["Snacks"]?.meal && 
-                  <p className="text-muted-foreground italic">Click to add a meal</p>
-                }
+              <div className="h-[160px]">
+                <MealCard
+                  title={`${currentDayName} Snacks`}
+                  meal={weeklyMeals[currentDayName]?.["Snacks"]?.meal}
+                  macros={weeklyMeals[currentDayName]?.["Snacks"]?.macros}
+                  ingredients={weeklyMeals[currentDayName]?.["Snacks"]?.ingredients}
+                  className="w-full h-full"
+                  onMealUpdate={(ingredients, macros, mealName) => 
+                    handleMealUpdate(currentDayName, "Snacks", ingredients, macros, mealName)
+                  }
+                  availableIngredients={getAllAvailableIngredients()}
+                  macroVisibility={macroGoals}
+                />
               </div>
             </div>
           </div>
@@ -145,13 +170,19 @@ const Index = () => {
           {/* Dinner */}
           <div>
             <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
-            <div 
-              onClick={() => handleMealCardClick(currentDayName, "Dinner")}
-              className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
-            >
-              {!weeklyMeals[currentDayName]?.["Dinner"]?.meal && 
-                <p className="text-muted-foreground italic">Click to add a meal</p>
-              }
+            <div className="h-[160px]">
+              <MealCard
+                title={`${currentDayName} Dinner`}
+                meal={weeklyMeals[currentDayName]?.["Dinner"]?.meal}
+                macros={weeklyMeals[currentDayName]?.["Dinner"]?.macros}
+                ingredients={weeklyMeals[currentDayName]?.["Dinner"]?.ingredients}
+                className="w-full h-full"
+                onMealUpdate={(ingredients, macros, mealName) => 
+                  handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
+                }
+                availableIngredients={getAllAvailableIngredients()}
+                macroVisibility={macroGoals}
+              />
             </div>
           </div>
           
@@ -159,13 +190,19 @@ const Index = () => {
           <div className="flex justify-end">
             <div className="w-3/4">
               <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Snacks</p>
-              <div 
-                onClick={() => handleMealCardClick(currentDayName, "Snacks")}
-                className="bg-white/95 rounded-xl h-[160px] flex items-center justify-center cursor-pointer shadow-sm hover:shadow-md transition-all"
-              >
-                {!weeklyMeals[currentDayName]?.["Snacks"]?.meal && 
-                  <p className="text-muted-foreground italic">Click to add a meal</p>
-                }
+              <div className="h-[160px]">
+                <MealCard
+                  title={`${currentDayName} Snacks`}
+                  meal={weeklyMeals[currentDayName]?.["Snacks"]?.meal}
+                  macros={weeklyMeals[currentDayName]?.["Snacks"]?.macros}
+                  ingredients={weeklyMeals[currentDayName]?.["Snacks"]?.ingredients}
+                  className="w-full h-full"
+                  onMealUpdate={(ingredients, macros, mealName) => 
+                    handleMealUpdate(currentDayName, "Snacks", ingredients, macros, mealName)
+                  }
+                  availableIngredients={getAllAvailableIngredients()}
+                  macroVisibility={macroGoals}
+                />
               </div>
             </div>
           </div>
@@ -181,19 +218,6 @@ const Index = () => {
       />
     </div>
   );
-
-  // Helper function to handle meal card clicks
-  function handleMealCardClick(day: string, mealType: MealType) {
-    // If there's already a meal, we could show details or edit
-    if (weeklyMeals[day]?.[mealType]?.meal) {
-      // Show meal details or edit functionality
-      console.log("Meal exists:", weeklyMeals[day][mealType]);
-    } else {
-      // Open meal selection dialog
-      console.log("Would open meal selection for", mealType);
-      // You would implement your meal selection UI here
-    }
-  }
 };
 
 export default Index;
