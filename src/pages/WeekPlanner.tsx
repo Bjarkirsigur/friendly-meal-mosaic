@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import WeekHeader from "../components/WeekHeader";
-import MealRow from "../components/MealRow";
+import WeekMealRow from "../components/WeekMealRow";
 import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
 import { MealType } from "../types/meals";
 import MacroGoalsDialog from "@/components/MacroGoalsDialog";
@@ -29,7 +29,7 @@ const WeekPlanner = () => {
     <div className="grid gap-6">
       <WeekHeader currentDate={currentDate} onWeekChange={setCurrentDate} />
       {MEAL_TYPES.map((meal) => (
-        <MealRow
+        <WeekMealRow
           key={meal}
           mealType={meal as MealType}
           weeklyMeals={weeklyMeals}
