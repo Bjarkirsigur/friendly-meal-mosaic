@@ -1,7 +1,6 @@
-
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -9,22 +8,134 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { MEALS } from "@/data/mealsData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Textarea } from "@/components/ui/textarea";
+
+interface NewIngredient {
+  name: string;
+  grams: number;
+  macros: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    showCalories: boolean;
+    showProtein: boolean;
+    showCarbs: boolean;
+    showFat: boolean;
+  };
+}
 
 const Meals = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newMeal, setNewMeal] = useState({
     name: "",
-    ingredients: [] as { name: string; grams: number; macros: { calories: number; protein: number; carbs: number; fat: number; } }[]
+    ingredients: [] as NewIngredient[],
+    recipe: "",
+    category: "Breakfast"
+  });
+  const [tempIngredient, setTempIngredient] = useState<NewIngredient>({
+    name: "",
+    grams: 0,
+    macros: {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      showCalories: true,
+      showProtein: true,
+      showCarbs: true,
+      showFat: true
+    }
   });
   const { toast } = useToast();
 
+  const handleAddIngredient = () => {
+    if (tempIngredient.name && tempIngredient.grams > 0) {
+      setNewMeal(prev => ({
+        ...prev,
+        ingredients: [...prev.ingredients, tempIngredient]
+      }));
+      setTempIngredient({
+        name: "",
+        grams: 0,
+        macros: {
+          calories: 0,
+          protein: 0,
+          carbs: 0,
+          fat: 0,
+          showCalories: true,
+          showProtein: true,
+          showCarbs: true,
+          showFat: true
+        }
+      });
+    }
+  };
+
+  const handleRemoveIngredient = (index: number) => {
+    setNewMeal(prev => ({
+      ...prev,
+      ingredients: prev.ingredients.filter((_, i) => i !== index)
+    }));
+  };
+
+  const calculateTotalMacros = () => {
+    return newMeal.ingredients.reduce((acc, ingredient) => ({
+      calories: acc.calories + ingredient.macros.calories,
+      protein: acc.protein + ingredient.macros.protein,
+      carbs: acc.carbs + ingredient.macros.carbs,
+      fat: acc.fat + ingredient.macros.fat,
+      showCalories: true,
+      showProtein: true,
+      showCarbs: true,
+      showFat: true
+    }), {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      showCalories: true,
+      showProtein: true,
+      showCarbs: true,
+      showFat: true
+    });
+  };
+
   const handleCreateMeal = () => {
+    if (!newMeal.name || newMeal.ingredients.length === 0) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in the meal name and add at least one ingredient.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const totalMacros = calculateTotalMacros();
+    const newMealObject = {
+      meal: newMeal.name,
+      ingredients: newMeal.ingredients,
+      macros: totalMacros,
+      recipe: newMeal.recipe
+    };
+
+    if (!MEALS[newMeal.category]) {
+      MEALS[newMeal.category] = [];
+    }
+    MEALS[newMeal.category].push(newMealObject);
+
     toast({
       title: "Meal Created",
       description: "Your new meal has been added to the list.",
     });
+    
     setIsCreateDialogOpen(false);
-    setNewMeal({ name: "", ingredients: [] });
+    setNewMeal({
+      name: "",
+      ingredients: [],
+      recipe: "",
+      category: "Breakfast"
+    });
   };
 
   return (
@@ -112,23 +223,108 @@ const Meals = () => {
         </div>
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Create New Meal</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div>
-                <label htmlFor="mealName" className="block text-sm font-medium text-foreground mb-2">
-                  Meal Name
-                </label>
-                <Input
-                  id="mealName"
-                  value={newMeal.name}
-                  onChange={(e) => setNewMeal({ ...newMeal, name: e.target.value })}
-                  placeholder="Enter meal name"
-                />
+            <div className="space-y-6 py-4">
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="mealName" className="block text-sm font-medium text-foreground mb-2">
+                    Meal Name
+                  </label>
+                  <Input
+                    id="mealName"
+                    value={newMeal.name}
+                    onChange={(e) => setNewMeal({ ...newMeal, name: e.target.value })}
+                    placeholder="Enter meal name"
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
+                    Category
+                  </label>
+                  <select
+                    id="category"
+                    value={newMeal.category}
+                    onChange={(e) => setNewMeal({ ...newMeal, category: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2"
+                  >
+                    {Object.keys(MEALS).map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Ingredients
+                  </label>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      <Input
+                        placeholder="Ingredient name"
+                        value={tempIngredient.name}
+                        onChange={(e) => setTempIngredient({ ...tempIngredient, name: e.target.value })}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Grams"
+                        value={tempIngredient.grams || ""}
+                        onChange={(e) => setTempIngredient({ ...tempIngredient, grams: Number(e.target.value) })}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Calories"
+                        value={tempIngredient.macros.calories || ""}
+                        onChange={(e) => setTempIngredient({
+                          ...tempIngredient,
+                          macros: { ...tempIngredient.macros, calories: Number(e.target.value) }
+                        })}
+                      />
+                      <Button onClick={handleAddIngredient} className="w-full md:w-auto">
+                        Add Ingredient
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {newMeal.ingredients.map((ingredient, index) => (
+                        <div key={index} className="flex items-center justify-between bg-secondary/50 p-2 rounded-md">
+                          <span>
+                            {ingredient.name} ({ingredient.grams}g) - {ingredient.macros.calories} kcal
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveIngredient(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="recipe" className="block text-sm font-medium text-foreground mb-2">
+                    Recipe Instructions
+                  </label>
+                  <Textarea
+                    id="recipe"
+                    value={newMeal.recipe}
+                    onChange={(e) => setNewMeal({ ...newMeal, recipe: e.target.value })}
+                    placeholder="Enter recipe instructions..."
+                    className="min-h-[100px]"
+                  />
+                </div>
               </div>
-              <div className="flex justify-end space-x-2 mt-6">
+
+              <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                   Cancel
                 </Button>
