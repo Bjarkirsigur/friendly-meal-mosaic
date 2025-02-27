@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, Shuffle, Book, X, ChevronDown, ChevronUp, Clock, BarChart2 } from "lucide-react";
@@ -37,7 +36,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
   const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
   const { meals, loading: loadingMeals } = useMeals();
 
-  // Extract meal type from title (e.g., "Monday Breakfast" -> "Breakfast")
   const mealType = title.split(" ").pop() || "";
 
   const handleEdit = (e: React.MouseEvent) => {
@@ -49,13 +47,12 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
 
   const handleEmptyCardClick = () => {
     setIsSwitchDialogOpen(true);
-    setShowAllMeals(false); // Reset to default view when opening dialog
+    setShowAllMeals(false);
   };
 
   const handleRemove = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onMealUpdate) {
-      // Pass empty ingredients and macros to effectively remove the meal
       onMealUpdate([], {
         calories: 0,
         protein: 0,
@@ -74,7 +71,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
       onMealUpdate(selectedMeal.ingredients, selectedMeal.macros, selectedMeal.meal);
     }
     setIsSwitchDialogOpen(false);
-    setShowAllMeals(false); // Reset state for next time
+    setShowAllMeals(false);
   };
 
   const handleSave = (newIngredients: Ingredient[], newMacros: MacroInfo) => {
@@ -104,20 +101,17 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
     }));
   };
 
-  // Get meal type category (Breakfast, Lunch, Dinner, Snacks)
   const getMealTypeCategory = (mealType: string): MealCategory => {
     if (mealType === "Breakfast") return "Breakfast";
     if (mealType === "Lunch") return "Lunch";
     if (mealType === "Dinner") return "Dinner";
     if (mealType.includes("Snack")) return "Snacks";
-    return "Snacks"; // Default
+    return "Snacks";
   };
 
-  // Filter meals based on the meal type
   const filterMealsByType = () => {
     const mealTypeCategory = getMealTypeCategory(mealType);
     
-    // Apply type and search filters
     const filteredMeals = meals.filter(meal => 
       (showAllMeals || meal.meal_type === mealTypeCategory) &&
       (!searchTerm || 
@@ -128,7 +122,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
       )
     );
     
-    // Group by category
     const groupedMeals: Record<string, Meal[]> = {};
     filteredMeals.forEach(meal => {
       const category = meal.meal_type || "Snacks";
@@ -141,7 +134,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
     return Object.entries(groupedMeals);
   };
 
-  // Find selected meal's details
   const currentMealDetails = meal ? meals.find(m => m.meal === meal) : null;
 
   return (
@@ -159,7 +151,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
             onClick={(e) => {
               e.stopPropagation();
               setIsSwitchDialogOpen(true);
-              setShowAllMeals(false); // Reset to default view
+              setShowAllMeals(false);
             }}
           >
             <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
@@ -183,36 +175,32 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
       >
         {meal ? (
           <>
-            <MealImage meal={meal} />
-            <div className="p-4">
+            <div className="h-[120px] relative">
+              <MealImage meal={meal} className="absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <div className="p-3">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-foreground">{meal}</p>
+                <p className="text-sm text-foreground line-clamp-1">{meal}</p>
                 {currentMealDetails?.recipe && (
-                  <Book className="w-4 h-4 text-primary/50" />
+                  <Book className="w-4 h-4 text-primary/50 shrink-0" />
                 )}
               </div>
               {macros && (
                 <MacroDisplay 
                   macros={macros} 
                   visibilitySettings={macroVisibility}
-                  className="text-xs text-muted-foreground mt-3" 
+                  className="text-xs text-muted-foreground mt-2" 
                 />
-              )}
-              {currentMealDetails?.recipe && (
-                <div className="mt-3 text-xs text-muted-foreground">
-                  <p className="line-clamp-2">{currentMealDetails.recipe.split('\n')[0]}...</p>
-                </div>
               )}
             </div>
           </>
         ) : (
-          <div className="min-h-[200px] p-4 flex items-center justify-center">
+          <div className="h-[180px] p-4 flex items-center justify-center">
             <p className="text-muted-foreground italic">Click to add a meal</p>
           </div>
         )}
       </Card>
 
-      {/* Meal Details Dialog */}
       {meal && macros && ingredients && (
         <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
           <MealDetails
@@ -226,7 +214,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
         </Dialog>
       )}
 
-      {/* Edit Modal */}
       {isEditModalOpen && ingredients && (
         <EditMealModal
           isOpen={isEditModalOpen}
@@ -238,7 +225,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
         />
       )}
 
-      {/* Switch Dialog */}
       <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
         <DialogContent className="max-h-[90vh] md:max-h-[80vh] w-[95vw] md:w-full overflow-y-auto">
           <DialogHeader>
@@ -274,7 +260,6 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
                           onClick={() => handleSwitch(availableMeal)}
                           className="w-full flex flex-col gap-3 hover:bg-secondary/30 transition-colors duration-200 text-left"
                         >
-                          {/* Add meal image */}
                           <div className="w-full h-32 overflow-hidden">
                             <MealImage meal={availableMeal.meal} className="w-full h-full object-cover" />
                           </div>
