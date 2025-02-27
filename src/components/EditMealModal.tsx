@@ -1,3 +1,4 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -139,7 +140,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit {meal}</DialogTitle>
         </DialogHeader>
@@ -148,73 +149,97 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
             <Button
               onClick={adjustIngredientsToTarget}
               variant="outline"
-              className="mb-4"
+              className="mb-2"
             >
               <Wand2 className="w-4 h-4 mr-2" />
               Adjust to Target Macros
             </Button>
           </div>
-          <div className="grid grid-cols-4 gap-4 text-sm font-medium text-muted-foreground mb-2">
-            <div>Ingredient</div>
-            <div>Amount (g)</div>
-            <div>Macros per serving</div>
-            <div></div>
+          <div className="grid grid-cols-12 gap-4 text-sm font-medium text-muted-foreground mb-2">
+            <div className="col-span-4">Ingredient</div>
+            <div className="col-span-2">Amount (g)</div>
+            <div className="col-span-6">Macros per serving</div>
           </div>
           {ingredients.map((ingredient, index) => (
-            <div key={index} className="grid grid-cols-4 gap-4 items-center">
-              <Popover open={openPopover === index} onOpenChange={(open) => {
-                setOpenPopover(open ? index : null);
-                if (!open) setSearch("");
-              }}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={openPopover === index}
-                    className="justify-between"
-                  >
-                    {ingredient.name}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-0" align="start">
-                  <Command shouldFilter={false}>
-                    <CommandInput 
-                      placeholder="Search ingredients..." 
-                      value={search}
-                      onValueChange={setSearch}
-                    />
-                    <CommandList>
-                      <CommandEmpty>No ingredient found.</CommandEmpty>
-                      <CommandGroup className="max-h-[200px] overflow-y-auto">
-                        {filteredIngredients.map((ing) => (
-                          <CommandItem
-                            key={ing.name}
-                            onSelect={() => handleIngredientChange(index, ing.name)}
-                            className="cursor-pointer"
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                ingredient.name === ing.name ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            {ing.name}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <Input
-                type="number"
-                value={ingredient.grams}
-                onChange={(e) => handleGramsChange(index, Number(e.target.value))}
-                min="0"
-                className="w-24"
-              />
-              <div className="text-sm text-muted-foreground">
+            <div key={index} className="grid grid-cols-12 gap-4 items-center">
+              <div className="col-span-4">
+                <Popover open={openPopover === index} onOpenChange={(open) => {
+                  setOpenPopover(open ? index : null);
+                  if (!open) setSearch("");
+                }}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openPopover === index}
+                      className="w-full justify-between"
+                    >
+                      {ingredient.name}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0" align="start">
+                    <Command shouldFilter={false}>
+                      <CommandInput 
+                        placeholder="Search ingredients..." 
+                        value={search}
+                        onValueChange={setSearch}
+                      />
+                      <CommandList>
+                        <CommandEmpty>No ingredient found.</CommandEmpty>
+                        <CommandGroup className="max-h-[200px] overflow-y-auto">
+                          {availableIngredients
+                            .filter(ing => ing.name.toLowerCase().includes(search.toLowerCase()))
+                            .map((ing) => (
+                              <CommandItem
+                                key={ing.name}
+                                onSelect={() => {
+                                  const newIngredients = [...ingredients];
+                                  newIngredients[index] = {
+                                    ...ing,
+                                    grams: ingredient.grams,
+                                    macros: calculateMacrosForGrams(ing, ingredient.grams)
+                                  };
+                                  setIngredients(newIngredients);
+                                  setOpenPopover(null);
+                                  setSearch("");
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    ingredient.name === ing.name ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {ing.name}
+                              </CommandItem>
+                            ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="col-span-2">
+                <Input
+                  type="number"
+                  value={ingredient.grams}
+                  onChange={(e) => {
+                    const newIngredients = [...ingredients];
+                    const newGrams = Number(e.target.value);
+                    newIngredients[index] = {
+                      ...ingredient,
+                      grams: newGrams,
+                      macros: calculateMacrosForGrams(ingredient, newGrams)
+                    };
+                    setIngredients(newIngredients);
+                  }}
+                  min="0"
+                  className="w-full"
+                />
+              </div>
+              <div className="col-span-6 text-sm text-muted-foreground">
                 {macroVisibility.showCalories && <div>{ingredient.macros.calories} kcal</div>}
                 {macroVisibility.showProtein && <div>{ingredient.macros.protein}g protein</div>}
                 {macroVisibility.showCarbs && <div>{ingredient.macros.carbs}g carbs</div>}
