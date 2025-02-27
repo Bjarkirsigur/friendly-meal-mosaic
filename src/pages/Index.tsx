@@ -86,7 +86,7 @@ const Index = () => {
         </div>
 
         {/* Meal and Snack Layout */}
-        <div className="grid gap-64 max-w-2xl mx-auto">
+        <div className="grid gap-32 max-w-2xl mx-auto">
           {/* Breakfast */}
           <div className="flex justify-start">
             <div className="w-3/4">
