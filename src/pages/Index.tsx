@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import MealRow from "../components/MealRow";
 import { MEAL_TYPES, getAllAvailableIngredients } from "../utils/mealUtils";
 import { MealType, MacroInfo } from "../types/meals";
@@ -24,8 +24,8 @@ const Index = () => {
   const { weeklyMeals, handleMealUpdate } = useMealPlanner();
   const currentDayName = format(currentDate, 'EEEE');
 
-  // Calculate total daily macros
-  const calculateDailyMacros = (): MacroInfo => {
+  // Calculate total daily macros using useMemo to update when weeklyMeals changes
+  const totalDailyMacros = useMemo(() => {
     const initialMacros: MacroInfo = {
       calories: 0,
       protein: 0,
@@ -37,12 +37,16 @@ const Index = () => {
       showFat: true
     };
 
+    if (!weeklyMeals[currentDayName]) {
+      return initialMacros;
+    }
+
     return MEAL_TYPES.reduce((total, mealType) => {
-      const meal = weeklyMeals[currentDayName]?.[mealType as MealType];
+      const meal = weeklyMeals[currentDayName][mealType as MealType];
       if (meal?.macros) {
         return {
           ...total,
-          calories: total.calories + meal.macros.calories,
+          calories: Math.round((total.calories + meal.macros.calories) * 10) / 10,
           protein: Math.round((total.protein + meal.macros.protein) * 10) / 10,
           carbs: Math.round((total.carbs + meal.macros.carbs) * 10) / 10,
           fat: Math.round((total.fat + meal.macros.fat) * 10) / 10,
@@ -50,9 +54,7 @@ const Index = () => {
       }
       return total;
     }, initialMacros);
-  };
-
-  const totalDailyMacros = calculateDailyMacros();
+  }, [weeklyMeals, currentDayName]); // Dependencies for useMemo
 
   return (
     <div className="min-h-screen bg-[#E8F3E8] -mx-4 px-4">
