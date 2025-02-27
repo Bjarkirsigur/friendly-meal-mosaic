@@ -89,22 +89,25 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
 
   // Filter meals based on the meal type
   const filterMealsByType = (meals: Record<string, Meal[]>) => {
-    // For each meal type, determine what categories to show
-    const mealTypeToCategories: Record<string, string[]> = {
-      "Breakfast": ["Breakfast"],
-      "Lunch": ["Lunch"],
-      "Dinner": ["Dinner"],
-      "Morning Snack": ["Snacks"],
-      "Afternoon Snack": ["Snacks"],
-      "Evening Snack": ["Snacks"]
-    };
+    // Define which category to show for each meal type
+    let categoryToShow: string;
+    
+    if (mealType === "Breakfast") {
+      categoryToShow = "Breakfast";
+    } else if (mealType === "Lunch") {
+      categoryToShow = "Lunch";
+    } else if (mealType === "Dinner") {
+      categoryToShow = "Dinner";
+    } else if (mealType.includes("Snack")) {
+      categoryToShow = "Snacks"; 
+    } else {
+      // Default case - shouldn't happen with our current structure
+      categoryToShow = "";
+    }
 
-    // Get the relevant categories for this meal type
-    const relevantCategories = mealTypeToCategories[mealType] || Object.keys(meals);
-
-    // Filter entries to only include relevant categories
+    // Only filter to the relevant category
     return Object.entries(meals)
-      .filter(([category]) => relevantCategories.includes(category))
+      .filter(([category]) => category === categoryToShow)
       .map(([category, categoryMeals]) => {
         // Further filter by search term if provided
         const filteredMeals = searchTerm 
