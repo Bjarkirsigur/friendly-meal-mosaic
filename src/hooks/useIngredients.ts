@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { DbIngredient, Ingredient } from '@/types/meals';
+import { Ingredient } from '@/types/meals';
 import { useToast } from '@/hooks/use-toast';
 
 export const useIngredients = () => {
@@ -22,7 +22,7 @@ export const useIngredients = () => {
       if (error) throw error;
       
       if (data) {
-        const mappedIngredients = data.map((ingredient: DbIngredient) => ({
+        const mappedIngredients = data.map((ingredient: any) => ({
           id: ingredient.id,
           name: ingredient.name,
           grams: ingredient.grams,
@@ -74,7 +74,7 @@ export const useIngredients = () => {
       if (error) throw error;
       
       if (data && data.length > 0) {
-        const ingredientDb = data[0] as DbIngredient;
+        const ingredientDb = data[0] as any;
         const ingredient: Ingredient = {
           id: ingredientDb.id,
           name: ingredientDb.name,
@@ -116,10 +116,10 @@ export const useIngredients = () => {
       if (updatedIngredient.name) updateData.name = updatedIngredient.name;
       if (updatedIngredient.grams) updateData.grams = updatedIngredient.grams;
       if (updatedIngredient.macros) {
-        if (updatedIngredient.macros.calories) updateData.calories = updatedIngredient.macros.calories;
-        if (updatedIngredient.macros.protein) updateData.protein = updatedIngredient.macros.protein;
-        if (updatedIngredient.macros.carbs) updateData.carbs = updatedIngredient.macros.carbs;
-        if (updatedIngredient.macros.fat) updateData.fat = updatedIngredient.macros.fat;
+        if (updatedIngredient.macros.calories !== undefined) updateData.calories = updatedIngredient.macros.calories;
+        if (updatedIngredient.macros.protein !== undefined) updateData.protein = updatedIngredient.macros.protein;
+        if (updatedIngredient.macros.carbs !== undefined) updateData.carbs = updatedIngredient.macros.carbs;
+        if (updatedIngredient.macros.fat !== undefined) updateData.fat = updatedIngredient.macros.fat;
       }
       
       const { error } = await supabase

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { DbMeal, DbMealIngredient, DbIngredient, Meal, Ingredient, MacroInfo } from '@/types/meals';
+import { Meal, Ingredient, MacroInfo } from '@/types/meals';
 import { useToast } from '@/hooks/use-toast';
 
 export const useMeals = () => {
@@ -12,9 +12,9 @@ export const useMeals = () => {
   const { toast } = useToast();
 
   const convertDbToMeal = (
-    dbMeal: DbMeal, 
-    mealIngredients: DbMealIngredient[],
-    ingredients: DbIngredient[]
+    dbMeal: any, 
+    mealIngredients: any[],
+    ingredients: any[]
   ): Meal => {
     // Map ingredients
     const mealIngredientsWithDetails = mealIngredients
@@ -105,7 +105,7 @@ export const useMeals = () => {
       
       // Convert DB data to app models
       if (mealsData && mealIngredientsData && ingredientsData) {
-        const convertedMeals = mealsData.map((dbMeal: DbMeal) => 
+        const convertedMeals = mealsData.map((dbMeal: any) => 
           convertDbToMeal(dbMeal, mealIngredientsData, ingredientsData)
         );
         
@@ -146,7 +146,7 @@ export const useMeals = () => {
         throw new Error('Failed to create meal');
       }
       
-      const createdMeal = mealData[0] as DbMeal;
+      const createdMeal = mealData[0];
       
       // Insert meal ingredients
       if (newMeal.ingredients.length > 0) {

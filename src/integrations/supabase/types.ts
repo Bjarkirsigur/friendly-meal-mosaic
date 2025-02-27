@@ -9,6 +9,183 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ingredients: {
+        Row: {
+          calories: number
+          carbs: number
+          created_at: string | null
+          fat: number
+          grams: number
+          id: string
+          is_default: boolean | null
+          name: string
+          protein: number
+          user_id: string | null
+        }
+        Insert: {
+          calories: number
+          carbs: number
+          created_at?: string | null
+          fat: number
+          grams: number
+          id?: string
+          is_default?: boolean | null
+          name: string
+          protein: number
+          user_id?: string | null
+        }
+        Update: {
+          calories?: number
+          carbs?: number
+          created_at?: string | null
+          fat?: number
+          grams?: number
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          protein?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingredients_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_ingredients: {
+        Row: {
+          created_at: string | null
+          grams: number
+          id: string
+          ingredient_id: string
+          meal_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          grams: number
+          id?: string
+          ingredient_id: string
+          meal_id: string
+        }
+        Update: {
+          created_at?: string | null
+          grams?: number
+          id?: string
+          ingredient_id?: string
+          meal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_ingredients_meal_id_fkey"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_plans: {
+        Row: {
+          created_at: string | null
+          day_name: string
+          drinks_and_accompaniments: Json | null
+          id: string
+          ingredients: Json | null
+          macros: Json | null
+          meal_name: string | null
+          meal_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          day_name: string
+          drinks_and_accompaniments?: Json | null
+          id?: string
+          ingredients?: Json | null
+          macros?: Json | null
+          meal_name?: string | null
+          meal_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          day_name?: string
+          drinks_and_accompaniments?: Json | null
+          id?: string
+          ingredients?: Json | null
+          macros?: Json | null
+          meal_name?: string | null
+          meal_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meals: {
+        Row: {
+          created_at: string | null
+          difficulty: string | null
+          id: string
+          is_default: boolean | null
+          meal_type: string
+          name: string
+          prep_time: number | null
+          recipe: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          difficulty?: string | null
+          id?: string
+          is_default?: boolean | null
+          meal_type: string
+          name: string
+          prep_time?: number | null
+          recipe?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          difficulty?: string | null
+          id?: string
+          is_default?: boolean | null
+          meal_type?: string
+          name?: string
+          prep_time?: number | null
+          recipe?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           first_name: string | null

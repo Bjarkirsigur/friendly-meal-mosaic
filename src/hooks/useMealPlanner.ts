@@ -39,7 +39,7 @@ export const useMealPlanner = () => {
           const newWeeklyMeals = createInitialMeals();
           const newDrinksAndAccompaniments: Record<string, Record<string, { items: string[] }>> = {};
           
-          data.forEach(plan => {
+          data.forEach((plan: any) => {
             const { day_name, meal_type, meal_name, ingredients, macros, drinks_and_accompaniments } = plan;
             
             if (newWeeklyMeals[day_name] && meal_name && ingredients && macros) {
@@ -114,7 +114,7 @@ export const useMealPlanner = () => {
             ingredients: meal?.ingredients || null,
             macros: meal?.macros || null,
             drinks_and_accompaniments: drinksItems ? { items: drinksItems } : null,
-            updated_at: new Date()
+            updated_at: new Date().toISOString()
           })
           .eq('id', existingData.id);
         
