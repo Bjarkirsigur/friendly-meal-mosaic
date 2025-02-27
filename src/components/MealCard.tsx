@@ -28,9 +28,11 @@ interface MealCardProps {
 const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, availableIngredients, macroVisibility }: MealCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (meal && ingredients && availableIngredients) {
       setIsEditModalOpen(true);
     }
@@ -54,6 +56,14 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     setIsEditModalOpen(false);
   };
 
+  const handleCardClick = () => {
+    if (meal) {
+      setIsDetailsOpen(true);
+    } else {
+      handleEmptyCardClick();
+    }
+  };
+
   const filterMeals = (meals: Record<string, Meal[]>) => {
     const filteredEntries = Object.entries(meals).map(([category, categoryMeals]) => {
       const filteredMeals = categoryMeals.filter(meal =>
@@ -73,7 +83,10 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
         <div className="flex gap-1 justify-end">
           <button 
             className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
-            onClick={() => setIsSwitchDialogOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSwitchDialogOpen(true);
+            }}
           >
             <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
           </button>
@@ -92,7 +105,7 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           !meal && "cursor-pointer hover:bg-secondary/50",
           className
         )}
-        onClick={() => !meal && handleEmptyCardClick()}
+        onClick={handleCardClick}
       >
         {meal ? (
           <>
@@ -143,6 +156,75 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
           </div>
         )}
       </Card>
+
+      <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{meal}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <AspectRatio ratio={16 / 9}>
+              <img
+                src={`https://source.unsplash.com/featured/?${encodeURIComponent(meal?.toLowerCase() || '')},food`}
+                alt={meal}
+                className="object-cover w-full h-full rounded-lg"
+              />
+            </AspectRatio>
+
+            {macros && (
+              <div className="grid grid-cols-4 gap-4 p-4 bg-secondary/30 rounded-lg">
+                {macroVisibility.showCalories && (
+                  <div className="text-center">
+                    <p className="text-2xl font-semibold text-primary">{macros.calories}</p>
+                    <p className="text-sm text-muted-foreground">kcal</p>
+                  </div>
+                )}
+                {macroVisibility.showProtein && (
+                  <div className="text-center">
+                    <p className="text-2xl font-semibold text-primary">{macros.protein}g</p>
+                    <p className="text-sm text-muted-foreground">Protein</p>
+                  </div>
+                )}
+                {macroVisibility.showCarbs && (
+                  <div className="text-center">
+                    <p className="text-2xl font-semibold text-primary">{macros.carbs}g</p>
+                    <p className="text-sm text-muted-foreground">Carbs</p>
+                  </div>
+                )}
+                {macroVisibility.showFat && (
+                  <div className="text-center">
+                    <p className="text-2xl font-semibold text-primary">{macros.fat}g</p>
+                    <p className="text-sm text-muted-foreground">Fat</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {ingredients && ingredients.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Ingredients</h3>
+                <div className="space-y-2">
+                  {ingredients.map((ingredient, idx) => (
+                    <div key={idx} className="flex justify-between items-center p-2 bg-secondary/20 rounded">
+                      <span>{ingredient.name}</span>
+                      <span className="text-muted-foreground">{ingredient.grams}g</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {MEALS[title]?.find(m => m.meal === meal)?.recipe && (
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Recipe Instructions</h3>
+                <p className="text-muted-foreground whitespace-pre-line">
+                  {MEALS[title]?.find(m => m.meal === meal)?.recipe}
+                </p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {isEditModalOpen && ingredients && availableIngredients && (
         <EditMealModal
