@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Plus, X } from "lucide-react";
+import { ArrowLeft, Plus, X, Search, ChevronsUpDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -11,21 +11,11 @@ import { MEALS } from "@/data/mealsData";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Textarea } from "@/components/ui/textarea";
 import { useMeals } from "@/hooks/useMeals";
-
-interface NewIngredient {
-  name: string;
-  grams: number;
-  macros: {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    showCalories: boolean;
-    showProtein: boolean;
-    showCarbs: boolean;
-    showFat: boolean;
-  };
-}
+import { useIngredients } from "@/hooks/useIngredients";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Ingredient } from "@/types/meals";
 
 // Real meal image mappings
 const MEAL_IMAGES: Record<string, string> = {
@@ -59,46 +49,55 @@ const Meals = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newMeal, setNewMeal] = useState({
     name: "",
-    ingredients: [] as NewIngredient[],
+    ingredients: [] as Ingredient[],
     recipe: "",
     category: "Breakfast"
   });
-  const [tempIngredient, setTempIngredient] = useState<NewIngredient>({
-    name: "",
-    grams: 0,
-    macros: {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
+  const [ingredientSearchOpen, setIngredientSearchOpen] = useState(false);
+  const [ingredientSearch, setIngredientSearch] = useState("");
+  const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null);
+  const [ingredientGrams, setIngredientGrams] = useState<number>(100);
+  const { toast } = useToast();
+  const { meals, loading } = useMeals();
+  const { ingredients: availableIngredients, loading: loadingIngredients } = useIngredients();
+
+  const calculateMacrosForGrams = (ingredient: Ingredient, grams: number) => {
+    const ratio = grams / ingredient.grams;
+    return {
+      calories: Math.round(ingredient.macros.calories * ratio),
+      protein: Math.round(ingredient.macros.protein * ratio * 10) / 10,
+      carbs: Math.round(ingredient.macros.carbs * ratio * 10) / 10,
+      fat: Math.round(ingredient.macros.fat * ratio * 10) / 10,
       showCalories: true,
       showProtein: true,
       showCarbs: true,
       showFat: true
-    }
-  });
-  const { toast } = useToast();
-  const { meals, loading } = useMeals();
+    };
+  };
 
   const handleAddIngredient = () => {
-    if (tempIngredient.name && tempIngredient.grams > 0) {
+    if (selectedIngredient && ingredientGrams > 0) {
+      const adjustedIngredient: Ingredient = {
+        ...selectedIngredient,
+        grams: ingredientGrams,
+        macros: calculateMacrosForGrams(selectedIngredient, ingredientGrams)
+      };
+      
       setNewMeal(prev => ({
         ...prev,
-        ingredients: [...prev.ingredients, tempIngredient]
+        ingredients: [...prev.ingredients, adjustedIngredient]
       }));
-      setTempIngredient({
-        name: "",
-        grams: 0,
-        macros: {
-          calories: 0,
-          protein: 0,
-          carbs: 0,
-          fat: 0,
-          showCalories: true,
-          showProtein: true,
-          showCarbs: true,
-          showFat: true
-        }
+      
+      // Reset selection
+      setSelectedIngredient(null);
+      setIngredientGrams(100);
+      setIngredientSearch("");
+      setIngredientSearchOpen(false);
+    } else {
+      toast({
+        title: "Invalid Selection",
+        description: "Please select an ingredient and specify a valid amount in grams.",
+        variant: "destructive"
       });
     }
   };
@@ -168,6 +167,11 @@ const Meals = () => {
       category: "Breakfast"
     });
   };
+
+  // Filter ingredients based on search term
+  const filteredIngredients = availableIngredients.filter(ingredient =>
+    ingredient.name.toLowerCase().includes(ingredientSearch.toLowerCase())
+  );
 
   // Group meals by category
   const mealsByCategory: Record<string, any[]> = {};
@@ -313,49 +317,109 @@ const Meals = () => {
                   <label className="block text-sm font-medium text-foreground mb-2">
                     Ingredients
                   </label>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                      <Input
-                        placeholder="Ingredient name"
-                        value={tempIngredient.name}
-                        onChange={(e) => setTempIngredient({ ...tempIngredient, name: e.target.value })}
-                      />
+                  
+                  {/* Ingredient selector and gram input */}
+                  <div className="flex items-end gap-2 mb-4">
+                    <div className="flex-1">
+                      <Popover open={ingredientSearchOpen} onOpenChange={setIngredientSearchOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={ingredientSearchOpen}
+                            className="w-full justify-between"
+                          >
+                            {selectedIngredient ? selectedIngredient.name : "Select an ingredient..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0" align="start">
+                          <Command>
+                            <CommandInput 
+                              placeholder="Search ingredients..." 
+                              value={ingredientSearch}
+                              onValueChange={setIngredientSearch}
+                            />
+                            <CommandList>
+                              {loadingIngredients ? (
+                                <div className="py-6 text-center">
+                                  <p className="text-sm text-muted-foreground">Loading ingredients...</p>
+                                </div>
+                              ) : (
+                                <>
+                                  <CommandEmpty>No ingredients found.</CommandEmpty>
+                                  <CommandGroup className="max-h-[200px] overflow-y-auto">
+                                    {filteredIngredients.map((ingredient) => (
+                                      <CommandItem
+                                        key={ingredient.id}
+                                        value={ingredient.name}
+                                        onSelect={() => {
+                                          setSelectedIngredient(ingredient);
+                                          setIngredientSearchOpen(false);
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            selectedIngredient?.id === ingredient.id ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {ingredient.name}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </>
+                              )}
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    
+                    <div className="w-24">
                       <Input
                         type="number"
                         placeholder="Grams"
-                        value={tempIngredient.grams || ""}
-                        onChange={(e) => setTempIngredient({ ...tempIngredient, grams: Number(e.target.value) })}
+                        value={ingredientGrams}
+                        onChange={(e) => setIngredientGrams(Number(e.target.value))}
+                        className="w-full"
+                        min="1"
                       />
-                      <Input
-                        type="number"
-                        placeholder="Calories"
-                        value={tempIngredient.macros.calories || ""}
-                        onChange={(e) => setTempIngredient({
-                          ...tempIngredient,
-                          macros: { ...tempIngredient.macros, calories: Number(e.target.value) }
-                        })}
-                      />
-                      <Button onClick={handleAddIngredient} className="w-full md:w-auto">
-                        Add Ingredient
-                      </Button>
                     </div>
+                    
+                    <Button onClick={handleAddIngredient} type="button">
+                      Add
+                    </Button>
+                  </div>
 
-                    <div className="space-y-2">
-                      {newMeal.ingredients.map((ingredient, index) => (
+                  {/* Display selected ingredients */}
+                  <div className="space-y-2 mt-4">
+                    {newMeal.ingredients.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">No ingredients added yet. Search and select ingredients above.</p>
+                    ) : (
+                      newMeal.ingredients.map((ingredient, index) => (
                         <div key={index} className="flex items-center justify-between bg-secondary/50 p-2 rounded-md">
-                          <span>
-                            {ingredient.name} ({ingredient.grams}g) - {ingredient.macros.calories} kcal
-                          </span>
+                          <div className="flex-1">
+                            <span className="font-medium">{ingredient.name}</span>
+                            <div className="text-sm text-muted-foreground">
+                              <span>{ingredient.grams}g</span>
+                              <span className="mx-2">•</span>
+                              <span>{ingredient.macros.calories} kcal</span>
+                              <span className="mx-2">•</span>
+                              <span>{ingredient.macros.protein}g protein</span>
+                            </div>
+                          </div>
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleRemoveIngredient(index)}
+                            className="text-destructive"
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
-                      ))}
-                    </div>
+                      ))
+                    )}
                   </div>
                 </div>
 
@@ -371,6 +435,31 @@ const Meals = () => {
                     className="min-h-[100px]"
                   />
                 </div>
+                
+                {/* Display total macros */}
+                {newMeal.ingredients.length > 0 && (
+                  <div className="bg-secondary/30 p-4 rounded-md mt-4">
+                    <h4 className="font-medium mb-2">Total Macros</h4>
+                    <div className="grid grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <p className="font-medium">{calculateTotalMacros().calories}</p>
+                        <p className="text-muted-foreground">kcal</p>
+                      </div>
+                      <div>
+                        <p className="font-medium">{calculateTotalMacros().protein}g</p>
+                        <p className="text-muted-foreground">Protein</p>
+                      </div>
+                      <div>
+                        <p className="font-medium">{calculateTotalMacros().carbs}g</p>
+                        <p className="text-muted-foreground">Carbs</p>
+                      </div>
+                      <div>
+                        <p className="font-medium">{calculateTotalMacros().fat}g</p>
+                        <p className="text-muted-foreground">Fat</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end space-x-2">
