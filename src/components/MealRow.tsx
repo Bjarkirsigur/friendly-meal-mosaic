@@ -3,17 +3,18 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { DAYS } from "../utils/mealUtils";
 import MealCard from "./MealCard";
 import { Ingredient, MacroInfo, MealType, DayMeals } from "../types/meals";
+import { useIngredients } from "@/hooks/useIngredients";
 
 interface MealRowProps {
   mealType: MealType;
   weeklyMeals: Record<string, DayMeals>;
   onMealUpdate: (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo, mealName: string) => void;
-  availableIngredients: Ingredient[];
   macroVisibility: MacroInfo;
 }
 
-const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, macroVisibility }: MealRowProps) => {
+const MealRow = ({ mealType, weeklyMeals, onMealUpdate, macroVisibility }: MealRowProps) => {
   const isMobile = useIsMobile();
+  const { ingredients } = useIngredients();
 
   return (
     <div className="flex gap-2 md:gap-4 items-center">
@@ -28,7 +29,6 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, ma
             ingredients={dayMeals?.[mealType]?.ingredients}
             className="w-[200px] md:w-full shrink-0"
             onMealUpdate={(ingredients, macros, mealName) => onMealUpdate(day, mealType, ingredients, macros, mealName)}
-            availableIngredients={availableIngredients}
             macroVisibility={macroVisibility}
           />
         ))}

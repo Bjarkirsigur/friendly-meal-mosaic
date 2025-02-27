@@ -8,51 +8,38 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Check, ChevronsUpDown, Wand2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
-
-interface Macros {
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-}
-
-interface Ingredient {
-  name: string;
-  grams: number;
-  macros: Macros;
-}
-
-interface MacroInfo {
-  showCalories: boolean;
-  showProtein: boolean;
-  showCarbs: boolean;
-  showFat: boolean;
-}
+import { Ingredient, MacroInfo } from "@/types/meals"
+import { useIngredients } from "@/hooks/useIngredients"
 
 interface EditMealModalProps {
   isOpen: boolean;
   onClose: () => void;
   meal: string;
   ingredients: Ingredient[];
-  onSave: (ingredients: Ingredient[], totalMacros: Macros) => void;
-  availableIngredients: Ingredient[];
+  onSave: (ingredients: Ingredient[], totalMacros: MacroInfo) => void;
+  availableIngredients?: Ingredient[];
   macroVisibility: MacroInfo;
 }
 
-const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients, onSave, availableIngredients, macroVisibility }: EditMealModalProps) => {
+const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients, onSave, macroVisibility }: EditMealModalProps) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialIngredients);
-  const [totalMacros, setTotalMacros] = useState<Macros>({ calories: 0, protein: 0, carbs: 0, fat: 0 });
+  const [totalMacros, setTotalMacros] = useState<MacroInfo>({ calories: 0, protein: 0, carbs: 0, fat: 0, showCalories: true, showProtein: true, showCarbs: true, showFat: true });
   const [openPopover, setOpenPopover] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const { toast } = useToast();
+  const { ingredients: dbIngredients, loading: loadingIngredients } = useIngredients();
 
-  const calculateMacrosForGrams = (ingredient: Ingredient, grams: number): Macros => {
+  const calculateMacrosForGrams = (ingredient: Ingredient, grams: number): MacroInfo => {
     const ratio = grams / ingredient.grams;
     return {
       calories: Math.round(ingredient.macros.calories * ratio),
       protein: Math.round(ingredient.macros.protein * ratio * 10) / 10,
       carbs: Math.round(ingredient.macros.carbs * ratio * 10) / 10,
       fat: Math.round(ingredient.macros.fat * ratio * 10) / 10,
+      showCalories: true,
+      showProtein: true, 
+      showCarbs: true,
+      showFat: true
     };
   };
 
@@ -62,7 +49,11 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
       protein: Math.round((total.protein + ingredient.macros.protein) * 10) / 10,
       carbs: Math.round((total.carbs + ingredient.macros.carbs) * 10) / 10,
       fat: Math.round((total.fat + ingredient.macros.fat) * 10) / 10,
-    }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+      showCalories: true,
+      showProtein: true,
+      showCarbs: true,
+      showFat: true
+    }), { calories: 0, protein: 0, carbs: 0, fat: 0, showCalories: true, showProtein: true, showCarbs: true, showFat: true });
   };
 
   const adjustIngredientsToTarget = () => {
@@ -116,10 +107,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
     }));
   };
 
-  const handleIngredientChange = (index: number, newIngredientName: string) => {
-    const newIngredient = availableIngredients.find(ing => ing.name === newIngredientName);
-    if (!newIngredient) return;
-
+  const handleIngredientChange = (index: number, newIngredient: Ingredient) => {
     setIngredients(prev => prev.map((ing, i) => {
       if (i === index) {
         return {
@@ -134,7 +122,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
     setSearch("");
   };
 
-  const filteredIngredients = availableIngredients.filter(ing => 
+  const filteredIngredients = dbIngredients.filter(ing => 
     ing.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -188,33 +176,21 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
                       <CommandList>
                         <CommandEmpty>No ingredient found.</CommandEmpty>
                         <CommandGroup className="max-h-[200px] overflow-y-auto">
-                          {availableIngredients
-                            .filter(ing => ing.name.toLowerCase().includes(search.toLowerCase()))
-                            .map((ing) => (
-                              <CommandItem
-                                key={ing.name}
-                                onSelect={() => {
-                                  const newIngredients = [...ingredients];
-                                  newIngredients[index] = {
-                                    ...ing,
-                                    grams: ingredient.grams,
-                                    macros: calculateMacrosForGrams(ing, ingredient.grams)
-                                  };
-                                  setIngredients(newIngredients);
-                                  setOpenPopover(null);
-                                  setSearch("");
-                                }}
-                                className="cursor-pointer"
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    ingredient.name === ing.name ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {ing.name}
-                              </CommandItem>
-                            ))}
+                          {filteredIngredients.map((ing) => (
+                            <CommandItem
+                              key={ing.id}
+                              onSelect={() => handleIngredientChange(index, ing)}
+                              className="cursor-pointer"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  ingredient.name === ing.name ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {ing.name}
+                            </CommandItem>
+                          ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
@@ -225,16 +201,7 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
                 <Input
                   type="number"
                   value={ingredient.grams}
-                  onChange={(e) => {
-                    const newIngredients = [...ingredients];
-                    const newGrams = Number(e.target.value);
-                    newIngredients[index] = {
-                      ...ingredient,
-                      grams: newGrams,
-                      macros: calculateMacrosForGrams(ingredient, newGrams)
-                    };
-                    setIngredients(newIngredients);
-                  }}
+                  onChange={(e) => handleGramsChange(index, Number(e.target.value))}
                   min="0"
                   className="w-full"
                 />
@@ -247,6 +214,24 @@ const EditMealModal = ({ isOpen, onClose, meal, ingredients: initialIngredients,
               </div>
             </div>
           ))}
+          <div className="mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={() => {
+                if (dbIngredients.length > 0) {
+                  const newIngredient = dbIngredients[0];
+                  setIngredients([...ingredients, {
+                    ...newIngredient,
+                    grams: 100,
+                    macros: calculateMacrosForGrams(newIngredient, 100)
+                  }]);
+                }
+              }}
+            >
+              + Add Ingredient
+            </Button>
+          </div>
           <div className="border-t pt-4 mt-4">
             <div className="font-medium mb-2">Total Macros:</div>
             <div className="grid grid-cols-4 gap-4 text-sm">

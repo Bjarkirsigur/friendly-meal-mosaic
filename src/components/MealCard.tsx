@@ -3,20 +3,20 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, Shuffle, Book, X, ChevronDown, ChevronUp, Clock, BarChart2 } from "lucide-react";
 import EditMealModal from "./EditMealModal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { MEALS } from "@/data/mealsData";
 import { Input } from "@/components/ui/input";
-import { MacroInfo, Ingredient, Meal } from "@/types/meals";
+import { MacroInfo, Ingredient, Meal, MealCategory } from "@/types/meals";
 import { MealImage } from "./meal/MealImage";
 import { MacroDisplay } from "./meal/MacroDisplay";
 import { MealDetails } from "./meal/MealDetails";
 import { Button } from "@/components/ui/button";
+import { useMeals } from "@/hooks/useMeals";
 
 interface MealCardProps {
   title: string;
@@ -25,24 +25,24 @@ interface MealCardProps {
   ingredients?: Ingredient[];
   className?: string;
   onMealUpdate?: (ingredients: Ingredient[], macros: MacroInfo, mealName: string) => void;
-  availableIngredients?: Ingredient[];
   macroVisibility: MacroInfo;
 }
 
-const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, availableIngredients, macroVisibility }: MealCardProps) => {
+const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, macroVisibility }: MealCardProps) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllMeals, setShowAllMeals] = useState(false);
   const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
+  const { meals, loading: loadingMeals } = useMeals();
 
   // Extract meal type from title (e.g., "Monday Breakfast" -> "Breakfast")
   const mealType = title.split(" ").pop() || "";
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (meal && ingredients && availableIngredients) {
+    if (meal && ingredients) {
       setIsEditModalOpen(true);
     }
   };
@@ -96,71 +96,53 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
     setShowAllMeals(!showAllMeals);
   };
 
-  const toggleMealExpand = (mealName: string, e: React.MouseEvent) => {
+  const toggleMealExpand = (mealId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedMeals(prev => ({
       ...prev,
-      [mealName]: !prev[mealName]
+      [mealId]: !prev[mealId]
     }));
   };
 
-  // Filter meals based on the meal type
-  const filterMealsByType = (meals: Record<string, Meal[]>) => {
-    if (showAllMeals) {
-      // Show all categories when showAllMeals is true
-      return Object.entries(meals)
-        .map(([category, categoryMeals]) => {
-          // Apply search filter if provided
-          const filteredMeals = searchTerm 
-            ? categoryMeals.filter(meal =>
-                meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                meal.ingredients.some(ing => 
-                  ing.name.toLowerCase().includes(searchTerm.toLowerCase())
-                )
-              )
-            : categoryMeals;
-          
-          return [category, filteredMeals] as [string, Meal[]];
-        })
-        .filter(([_, meals]) => meals.length > 0);
-    } else {
-      // Define which category to show for each meal type
-      let categoryToShow: string;
-      
-      if (mealType === "Breakfast") {
-        categoryToShow = "Breakfast";
-      } else if (mealType === "Lunch") {
-        categoryToShow = "Lunch";
-      } else if (mealType === "Dinner") {
-        categoryToShow = "Dinner";
-      } else if (mealType.includes("Snack")) {
-        categoryToShow = "Snacks"; 
-      } else {
-        // Default case - shouldn't happen with our current structure
-        categoryToShow = "";
-      }
-
-      // Only filter to the relevant category
-      return Object.entries(meals)
-        .filter(([category]) => category === categoryToShow)
-        .map(([category, categoryMeals]) => {
-          // Further filter by search term if provided
-          const filteredMeals = searchTerm 
-            ? categoryMeals.filter(meal =>
-                meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                meal.ingredients.some(ing => 
-                  ing.name.toLowerCase().includes(searchTerm.toLowerCase())
-                )
-              )
-            : categoryMeals;
-          
-          return [category, filteredMeals] as [string, Meal[]];
-        })
-        .filter(([_, meals]) => meals.length > 0);
-    }
+  // Get meal type category (Breakfast, Lunch, Dinner, Snacks)
+  const getMealTypeCategory = (mealType: string): MealCategory => {
+    if (mealType === "Breakfast") return "Breakfast";
+    if (mealType === "Lunch") return "Lunch";
+    if (mealType === "Dinner") return "Dinner";
+    if (mealType.includes("Snack")) return "Snacks";
+    return "Snacks"; // Default
   };
 
-  const currentMealDetails = meal ? MEALS[title]?.find(m => m.meal === meal) : null;
+  // Filter meals based on the meal type
+  const filterMealsByType = () => {
+    const mealTypeCategory = getMealTypeCategory(mealType);
+    
+    // Apply type and search filters
+    const filteredMeals = meals.filter(meal => 
+      (showAllMeals || meal.meal_type === mealTypeCategory) &&
+      (!searchTerm || 
+        meal.meal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        meal.ingredients.some(ing => 
+          ing.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      )
+    );
+    
+    // Group by category
+    const groupedMeals: Record<string, Meal[]> = {};
+    filteredMeals.forEach(meal => {
+      const category = meal.meal_type || "Snacks";
+      if (!groupedMeals[category]) {
+        groupedMeals[category] = [];
+      }
+      groupedMeals[category].push(meal);
+    });
+    
+    return Object.entries(groupedMeals);
+  };
+
+  // Find selected meal's details
+  const currentMealDetails = meal ? meals.find(m => m.meal === meal) : null;
 
   return (
     <div className="flex flex-col gap-2">
@@ -245,14 +227,13 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
       )}
 
       {/* Edit Modal */}
-      {isEditModalOpen && ingredients && availableIngredients && (
+      {isEditModalOpen && ingredients && (
         <EditMealModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           meal={meal || ""}
           ingredients={ingredients}
           onSave={handleSave}
-          availableIngredients={availableIngredients}
           macroVisibility={macroVisibility}
         />
       )}
@@ -280,78 +261,82 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
               </Button>
             </div>
             
-            {filterMealsByType(MEALS).map(([category, meals]) => (
-              <div key={category} className="space-y-4">
-                <h3 className="font-semibold text-lg">{category}</h3>
-                <div className="grid gap-4">
-                  {meals.map((availableMeal, index) => (
-                    <div key={index} className="border border-border rounded-lg overflow-hidden">
-                      <button
-                        onClick={() => handleSwitch(availableMeal)}
-                        className="w-full flex flex-col gap-3 p-4 hover:bg-secondary/30 transition-colors duration-200 text-left"
-                      >
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium text-lg">{availableMeal.meal}</p>
-                          <button 
-                            className="p-1 rounded-full hover:bg-secondary"
-                            onClick={(e) => toggleMealExpand(availableMeal.meal, e)}
-                          >
-                            {expandedMeals[availableMeal.meal] ? (
-                              <ChevronUp className="w-4 h-4" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                        
-                        {(availableMeal.prepTime !== undefined || availableMeal.difficulty) && (
-                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                            {availableMeal.prepTime !== undefined && (
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                <span>{availableMeal.prepTime} min</span>
-                              </div>
-                            )}
-                            {availableMeal.difficulty && (
-                              <div className="flex items-center gap-1">
-                                <BarChart2 className="w-3 h-3" />
-                                <span>{availableMeal.difficulty}</span>
+            {loadingMeals ? (
+              <div className="text-center py-8">Loading meals...</div>
+            ) : (
+              filterMealsByType().map(([category, categoryMeals]) => (
+                <div key={category} className="space-y-4">
+                  <h3 className="font-semibold text-lg">{category}</h3>
+                  <div className="grid gap-4">
+                    {categoryMeals.map((availableMeal) => (
+                      <div key={availableMeal.id} className="border border-border rounded-lg overflow-hidden">
+                        <button
+                          onClick={() => handleSwitch(availableMeal)}
+                          className="w-full flex flex-col gap-3 p-4 hover:bg-secondary/30 transition-colors duration-200 text-left"
+                        >
+                          <div className="flex items-center justify-between">
+                            <p className="font-medium text-lg">{availableMeal.meal}</p>
+                            <button 
+                              className="p-1 rounded-full hover:bg-secondary"
+                              onClick={(e) => toggleMealExpand(availableMeal.id || '', e)}
+                            >
+                              {expandedMeals[availableMeal.id || ''] ? (
+                                <ChevronUp className="w-4 h-4" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                          
+                          {(availableMeal.prepTime !== undefined || availableMeal.difficulty) && (
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              {availableMeal.prepTime !== undefined && (
+                                <div className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  <span>{availableMeal.prepTime} min</span>
+                                </div>
+                              )}
+                              {availableMeal.difficulty && (
+                                <div className="flex items-center gap-1">
+                                  <BarChart2 className="w-3 h-3" />
+                                  <span>{availableMeal.difficulty}</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          <MacroDisplay 
+                            macros={availableMeal.macros}
+                            visibilitySettings={macroVisibility}
+                            className="text-xs text-muted-foreground" 
+                          />
+                        </button>
+                        {expandedMeals[availableMeal.id || ''] && (
+                          <div className="bg-secondary/10 p-4 border-t border-border">
+                            <div className="text-sm text-muted-foreground">
+                              <p className="font-medium mb-1">Ingredients:</p>
+                              <ul className="list-disc pl-4 space-y-1">
+                                {availableMeal.ingredients.map((ingredient, idx) => (
+                                  <li key={idx}>
+                                    {ingredient.name} ({ingredient.grams}g)
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            {availableMeal.recipe && (
+                              <div className="text-sm text-muted-foreground mt-4">
+                                <p className="font-medium mb-1">Recipe:</p>
+                                <p className="whitespace-pre-line">{availableMeal.recipe}</p>
                               </div>
                             )}
                           </div>
                         )}
-                        
-                        <MacroDisplay 
-                          macros={availableMeal.macros}
-                          visibilitySettings={macroVisibility}
-                          className="text-xs text-muted-foreground" 
-                        />
-                      </button>
-                      {expandedMeals[availableMeal.meal] && (
-                        <div className="bg-secondary/10 p-4 border-t border-border">
-                          <div className="text-sm text-muted-foreground">
-                            <p className="font-medium mb-1">Ingredients:</p>
-                            <ul className="list-disc pl-4 space-y-1">
-                              {availableMeal.ingredients.map((ingredient, idx) => (
-                                <li key={idx}>
-                                  {ingredient.name} ({ingredient.grams}g)
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          {availableMeal.recipe && (
-                            <div className="text-sm text-muted-foreground mt-4">
-                              <p className="font-medium mb-1">Recipe:</p>
-                              <p className="whitespace-pre-line">{availableMeal.recipe}</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -22,6 +22,7 @@ export const createInitialMeals = () => {
   return initialMeals;
 };
 
+// This function is now a fallback in case database loading fails
 export const getAllAvailableIngredients = () => {
   return [
     {
