@@ -54,7 +54,7 @@ const Index = () => {
       }
       return total;
     }, initialMacros);
-  }, [weeklyMeals, currentDayName]); // Dependencies for useMemo
+  }, [weeklyMeals, currentDayName]);
 
   return (
     <div className="min-h-screen bg-[#E8F3E8] -mx-4 px-4">
@@ -74,6 +74,7 @@ const Index = () => {
                 visibilitySettings={macroGoals}
                 className="text-xs"
                 size="large"
+                goals={macroGoals}
               />
             </div>
           </div>
