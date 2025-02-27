@@ -33,30 +33,30 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between mb-1">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between mb-2">
         <Button
           variant="outline"
           size="icon"
           onClick={handlePreviousWeek}
-          className="h-6 w-6"
+          className="h-8 w-8"
         >
-          <ChevronLeft className="h-3 w-3" />
+          <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div className="text-sm font-medium">
+        <div className="text-base md:text-lg font-medium">
           {format(startOfCurrentWeek, 'MMMM yyyy')}
         </div>
         <Button
           variant="outline"
           size="icon"
           onClick={handleNextWeek}
-          className="h-6 w-6"
+          className="h-8 w-8"
         >
-          <ChevronRight className="h-3 w-3" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-      <div className="grid grid-cols-[40px_repeat(7,1fr)] gap-1 items-center">
-        <div className="text-muted-foreground font-medium text-xs" />
+      <div className="grid grid-cols-[80px_repeat(7,1fr)] md:grid-cols-[120px_repeat(7,1fr)] gap-2 md:gap-4 items-center min-w-[800px]">
+        <div className="text-muted-foreground font-medium text-sm md:text-base" />
         {DAYS.map((day, index) => {
           const dayDate = getDayDate(index);
           const isFinished = isPastDay(dayDate);
@@ -69,8 +69,8 @@ const WeekHeader = ({ currentDate, onWeekChange }: WeekHeaderProps) => {
                 isFinished && "opacity-50"
               )}
             >
-              <h2 className="text-primary font-semibold text-[10px]">{day.slice(0, 3)}</h2>
-              <div className="text-[10px] text-muted-foreground">
+              <h2 className="text-primary font-semibold text-sm md:text-base">{isMobile ? day.slice(0, 3) : day}</h2>
+              <div className="text-xs md:text-sm text-muted-foreground">
                 {format(dayDate, 'd')}
               </div>
             </div>
