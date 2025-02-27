@@ -26,7 +26,7 @@ const WeekMealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients
             meal={weeklyMeals[day]?.[mealType]?.meal}
             macros={weeklyMeals[day]?.[mealType]?.macros}
             ingredients={weeklyMeals[day]?.[mealType]?.ingredients}
-            className="w-[100px] shrink-0"
+            className="w-[50px] shrink-0"
             onMealUpdate={(ingredients, macros, mealName) => onMealUpdate(day, mealType, ingredients, macros, mealName)}
             availableIngredients={availableIngredients}
             macroVisibility={macroVisibility}
