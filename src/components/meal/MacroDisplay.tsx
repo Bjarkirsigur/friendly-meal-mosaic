@@ -30,7 +30,10 @@ export const MacroDisplay = ({
     <div className={`grid grid-cols-4 gap-4 ${className}`}>
       {visibility.showCalories && (
         <div className="text-center">
-          <p className={`font-semibold ${textSizeClass} mb-0.5`}>{macros.calories}</p>
+          <p className={`font-semibold ${textSizeClass} mb-0.5`}>
+            {macros.calories}
+            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.calories}</span>}
+          </p>
           <p className="text-sm text-muted-foreground mb-2">kcal</p>
           {goals && (
             <div className="w-full px-2">
@@ -44,7 +47,10 @@ export const MacroDisplay = ({
       )}
       {visibility.showProtein && (
         <div className="text-center">
-          <p className={`font-semibold ${textSizeClass} mb-0.5`}>{macros.protein}g</p>
+          <p className={`font-semibold ${textSizeClass} mb-0.5`}>
+            {macros.protein}
+            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.protein}</span>}
+          </p>
           <p className="text-sm text-muted-foreground mb-2">Protein</p>
           {goals && (
             <div className="w-full px-2">
@@ -58,7 +64,10 @@ export const MacroDisplay = ({
       )}
       {visibility.showCarbs && (
         <div className="text-center">
-          <p className={`font-semibold ${textSizeClass} mb-0.5`}>{macros.carbs}g</p>
+          <p className={`font-semibold ${textSizeClass} mb-0.5`}>
+            {macros.carbs}
+            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.carbs}</span>}
+          </p>
           <p className="text-sm text-muted-foreground mb-2">Carbs</p>
           {goals && (
             <div className="w-full px-2">
@@ -72,7 +81,10 @@ export const MacroDisplay = ({
       )}
       {visibility.showFat && (
         <div className="text-center">
-          <p className={`font-semibold ${textSizeClass} mb-0.5`}>{macros.fat}g</p>
+          <p className={`font-semibold ${textSizeClass} mb-0.5`}>
+            {macros.fat}
+            {goals && <span className="text-muted-foreground text-sm ml-1">/ {goals.fat}</span>}
+          </p>
           <p className="text-sm text-muted-foreground mb-2">Fat</p>
           {goals && (
             <div className="w-full px-2">
