@@ -1,5 +1,5 @@
 
-import { Meal } from "../types/meals";
+import { Meal, DifficultyLevel } from "../types/meals";
 
 const defaultVisibility = {
   showCalories: true,
@@ -21,7 +21,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Chia seeds", grams: 10, macros: { calories: 49, protein: 1.7, carbs: 4.1, fat: 3.1, ...defaultVisibility } }
       ],
       macros: { calories: 442, protein: 11.1, carbs: 84.2, fat: 9.7, ...defaultVisibility },
-      recipe: "1. In a medium saucepan, bring almond milk to a gentle boil\n2. Add rolled oats and reduce heat to low\n3. Simmer for 5-7 minutes, stirring occasionally\n4. Add chia seeds halfway through cooking\n5. Remove from heat and let stand for 2 minutes\n6. Top with mixed berries and sliced banana\n7. Drizzle with honey\n8. Serve warm and enjoy"
+      recipe: "1. In a medium saucepan, bring almond milk to a gentle boil\n2. Add rolled oats and reduce heat to low\n3. Simmer for 5-7 minutes, stirring occasionally\n4. Add chia seeds halfway through cooking\n5. Remove from heat and let stand for 2 minutes\n6. Top with mixed berries and sliced banana\n7. Drizzle with honey\n8. Serve warm and enjoy",
+      prepTime: 15,
+      difficulty: "Easy"
     },
     {
       meal: "Greek yogurt parfait",
@@ -33,7 +35,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Chia seeds", grams: 10, macros: { calories: 49, protein: 1.7, carbs: 4.1, fat: 3.1, ...defaultVisibility } }
       ],
       macros: { calories: 467, protein: 23.9, carbs: 64.2, fat: 13.5, ...defaultVisibility },
-      recipe: "1. In a serving glass or bowl, spoon half of the Greek yogurt\n2. Add a layer of mixed berries\n3. Sprinkle half of the granola and chia seeds\n4. Repeat layers with remaining yogurt, berries, and granola\n5. Drizzle with honey\n6. Serve immediately to maintain granola crunch"
+      recipe: "1. In a serving glass or bowl, spoon half of the Greek yogurt\n2. Add a layer of mixed berries\n3. Sprinkle half of the granola and chia seeds\n4. Repeat layers with remaining yogurt, berries, and granola\n5. Drizzle with honey\n6. Serve immediately to maintain granola crunch",
+      prepTime: 10,
+      difficulty: "Easy"
     },
     {
       meal: "Protein pancakes",
@@ -45,7 +49,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Maple syrup", grams: 15, macros: { calories: 45, protein: 0, carbs: 12, fat: 0, ...defaultVisibility } }
       ],
       macros: { calories: 429, protein: 42.3, carbs: 58.6, fat: 4.9, ...defaultVisibility },
-      recipe: "1. In a blender, combine protein powder, mashed banana, egg whites, and oat flour\n2. Blend until smooth and let rest for 5 minutes\n3. Heat a non-stick pan over medium heat\n4. Pour ¼ cup portions of batter into the pan\n5. Cook until bubbles form on surface (about 2-3 minutes)\n6. Flip and cook other side for 1-2 minutes\n7. Serve warm with maple syrup"
+      recipe: "1. In a blender, combine protein powder, mashed banana, egg whites, and oat flour\n2. Blend until smooth and let rest for 5 minutes\n3. Heat a non-stick pan over medium heat\n4. Pour ¼ cup portions of batter into the pan\n5. Cook until bubbles form on surface (about 2-3 minutes)\n6. Flip and cook other side for 1-2 minutes\n7. Serve warm with maple syrup",
+      prepTime: 20,
+      difficulty: "Medium"
     }
   ],
   Lunch: [
@@ -61,7 +67,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Lemon juice", grams: 15, macros: { calories: 3, protein: 0.1, carbs: 0.9, fat: 0, ...defaultVisibility } }
       ],
       macros: { calories: 669, protein: 56, carbs: 47.2, fat: 29.7, ...defaultVisibility },
-      recipe: "1. Season chicken breast with salt, pepper, and herbs\n2. Grill chicken for 6-7 minutes per side until done\n3. Cook quinoa according to package instructions\n4. Slice cucumber and halve cherry tomatoes\n5. Cut avocado into chunks\n6. Slice grilled chicken\n7. Combine all ingredients in a bowl\n8. Drizzle with olive oil and lemon juice\n9. Season to taste and serve"
+      recipe: "1. Season chicken breast with salt, pepper, and herbs\n2. Grill chicken for 6-7 minutes per side until done\n3. Cook quinoa according to package instructions\n4. Slice cucumber and halve cherry tomatoes\n5. Cut avocado into chunks\n6. Slice grilled chicken\n7. Combine all ingredients in a bowl\n8. Drizzle with olive oil and lemon juice\n9. Season to taste and serve",
+      prepTime: 30,
+      difficulty: "Medium"
     },
     {
       meal: "Tuna salad wrap",
@@ -75,7 +83,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Dijon mustard", grams: 10, macros: { calories: 15, protein: 1, carbs: 1.3, fat: 0.9, ...defaultVisibility } }
       ],
       macros: { calories: 393, protein: 44, carbs: 43.9, fat: 6.2, ...defaultVisibility },
-      recipe: "1. Drain tuna well\n2. In a bowl, mix tuna with Greek yogurt and Dijon mustard\n3. Finely dice red onion and celery\n4. Add diced vegetables to tuna mixture\n5. Season with salt and pepper\n6. Warm wrap slightly to make it more pliable\n7. Layer mixed greens on wrap\n8. Add tuna mixture\n9. Roll wrap tightly, tucking in sides\n10. Cut diagonally and serve"
+      recipe: "1. Drain tuna well\n2. In a bowl, mix tuna with Greek yogurt and Dijon mustard\n3. Finely dice red onion and celery\n4. Add diced vegetables to tuna mixture\n5. Season with salt and pepper\n6. Warm wrap slightly to make it more pliable\n7. Layer mixed greens on wrap\n8. Add tuna mixture\n9. Roll wrap tightly, tucking in sides\n10. Cut diagonally and serve",
+      prepTime: 15,
+      difficulty: "Easy"
     }
   ],
   Dinner: [
@@ -90,7 +100,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Garlic", grams: 9, macros: { calories: 13, protein: 0.6, carbs: 3, fat: 0, ...defaultVisibility } }
       ],
       macros: { calories: 676, protein: 48.9, carbs: 46.3, fat: 35.2, ...defaultVisibility },
-      recipe: "1. Preheat oven to 400°F (200°C)\n2. Cut sweet potato into 1-inch cubes\n3. Toss sweet potato and broccoli with half the olive oil\n4. Season vegetables with salt, pepper, and minced garlic\n5. Roast vegetables for 20-25 minutes\n6. Season salmon with salt, pepper, and remaining garlic\n7. Drizzle salmon with remaining olive oil\n8. Add lemon slices on top\n9. Bake salmon for 12-15 minutes until flaky\n10. Serve salmon with roasted vegetables"
+      recipe: "1. Preheat oven to 400°F (200°C)\n2. Cut sweet potato into 1-inch cubes\n3. Toss sweet potato and broccoli with half the olive oil\n4. Season vegetables with salt, pepper, and minced garlic\n5. Roast vegetables for 20-25 minutes\n6. Season salmon with salt, pepper, and remaining garlic\n7. Drizzle salmon with remaining olive oil\n8. Add lemon slices on top\n9. Bake salmon for 12-15 minutes until flaky\n10. Serve salmon with roasted vegetables",
+      prepTime: 45,
+      difficulty: "Medium"
     },
     {
       meal: "Turkey stir-fry",
@@ -104,7 +116,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Sesame oil", grams: 7, macros: { calories: 63, protein: 0, carbs: 0, fat: 7, ...defaultVisibility } }
       ],
       macros: { calories: 591, protein: 55.5, carbs: 60.5, fat: 16, ...defaultVisibility },
-      recipe: "1. Cook brown rice according to package instructions\n2. Slice bell peppers and carrots\n3. Cut broccoli into small florets\n4. Heat sesame oil in a large wok or pan\n5. Add ground turkey and cook until browned\n6. Add vegetables and stir-fry for 5-7 minutes\n7. Add soy sauce and stir to combine\n8. Cook until vegetables are tender-crisp\n9. Serve over brown rice"
+      recipe: "1. Cook brown rice according to package instructions\n2. Slice bell peppers and carrots\n3. Cut broccoli into small florets\n4. Heat sesame oil in a large wok or pan\n5. Add ground turkey and cook until browned\n6. Add vegetables and stir-fry for 5-7 minutes\n7. Add soy sauce and stir to combine\n8. Cook until vegetables are tender-crisp\n9. Serve over brown rice",
+      prepTime: 35,
+      difficulty: "Medium"
     }
   ],
   Snacks: [
@@ -118,7 +132,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Peanut butter", grams: 15, macros: { calories: 90, protein: 3.5, carbs: 3.5, fat: 7.5, ...defaultVisibility } }
       ],
       macros: { calories: 335, protein: 30.6, carbs: 31.8, fat: 12, ...defaultVisibility },
-      recipe: "1. Add almond milk to blender\n2. Add protein powder, banana, and spinach\n3. Add peanut butter\n4. Blend until smooth (about 1 minute)\n5. Add ice if desired and blend again\n6. Pour into glass and serve immediately"
+      recipe: "1. Add almond milk to blender\n2. Add protein powder, banana, and spinach\n3. Add peanut butter\n4. Blend until smooth (about 1 minute)\n5. Add ice if desired and blend again\n6. Pour into glass and serve immediately",
+      prepTime: 5,
+      difficulty: "Easy"
     },
     {
       meal: "Greek yogurt protein bowl",
@@ -129,8 +145,9 @@ export const MEALS: Record<string, Meal[]> = {
         { name: "Berries", grams: 50, macros: { calories: 22, protein: 0.4, carbs: 4.9, fat: 0.2, ...defaultVisibility } }
       ],
       macros: { calories: 299, protein: 38.6, carbs: 18.6, fat: 8.7, ...defaultVisibility },
-      recipe: "1. In a bowl, mix Greek yogurt with protein powder until smooth\n2. Top with mixed berries\n3. Chop almonds and sprinkle on top\n4. Serve immediately"
+      recipe: "1. In a bowl, mix Greek yogurt with protein powder until smooth\n2. Top with mixed berries\n3. Chop almonds and sprinkle on top\n4. Serve immediately",
+      prepTime: 5,
+      difficulty: "Easy"
     }
   ]
 };
-

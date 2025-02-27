@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Edit2, Shuffle, Book, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Edit2, Shuffle, Book, X, ChevronDown, ChevronUp, Clock, BarChart2 } from "lucide-react";
 import EditMealModal from "./EditMealModal";
 import { useState } from "react";
 import {
@@ -238,6 +238,8 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
             macros={macros}
             ingredients={ingredients}
             recipe={currentMealDetails?.recipe}
+            prepTime={currentMealDetails?.prepTime}
+            difficulty={currentMealDetails?.difficulty}
           />
         </Dialog>
       )}
@@ -301,6 +303,24 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, a
                             )}
                           </button>
                         </div>
+                        
+                        {(availableMeal.prepTime !== undefined || availableMeal.difficulty) && (
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            {availableMeal.prepTime !== undefined && (
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                <span>{availableMeal.prepTime} min</span>
+                              </div>
+                            )}
+                            {availableMeal.difficulty && (
+                              <div className="flex items-center gap-1">
+                                <BarChart2 className="w-3 h-3" />
+                                <span>{availableMeal.difficulty}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
                         <MacroDisplay 
                           macros={availableMeal.macros}
                           visibilitySettings={macroVisibility}

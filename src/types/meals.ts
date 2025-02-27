@@ -16,11 +16,15 @@ export interface Ingredient {
   macros: MacroInfo;
 }
 
+export type DifficultyLevel = "Easy" | "Medium" | "Hard";
+
 export interface Meal {
   meal: string;
   ingredients: Ingredient[];
   macros: MacroInfo;
   recipe?: string;
+  prepTime?: number; // in minutes
+  difficulty?: DifficultyLevel;
 }
 
 export type MealType = "Breakfast" | "Morning Snack" | "Lunch" | "Afternoon Snack" | "Dinner" | "Evening Snack";
