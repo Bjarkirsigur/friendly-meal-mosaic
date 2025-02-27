@@ -6,18 +6,20 @@ import { Ingredient, MacroInfo, MealType, DayMeals } from "../types/meals";
 
 interface MealRowProps {
   mealType: MealType;
+  displayName?: string;
   weeklyMeals: Record<string, DayMeals>;
   onMealUpdate: (day: string, mealType: string, ingredients: Ingredient[], macros: MacroInfo, mealName: string) => void;
   availableIngredients: Ingredient[];
   macroVisibility: MacroInfo;
 }
 
-const MealRow = ({ mealType, weeklyMeals, onMealUpdate, availableIngredients, macroVisibility }: MealRowProps) => {
+const MealRow = ({ mealType, displayName, weeklyMeals, onMealUpdate, availableIngredients, macroVisibility }: MealRowProps) => {
   const isMobile = useIsMobile();
+  const showName = displayName || mealType;
 
   return (
     <div className="flex gap-2 md:gap-4 items-center">
-      <div className="text-muted-foreground font-medium w-[80px] md:w-[120px] text-sm md:text-base shrink-0">{mealType}</div>
+      <div className="text-muted-foreground font-medium w-[80px] md:w-[120px] text-sm md:text-base shrink-0">{showName}</div>
       <div className="flex gap-2 md:gap-4 w-full overflow-x-auto pb-2">
         {Object.entries(weeklyMeals).map(([day, dayMeals]) => (
           <MealCard
