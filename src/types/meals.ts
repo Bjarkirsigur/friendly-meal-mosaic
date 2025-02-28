@@ -33,6 +33,7 @@ export interface Meal {
   meal_type?: MealCategory;
   is_default?: boolean;
   user_id?: string;
+  image_url?: string;
 }
 
 export type MealType = "Breakfast" | "Morning Snack" | "Lunch" | "Afternoon Snack" | "Dinner" | "Evening Snack";
@@ -71,6 +72,7 @@ export interface DbMeal {
   is_default: boolean;
   user_id?: string;
   created_at?: string;
+  image_url?: string;
 }
 
 export interface DbMealIngredient {
