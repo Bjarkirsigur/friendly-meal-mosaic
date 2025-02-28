@@ -247,7 +247,7 @@ export const useMealPlanner = () => {
       return newWeeklyMeals;
     });
     
-    // Sync with database
+    // Sync with database only if user is logged in
     if (user) {
       syncMealPlan(day, mealType);
     }
@@ -268,7 +268,7 @@ export const useMealPlanner = () => {
       return newItems;
     });
     
-    // Sync with database
+    // Sync with database only if user is logged in
     if (user) {
       syncMealPlan(day, mealType);
     }

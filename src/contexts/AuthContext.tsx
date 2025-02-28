@@ -12,30 +12,19 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
-  loading: true,
+  loading: false,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Get initial session
-    const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user || null);
-      setLoading(false);
-    };
-
-    getInitialSession();
-
-    // Set up auth state listener
+    // Listen for auth changes, but don't block the UI
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user || null);
-      setLoading(false);
     });
 
     return () => {

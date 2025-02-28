@@ -315,9 +315,8 @@ export const useMeals = () => {
     try {
       setLoading(true);
       
-      // Check if we should use sample data or fetch from database
+      // Always load sample meals if no user is logged in
       if (!user) {
-        // Use sample data
         const sampleMeals = createSampleMeals();
         setMeals(sampleMeals);
         return;
@@ -368,6 +367,10 @@ export const useMeals = () => {
         description: error.message,
         variant: 'destructive',
       });
+      
+      // Fallback to sample meals on error
+      const sampleMeals = createSampleMeals();
+      setMeals(sampleMeals);
     } finally {
       setLoading(false);
     }

@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Ingredient } from '@/types/meals';
 import { useToast } from '@/hooks/use-toast';
+import { foodLibrary } from '@/utils/foodLibrary';
 
 export const useIngredients = () => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -11,9 +11,45 @@ export const useIngredients = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  const createSampleIngredients = (): Ingredient[] => {
+    let sampleIngredients: Ingredient[] = [];
+    let id = 1;
+    
+    foodLibrary.forEach(category => {
+      category.foods.forEach(food => {
+        sampleIngredients.push({
+          id: String(id++),
+          name: food.name,
+          grams: food.grams,
+          macros: {
+            calories: food.macros.calories,
+            protein: food.macros.protein,
+            carbs: food.macros.carbs,
+            fat: food.macros.fat,
+            showCalories: true,
+            showProtein: true,
+            showCarbs: true,
+            showFat: true
+          },
+          is_default: true,
+          user_id: null
+        });
+      });
+    });
+    
+    return sampleIngredients;
+  };
+
   const loadIngredients = async () => {
     try {
       setLoading(true);
+      
+      if (!user) {
+        const sampleIngredients = createSampleIngredients();
+        setIngredients(sampleIngredients);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('ingredients')
         .select('*')
@@ -49,13 +85,22 @@ export const useIngredients = () => {
         description: error.message,
         variant: 'destructive',
       });
+      
+      const sampleIngredients = createSampleIngredients();
+      setIngredients(sampleIngredients);
     } finally {
       setLoading(false);
     }
   };
 
   const addIngredient = async (newIngredient: Omit<Ingredient, 'id' | 'is_default' | 'user_id'>) => {
-    if (!user) return null;
+    if (!user) {
+      toast({
+        title: 'Guest Mode',
+        description: 'Sign in to save ingredients',
+      });
+      return null;
+    }
     
     try {
       const { data, error } = await supabase
@@ -111,10 +156,15 @@ export const useIngredients = () => {
   };
 
   const updateIngredient = async (id: string, updatedIngredient: Partial<Omit<Ingredient, 'id' | 'is_default' | 'user_id'>>) => {
-    if (!user) return false;
+    if (!user) {
+      toast({
+        title: 'Guest Mode',
+        description: 'Sign in to update ingredients',
+      });
+      return false;
+    }
     
     try {
-      // Prepare the database update object
       const updateData: Record<string, any> = {};
       if (updatedIngredient.name) updateData.name = updatedIngredient.name;
       if (updatedIngredient.grams) updateData.grams = updatedIngredient.grams;
@@ -134,7 +184,6 @@ export const useIngredients = () => {
       
       if (error) throw error;
       
-      // Update local state
       setIngredients(prev => prev.map(ingredient => 
         ingredient.id === id 
           ? { 
@@ -160,7 +209,13 @@ export const useIngredients = () => {
   };
 
   const deleteIngredient = async (id: string) => {
-    if (!user) return false;
+    if (!user) {
+      toast({
+        title: 'Guest Mode',
+        description: 'Sign in to delete ingredients',
+      });
+      return false;
+    }
     
     try {
       const { error } = await supabase
@@ -171,7 +226,6 @@ export const useIngredients = () => {
       
       if (error) throw error;
       
-      // Update local state
       setIngredients(prev => prev.filter(ingredient => ingredient.id !== id));
       
       return true;

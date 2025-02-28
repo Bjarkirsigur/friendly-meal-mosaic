@@ -8,11 +8,9 @@ import Index from "./pages/Index";
 import WeekPlanner from "./pages/WeekPlanner";
 import Meals from "./pages/Meals";
 import Ingredients from "./pages/Ingredients";
-import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AppSidebar } from "./components/AppSidebar";
 import { AuthProvider } from "./contexts/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -24,16 +22,13 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={<Auth />} />
             <Route
               path="/"
               element={
                 <AppSidebar>
                   <div className="py-8 px-4 h-full">
                     <div className="max-w-7xl mx-auto">
-                      <ProtectedRoute>
-                        <Index />
-                      </ProtectedRoute>
+                      <Index />
                     </div>
                   </div>
                 </AppSidebar>
@@ -45,9 +40,7 @@ const App = () => (
                 <AppSidebar>
                   <div className="py-8 px-4 h-full">
                     <div className="max-w-7xl mx-auto">
-                      <ProtectedRoute>
-                        <WeekPlanner />
-                      </ProtectedRoute>
+                      <WeekPlanner />
                     </div>
                   </div>
                 </AppSidebar>
@@ -59,9 +52,7 @@ const App = () => (
                 <AppSidebar>
                   <div className="py-8 px-4 h-full">
                     <div className="max-w-7xl mx-auto">
-                      <ProtectedRoute>
-                        <Meals />
-                      </ProtectedRoute>
+                      <Meals />
                     </div>
                   </div>
                 </AppSidebar>
@@ -73,9 +64,7 @@ const App = () => (
                 <AppSidebar>
                   <div className="py-8 px-4 h-full">
                     <div className="max-w-7xl mx-auto">
-                      <ProtectedRoute>
-                        <Ingredients />
-                      </ProtectedRoute>
+                      <Ingredients />
                     </div>
                   </div>
                 </AppSidebar>

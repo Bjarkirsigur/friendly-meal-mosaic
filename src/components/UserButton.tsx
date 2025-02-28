@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { 
@@ -11,18 +11,17 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogIn, User as UserIcon } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const UserButton = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
-      setLoading(false);
     });
 
     const getCurrentUser = async () => {
@@ -40,7 +39,6 @@ const UserButton = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
   };
 
   if (loading) {
@@ -49,10 +47,8 @@ const UserButton = () => {
 
   if (!user) {
     return (
-      <Button size="sm" variant="outline" asChild>
-        <Link to="/auth" className="flex items-center gap-2">
-          <LogIn className="w-4 h-4" /> Sign in
-        </Link>
+      <Button size="sm" variant="outline" className="flex items-center gap-2">
+        <UserIcon className="w-4 h-4" /> Guest
       </Button>
     );
   }
@@ -79,9 +75,9 @@ const UserButton = () => {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-2 cursor-pointer">
             <UserIcon className="w-4 h-4" /> Profile
-          </Link>
+          </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
