@@ -10,6 +10,7 @@ import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { MealDataInitializer } from "@/components/MealDataInitializer";
 
 const WeekPlanner = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -78,6 +79,8 @@ const WeekPlanner = () => {
         onGoalsChange={setTempGoals}
         onSave={handleUpdateGoals}
       />
+      
+      <MealDataInitializer />
     </div>
   );
 };
