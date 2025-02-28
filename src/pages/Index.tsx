@@ -9,7 +9,6 @@ import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
 import { Settings, Plus, X, Coffee, Search } from "lucide-react";
 import MealCard from "@/components/MealCard";
-import MealRow from "@/components/MealRow";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -150,9 +149,6 @@ const Index = () => {
     return getDrinksAndAccompanimentsMacros(currentEditingMeal.day, currentEditingMeal.mealType);
   }, [currentEditingMeal, getDrinksAndAccompanimentsMacros]);
 
-  console.log("Current weekly meals:", weeklyMeals);
-  console.log("Current day:", currentDayName);
-
   return (
     <div className="min-h-screen bg-[#E8F3E8] -mx-4 px-4">
       <div className="max-w-4xl mx-auto">
@@ -182,18 +178,288 @@ const Index = () => {
         </div>
 
         {/* Meal and Snack Layout - 2-column grid */}
-        <div className="grid gap-6 max-w-4xl mx-auto pb-24">
-          {/* Use MealRow component for each meal type, passing the current day */}
-          {MEAL_TYPES.map((meal) => (
-            <MealRow
-              key={meal}
-              mealType={meal as MealType}
-              weeklyMeals={weeklyMeals}
-              onMealUpdate={handleMealUpdate}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto pb-24">
+          {/* Breakfast */}
+          <div className="flex flex-col space-y-4">
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Breakfast</p>
+            <MealCard
+              title={`${currentDayName} Breakfast`}
+              meal={weeklyMeals[currentDayName]?.["Breakfast"]?.meal}
+              macros={weeklyMeals[currentDayName]?.["Breakfast"]?.macros}
+              ingredients={weeklyMeals[currentDayName]?.["Breakfast"]?.ingredients}
+              className="w-full"
+              onMealUpdate={(ingredients, macros, mealName) => 
+                handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
+              }
               macroVisibility={macroGoals}
-              selectedDay={currentDayName}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Breakfast")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Breakfast", items)
+              }
             />
-          ))}
+            <Card 
+              className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
+              onClick={() => handleOpenDrinkDialog("Breakfast")}
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDrinksAndAccompaniments(currentDayName, "Breakfast").map((item, idx) => (
+                    <div key={idx} className="bg-primary/10 px-2 py-1 rounded-md text-xs flex items-center gap-2">
+                      {item.name}
+                      <button 
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDrinkItem(currentDayName, "Breakfast", idx);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          {/* Morning Snack */}
+          <div className="flex flex-col space-y-4">
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Morning Snack</p>
+            <MealCard
+              title={`${currentDayName} Morning Snack`}
+              meal={weeklyMeals[currentDayName]?.["Morning Snack"]?.meal}
+              macros={weeklyMeals[currentDayName]?.["Morning Snack"]?.macros}
+              ingredients={weeklyMeals[currentDayName]?.["Morning Snack"]?.ingredients}
+              className="w-full"
+              onMealUpdate={(ingredients, macros, mealName) => 
+                handleMealUpdate(currentDayName, "Morning Snack", ingredients, macros, mealName)
+              }
+              macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Morning Snack")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Morning Snack", items)
+              }
+            />
+            <Card 
+              className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
+              onClick={() => handleOpenDrinkDialog("Morning Snack")}
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDrinksAndAccompaniments(currentDayName, "Morning Snack").map((item, idx) => (
+                    <div key={idx} className="bg-primary/10 px-2 py-1 rounded-md text-xs flex items-center gap-2">
+                      {item.name}
+                      <button 
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDrinkItem(currentDayName, "Morning Snack", idx);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          {/* Lunch */}
+          <div className="flex flex-col space-y-4">
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Lunch</p>
+            <MealCard
+              title={`${currentDayName} Lunch`}
+              meal={weeklyMeals[currentDayName]?.["Lunch"]?.meal}
+              macros={weeklyMeals[currentDayName]?.["Lunch"]?.macros}
+              ingredients={weeklyMeals[currentDayName]?.["Lunch"]?.ingredients}
+              className="w-full"
+              onMealUpdate={(ingredients, macros, mealName) => 
+                handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
+              }
+              macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Lunch")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Lunch", items)
+              }
+            />
+            <Card 
+              className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
+              onClick={() => handleOpenDrinkDialog("Lunch")}
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDrinksAndAccompaniments(currentDayName, "Lunch").map((item, idx) => (
+                    <div key={idx} className="bg-primary/10 px-2 py-1 rounded-md text-xs flex items-center gap-2">
+                      {item.name}
+                      <button 
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDrinkItem(currentDayName, "Lunch", idx);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          {/* Afternoon Snack */}
+          <div className="flex flex-col space-y-4">
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Afternoon Snack</p>
+            <MealCard
+              title={`${currentDayName} Afternoon Snack`}
+              meal={weeklyMeals[currentDayName]?.["Afternoon Snack"]?.meal}
+              macros={weeklyMeals[currentDayName]?.["Afternoon Snack"]?.macros}
+              ingredients={weeklyMeals[currentDayName]?.["Afternoon Snack"]?.ingredients}
+              className="w-full"
+              onMealUpdate={(ingredients, macros, mealName) => 
+                handleMealUpdate(currentDayName, "Afternoon Snack", ingredients, macros, mealName)
+              }
+              macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Afternoon Snack")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Afternoon Snack", items)
+              }
+            />
+            <Card 
+              className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
+              onClick={() => handleOpenDrinkDialog("Afternoon Snack")}
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDrinksAndAccompaniments(currentDayName, "Afternoon Snack").map((item, idx) => (
+                    <div key={idx} className="bg-primary/10 px-2 py-1 rounded-md text-xs flex items-center gap-2">
+                      {item.name}
+                      <button 
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDrinkItem(currentDayName, "Afternoon Snack", idx);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          {/* Dinner */}
+          <div className="flex flex-col space-y-4">
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Dinner</p>
+            <MealCard
+              title={`${currentDayName} Dinner`}
+              meal={weeklyMeals[currentDayName]?.["Dinner"]?.meal}
+              macros={weeklyMeals[currentDayName]?.["Dinner"]?.macros}
+              ingredients={weeklyMeals[currentDayName]?.["Dinner"]?.ingredients}
+              className="w-full"
+              onMealUpdate={(ingredients, macros, mealName) => 
+                handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
+              }
+              macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Dinner")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Dinner", items)
+              }
+            />
+            <Card 
+              className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
+              onClick={() => handleOpenDrinkDialog("Dinner")}
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDrinksAndAccompaniments(currentDayName, "Dinner").map((item, idx) => (
+                    <div key={idx} className="bg-primary/10 px-2 py-1 rounded-md text-xs flex items-center gap-2">
+                      {item.name}
+                      <button 
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDrinkItem(currentDayName, "Dinner", idx);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+          
+          {/* Evening Snack */}
+          <div className="flex flex-col space-y-4">
+            <p className="text-lg font-medium text-[#2F4F4F] mb-2 text-center">Evening Snack</p>
+            <MealCard
+              title={`${currentDayName} Evening Snack`}
+              meal={weeklyMeals[currentDayName]?.["Evening Snack"]?.meal}
+              macros={weeklyMeals[currentDayName]?.["Evening Snack"]?.macros}
+              ingredients={weeklyMeals[currentDayName]?.["Evening Snack"]?.ingredients}
+              className="w-full"
+              onMealUpdate={(ingredients, macros, mealName) => 
+                handleMealUpdate(currentDayName, "Evening Snack", ingredients, macros, mealName)
+              }
+              macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Evening Snack")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Evening Snack", items)
+              }
+            />
+            <Card 
+              className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
+              onClick={() => handleOpenDrinkDialog("Evening Snack")}
+            >
+              <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-muted-foreground italic text-sm">Drinks & Accompaniments</p>
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDrinksAndAccompaniments(currentDayName, "Evening Snack").map((item, idx) => (
+                    <div key={idx} className="bg-primary/10 px-2 py-1 rounded-md text-xs flex items-center gap-2">
+                      {item.name}
+                      <button 
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveDrinkItem(currentDayName, "Evening Snack", idx);
+                        }}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
 
