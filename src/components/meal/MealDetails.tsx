@@ -86,10 +86,10 @@ export const MealDetails = ({
                 <MacroDisplay 
                   macros={macros}
                   visibilitySettings={{
-                    calories: true,
-                    protein: true,
-                    carbs: true,
-                    fat: true,
+                    calories: 0,
+                    protein: 0,
+                    carbs: 0,
+                    fat: 0,
                     showCalories: true,
                     showProtein: true,
                     showCarbs: true,
@@ -124,10 +124,10 @@ export const MealDetails = ({
                       <MacroDisplay 
                         macros={drinksMacros}
                         visibilitySettings={{
-                          calories: true,
-                          protein: true,
-                          carbs: true,
-                          fat: true,
+                          calories: 0,
+                          protein: 0,
+                          carbs: 0,
+                          fat: 0,
                           showCalories: true,
                           showProtein: true,
                           showCarbs: true,
