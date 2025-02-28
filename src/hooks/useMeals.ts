@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -305,6 +304,52 @@ export const useMeals = () => {
         5,
         "Easy",
         "1. Mix oats and yogurt\n2. Add a splash of milk if desired\n3. Refrigerate overnight\n4. Top with berries before serving"
+      ));
+    }
+
+    // Add more sample meals
+    if (chicken && quinoa && bellPepper) {
+      allMeals.push(createMealFromIngredients(
+        "Spicy Chicken Quinoa",
+        "Lunch",
+        [
+          { ...chicken, id: "34", grams: 150, is_default: true, user_id: null },
+          { ...quinoa, id: "35", grams: 150, is_default: true, user_id: null },
+          { ...bellPepper, id: "36", grams: 100, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Cook quinoa according to package\n2. Sauté sliced chicken breast\n3. Sauté sliced bell peppers\n4. Combine all ingredients\n5. Season with herbs and spices"
+      ));
+    }
+
+    if (salmon && rice && avocado) {
+      allMeals.push(createMealFromIngredients(
+        "Salmon Rice Bowl",
+        "Dinner",
+        [
+          { ...salmon, id: "37", grams: 150, is_default: true, user_id: null },
+          { ...rice, id: "38", grams: 150, is_default: true, user_id: null },
+          { ...avocado, id: "39", grams: 50, is_default: true, user_id: null }
+        ],
+        30,
+        "Medium",
+        "1. Cook rice according to package\n2. Bake salmon\n3. Slice avocado\n4. Combine all ingredients\n5. Season with herbs and spices"
+      ));
+    }
+
+    if (yogurt && banana && peanutButter) {
+      allMeals.push(createMealFromIngredients(
+        "Protein Yogurt Bowl",
+        "Snacks",
+        [
+          { ...yogurt, id: "40", grams: 200, is_default: true, user_id: null },
+          { ...banana, id: "41", grams: 120, is_default: true, user_id: null },
+          { ...peanutButter, id: "42", grams: 20, is_default: true, user_id: null }
+        ],
+        5,
+        "Easy",
+        "1. Combine all ingredients in a bowl"
       ));
     }
     
