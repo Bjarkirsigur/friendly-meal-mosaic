@@ -7,12 +7,15 @@ import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { useMealPlanner } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
-import { Settings, Plus, X } from "lucide-react";
+import { Settings, Plus, X, Coffee } from "lucide-react";
 import MealCard from "@/components/MealCard";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { useIngredients } from "@/hooks/useIngredients";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -28,6 +31,7 @@ const Index = () => {
   const [currentEditingMeal, setCurrentEditingMeal] = useState<{ day: string, mealType: string } | null>(null);
   const [newItemText, setNewItemText] = useState("");
   const [isAddDrinkDialogOpen, setIsAddDrinkDialogOpen] = useState(false);
+  const { ingredients: allIngredients } = useIngredients();
 
   const { 
     weeklyMeals, 
@@ -141,6 +145,10 @@ const Index = () => {
                 handleMealUpdate(currentDayName, "Breakfast", ingredients, macros, mealName)
               }
               macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Breakfast")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Breakfast", items)
+              }
             />
             <Card 
               className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
@@ -184,6 +192,10 @@ const Index = () => {
                 handleMealUpdate(currentDayName, "Morning Snack", ingredients, macros, mealName)
               }
               macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Morning Snack")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Morning Snack", items)
+              }
             />
             <Card 
               className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
@@ -227,6 +239,10 @@ const Index = () => {
                 handleMealUpdate(currentDayName, "Lunch", ingredients, macros, mealName)
               }
               macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Lunch")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Lunch", items)
+              }
             />
             <Card 
               className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
@@ -270,6 +286,10 @@ const Index = () => {
                 handleMealUpdate(currentDayName, "Afternoon Snack", ingredients, macros, mealName)
               }
               macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Afternoon Snack")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Afternoon Snack", items)
+              }
             />
             <Card 
               className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
@@ -313,6 +333,10 @@ const Index = () => {
                 handleMealUpdate(currentDayName, "Dinner", ingredients, macros, mealName)
               }
               macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Dinner")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Dinner", items)
+              }
             />
             <Card 
               className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
@@ -356,6 +380,10 @@ const Index = () => {
                 handleMealUpdate(currentDayName, "Evening Snack", ingredients, macros, mealName)
               }
               macroVisibility={macroGoals}
+              drinksAndAccompaniments={getDrinksAndAccompaniments(currentDayName, "Evening Snack")}
+              onDrinksAndAccompanimentsUpdate={(items) => 
+                handleDrinksAccompanimentsUpdate(currentDayName, "Evening Snack", items)
+              }
             />
             <Card 
               className="w-full min-h-[100px] bg-white/80 p-4 hover:shadow-md transition-shadow border-dashed border-2 border-primary/20 cursor-pointer"
@@ -404,19 +432,32 @@ const Index = () => {
           </DialogHeader>
           <div className="flex items-end gap-2 mt-4">
             <div className="grid flex-1 gap-2">
-              <Input
-                id="item"
-                value={newItemText}
-                onChange={(e) => setNewItemText(e.target.value)}
-                placeholder="Enter drink or accompaniment item"
-                className="col-span-3"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddDrinkItem();
-                  }
-                }}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start">
+                    {newItemText || "Select from ingredients..."}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search ingredients..." />
+                    <CommandEmpty>No ingredient found.</CommandEmpty>
+                    <CommandGroup className="max-h-[200px] overflow-y-auto">
+                      {allIngredients.map((ing) => (
+                        <CommandItem
+                          key={ing.id}
+                          onSelect={() => {
+                            setNewItemText(ing.name);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          {ing.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
             <Button type="submit" onClick={handleAddDrinkItem}>Add</Button>
           </div>
