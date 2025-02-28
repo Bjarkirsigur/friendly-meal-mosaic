@@ -8,6 +8,8 @@ import { IngredientsList } from "./IngredientsList";
 import { Clock, BarChart2, Coffee } from "lucide-react";
 import { DrinkAccompaniment } from "@/hooks/useMealPlanner";
 import { useMeals } from "@/hooks/useMeals";
+import { getProteinRatio, getProteinRatioDescription } from "@/utils/proteinRatio";
+import { Badge } from "@/components/ui/badge";
 
 interface MealDetailsProps {
   meal: string;
@@ -42,6 +44,9 @@ export const MealDetails = ({
       });
     }
   };
+
+  const { classification, color } = getProteinRatio(macros.calories, macros.protein);
+  const proteinRatioDescription = getProteinRatioDescription(macros.calories, macros.protein);
   
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-hidden">
@@ -64,6 +69,13 @@ export const MealDetails = ({
           <div className="space-y-6">
             {/* Meal info section */}
             <div className="space-y-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className={color}>
+                  {classification} Protein
+                </Badge>
+                <span className="text-sm text-muted-foreground">{proteinRatioDescription}</span>
+              </div>
+              
               {(prepTime !== undefined || difficulty) && (
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   {prepTime !== undefined && (
