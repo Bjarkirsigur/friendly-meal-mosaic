@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Meal, Ingredient, MacroInfo } from '@/types/meals';
+import { Meal, Ingredient, MacroInfo, DifficultyLevel, MealCategory } from '@/types/meals';
 import { useToast } from '@/hooks/use-toast';
 import { foodLibrary } from '@/utils/foodLibrary';
 
@@ -67,8 +67,8 @@ export const useMeals = () => {
       macros: totalMacros,
       recipe: dbMeal.recipe,
       prepTime: dbMeal.prep_time,
-      difficulty: dbMeal.difficulty,
-      meal_type: dbMeal.meal_type,
+      difficulty: dbMeal.difficulty as DifficultyLevel,
+      meal_type: dbMeal.meal_type as MealCategory,
       is_default: dbMeal.is_default,
       user_id: dbMeal.user_id,
       image_url: dbMeal.image_url
@@ -79,10 +79,10 @@ export const useMeals = () => {
     // Function to create a sample meal with ingredients from the food library
     const createMealFromIngredients = (
       name: string, 
-      mealType: string, 
+      mealType: MealCategory, 
       ingredients: Ingredient[],
       prepTime: number = 20,
-      difficulty: string = "Medium",
+      difficulty: DifficultyLevel = "Medium",
       recipe: string = ""
     ): Meal => {
       // Calculate total macros
