@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -114,6 +115,35 @@ export const useMeals = () => {
       };
     };
     
+    // Helper function to create a meal with both Lunch and Dinner categories
+    const createSharedMeal = (
+      name: string,
+      ingredients: Ingredient[],
+      prepTime: number = 20,
+      difficulty: DifficultyLevel = "Medium",
+      recipe: string = ""
+    ): Meal[] => {
+      // Create two identical meals but with different meal types and IDs
+      return [
+        createMealFromIngredients(
+          name,
+          "Lunch",
+          ingredients,
+          prepTime,
+          difficulty,
+          recipe
+        ),
+        createMealFromIngredients(
+          name,
+          "Dinner",
+          ingredients,
+          prepTime,
+          difficulty,
+          recipe
+        )
+      ];
+    };
+    
     // Get ingredients from food library
     const chicken = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Chicken Breast");
     const rice = foodLibrary.find(cat => cat.name === "Grains & Carbs")?.foods.find(f => f.name === "Brown Rice");
@@ -140,23 +170,8 @@ export const useMeals = () => {
 
     // Create an array to hold all meals
     const allMeals: Meal[] = [];
-
-    // Create each meal with unique ID and ingredients
-    if (chicken && rice && broccoli) {
-      allMeals.push(createMealFromIngredients(
-        "Chicken Rice Bowl",
-        "Lunch",
-        [
-          { ...chicken, id: "1", grams: 150, is_default: true, user_id: null },
-          { ...rice, id: "2", grams: 200, is_default: true, user_id: null },
-          { ...broccoli, id: "3", grams: 100, is_default: true, user_id: null }
-        ],
-        25,
-        "Easy",
-        "1. Season chicken with salt and pepper\n2. Grill chicken until fully cooked\n3. Cook rice according to package instructions\n4. Steam broccoli until tender\n5. Combine all ingredients in a bowl"
-      ));
-    }
     
+    // Breakfast-specific meals
     if (eggs && oats && banana) {
       allMeals.push(createMealFromIngredients(
         "Oatmeal Breakfast",
@@ -169,81 +184,6 @@ export const useMeals = () => {
         10,
         "Easy",
         "1. Cook oats with water or milk\n2. Whisk eggs separately and cook\n3. Slice banana\n4. Combine all ingredients in a bowl"
-      ));
-    }
-    
-    if (salmon && sweetPotato && spinach) {
-      allMeals.push(createMealFromIngredients(
-        "Salmon & Sweet Potato",
-        "Dinner",
-        [
-          { ...salmon, id: "7", grams: 150, is_default: true, user_id: null },
-          { ...sweetPotato, id: "8", grams: 200, is_default: true, user_id: null },
-          { ...spinach, id: "9", grams: 100, is_default: true, user_id: null }
-        ],
-        30,
-        "Medium",
-        "1. Season salmon with herbs and lemon\n2. Bake salmon at 400°F for 15-20 minutes\n3. Roast sweet potato cubes at 425°F for 25 minutes\n4. Sauté spinach with garlic\n5. Serve all together"
-      ));
-    }
-    
-    if (yogurt && berries && almonds) {
-      allMeals.push(createMealFromIngredients(
-        "Greek Yogurt Parfait",
-        "Snacks",
-        [
-          { ...yogurt, id: "10", grams: 200, is_default: true, user_id: null },
-          { ...berries, id: "11", grams: 100, is_default: true, user_id: null },
-          { ...almonds, id: "12", grams: 30, is_default: true, user_id: null }
-        ],
-        5,
-        "Easy",
-        "1. Layer yogurt, berries, and crushed almonds in a bowl\n2. Optional: drizzle with honey"
-      ));
-    }
-    
-    if (chicken && avocado && quinoa) {
-      allMeals.push(createMealFromIngredients(
-        "Chicken Avocado Bowl",
-        "Lunch",
-        [
-          { ...chicken, id: "13", grams: 150, is_default: true, user_id: null },
-          { ...avocado, id: "14", grams: 75, is_default: true, user_id: null },
-          { ...quinoa, id: "15", grams: 150, is_default: true, user_id: null }
-        ],
-        20,
-        "Medium",
-        "1. Cook quinoa according to package instructions\n2. Grill seasoned chicken\n3. Slice avocado\n4. Combine in a bowl\n5. Optional: add lime juice and cilantro"
-      ));
-    }
-    
-    if (groundBeef && pasta && spinach) {
-      allMeals.push(createMealFromIngredients(
-        "Beef Pasta Bowl",
-        "Dinner",
-        [
-          { ...groundBeef, id: "16", grams: 150, is_default: true, user_id: null },
-          { ...pasta, id: "17", grams: 200, is_default: true, user_id: null },
-          { ...spinach, id: "18", grams: 80, is_default: true, user_id: null }
-        ],
-        25,
-        "Medium",
-        "1. Brown ground beef with seasonings\n2. Cook pasta al dente\n3. Add spinach to beef until wilted\n4. Mix pasta with beef and spinach\n5. Optional: add tomato sauce"
-      ));
-    }
-    
-    if (whey && banana && peanutButter) {
-      allMeals.push(createMealFromIngredients(
-        "Protein Smoothie",
-        "Snacks",
-        [
-          { ...whey, id: "19", grams: 30, is_default: true, user_id: null },
-          { ...banana, id: "20", grams: 120, is_default: true, user_id: null },
-          { ...peanutButter, id: "21", grams: 20, is_default: true, user_id: null }
-        ],
-        5,
-        "Easy",
-        "1. Blend all ingredients with water or milk\n2. Add ice for a thicker consistency"
       ));
     }
     
@@ -262,36 +202,6 @@ export const useMeals = () => {
       ));
     }
     
-    if (tofu && broccoli && rice) {
-      allMeals.push(createMealFromIngredients(
-        "Tofu Stir Fry",
-        "Dinner",
-        [
-          { ...tofu, id: "25", grams: 150, is_default: true, user_id: null },
-          { ...broccoli, id: "26", grams: 120, is_default: true, user_id: null },
-          { ...rice, id: "27", grams: 150, is_default: true, user_id: null }
-        ],
-        20,
-        "Medium",
-        "1. Press and cube tofu\n2. Stir fry tofu until golden\n3. Add broccoli and cook until tender\n4. Serve over cooked rice\n5. Add soy sauce or teriyaki sauce"
-      ));
-    }
-    
-    if (turkey && bellPepper && quinoa) {
-      allMeals.push(createMealFromIngredients(
-        "Turkey Quinoa Bowl",
-        "Lunch",
-        [
-          { ...turkey, id: "28", grams: 120, is_default: true, user_id: null },
-          { ...bellPepper, id: "29", grams: 100, is_default: true, user_id: null },
-          { ...quinoa, id: "30", grams: 150, is_default: true, user_id: null }
-        ],
-        25,
-        "Medium",
-        "1. Cook quinoa according to package\n2. Sauté sliced turkey breast\n3. Sauté sliced bell peppers\n4. Combine all ingredients\n5. Season with herbs and spices"
-      ));
-    }
-    
     if (oats && yogurt && berries) {
       allMeals.push(createMealFromIngredients(
         "Overnight Oats",
@@ -306,38 +216,53 @@ export const useMeals = () => {
         "1. Mix oats and yogurt\n2. Add a splash of milk if desired\n3. Refrigerate overnight\n4. Top with berries before serving"
       ));
     }
-
-    // Add more sample meals
-    if (chicken && quinoa && bellPepper) {
+    
+    if (eggs && avocado && spinach) {
       allMeals.push(createMealFromIngredients(
-        "Spicy Chicken Quinoa",
-        "Lunch",
+        "Avocado Egg Bowl",
+        "Breakfast",
         [
-          { ...chicken, id: "34", grams: 150, is_default: true, user_id: null },
-          { ...quinoa, id: "35", grams: 150, is_default: true, user_id: null },
-          { ...bellPepper, id: "36", grams: 100, is_default: true, user_id: null }
+          { ...eggs, id: "43", grams: 100, is_default: true, user_id: null },
+          { ...avocado, id: "44", grams: 50, is_default: true, user_id: null },
+          { ...spinach, id: "45", grams: 50, is_default: true, user_id: null }
         ],
-        25,
-        "Medium",
-        "1. Cook quinoa according to package\n2. Sauté sliced chicken breast\n3. Sauté sliced bell peppers\n4. Combine all ingredients\n5. Season with herbs and spices"
+        15,
+        "Easy",
+        "1. Cook eggs over easy or scrambled\n2. Slice avocado\n3. Sauté spinach briefly\n4. Combine all ingredients in a bowl"
       ));
     }
-
-    if (salmon && rice && avocado) {
+    
+    // Snack-specific meals
+    if (yogurt && berries && almonds) {
       allMeals.push(createMealFromIngredients(
-        "Salmon Rice Bowl",
-        "Dinner",
+        "Greek Yogurt Parfait",
+        "Snacks",
         [
-          { ...salmon, id: "37", grams: 150, is_default: true, user_id: null },
-          { ...rice, id: "38", grams: 150, is_default: true, user_id: null },
-          { ...avocado, id: "39", grams: 50, is_default: true, user_id: null }
+          { ...yogurt, id: "10", grams: 200, is_default: true, user_id: null },
+          { ...berries, id: "11", grams: 100, is_default: true, user_id: null },
+          { ...almonds, id: "12", grams: 30, is_default: true, user_id: null }
         ],
-        30,
-        "Medium",
-        "1. Cook rice according to package\n2. Bake salmon\n3. Slice avocado\n4. Combine all ingredients\n5. Season with herbs and spices"
+        5,
+        "Easy",
+        "1. Layer yogurt, berries, and crushed almonds in a bowl\n2. Optional: drizzle with honey"
       ));
     }
-
+    
+    if (whey && banana && peanutButter) {
+      allMeals.push(createMealFromIngredients(
+        "Protein Smoothie",
+        "Snacks",
+        [
+          { ...whey, id: "19", grams: 30, is_default: true, user_id: null },
+          { ...banana, id: "20", grams: 120, is_default: true, user_id: null },
+          { ...peanutButter, id: "21", grams: 20, is_default: true, user_id: null }
+        ],
+        5,
+        "Easy",
+        "1. Blend all ingredients with water or milk\n2. Add ice for a thicker consistency"
+      ));
+    }
+    
     if (yogurt && banana && peanutButter) {
       allMeals.push(createMealFromIngredients(
         "Protein Yogurt Bowl",
@@ -350,6 +275,161 @@ export const useMeals = () => {
         5,
         "Easy",
         "1. Combine all ingredients in a bowl"
+      ));
+    }
+    
+    if (cottage && berries) {
+      allMeals.push(createMealFromIngredients(
+        "Cottage Cheese Bowl",
+        "Snacks",
+        [
+          { ...cottage, id: "46", grams: 150, is_default: true, user_id: null },
+          { ...berries, id: "47", grams: 100, is_default: true, user_id: null }
+        ],
+        3,
+        "Easy",
+        "1. Mix cottage cheese and berries\n2. Optional: add a drizzle of honey"
+      ));
+    }
+    
+    // Shared meals (available for both lunch and dinner)
+    if (chicken && rice && broccoli) {
+      allMeals.push(...createSharedMeal(
+        "Chicken Rice Bowl",
+        [
+          { ...chicken, id: "1", grams: 150, is_default: true, user_id: null },
+          { ...rice, id: "2", grams: 200, is_default: true, user_id: null },
+          { ...broccoli, id: "3", grams: 100, is_default: true, user_id: null }
+        ],
+        25,
+        "Easy",
+        "1. Season chicken with salt and pepper\n2. Grill chicken until fully cooked\n3. Cook rice according to package instructions\n4. Steam broccoli until tender\n5. Combine all ingredients in a bowl"
+      ));
+    }
+    
+    if (salmon && sweetPotato && spinach) {
+      allMeals.push(...createSharedMeal(
+        "Salmon & Sweet Potato",
+        [
+          { ...salmon, id: "7", grams: 150, is_default: true, user_id: null },
+          { ...sweetPotato, id: "8", grams: 200, is_default: true, user_id: null },
+          { ...spinach, id: "9", grams: 100, is_default: true, user_id: null }
+        ],
+        30,
+        "Medium",
+        "1. Season salmon with herbs and lemon\n2. Bake salmon at 400°F for 15-20 minutes\n3. Roast sweet potato cubes at 425°F for 25 minutes\n4. Sauté spinach with garlic\n5. Serve all together"
+      ));
+    }
+    
+    if (chicken && avocado && quinoa) {
+      allMeals.push(...createSharedMeal(
+        "Chicken Avocado Bowl",
+        [
+          { ...chicken, id: "13", grams: 150, is_default: true, user_id: null },
+          { ...avocado, id: "14", grams: 75, is_default: true, user_id: null },
+          { ...quinoa, id: "15", grams: 150, is_default: true, user_id: null }
+        ],
+        20,
+        "Medium",
+        "1. Cook quinoa according to package instructions\n2. Grill seasoned chicken\n3. Slice avocado\n4. Combine in a bowl\n5. Optional: add lime juice and cilantro"
+      ));
+    }
+    
+    if (groundBeef && pasta && spinach) {
+      allMeals.push(...createSharedMeal(
+        "Beef Pasta Bowl",
+        [
+          { ...groundBeef, id: "16", grams: 150, is_default: true, user_id: null },
+          { ...pasta, id: "17", grams: 200, is_default: true, user_id: null },
+          { ...spinach, id: "18", grams: 80, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Brown ground beef with seasonings\n2. Cook pasta al dente\n3. Add spinach to beef until wilted\n4. Mix pasta with beef and spinach\n5. Optional: add tomato sauce"
+      ));
+    }
+    
+    if (tofu && broccoli && rice) {
+      allMeals.push(...createSharedMeal(
+        "Tofu Stir Fry",
+        [
+          { ...tofu, id: "25", grams: 150, is_default: true, user_id: null },
+          { ...broccoli, id: "26", grams: 120, is_default: true, user_id: null },
+          { ...rice, id: "27", grams: 150, is_default: true, user_id: null }
+        ],
+        20,
+        "Medium",
+        "1. Press and cube tofu\n2. Stir fry tofu until golden\n3. Add broccoli and cook until tender\n4. Serve over cooked rice\n5. Add soy sauce or teriyaki sauce"
+      ));
+    }
+    
+    if (turkey && bellPepper && quinoa) {
+      allMeals.push(...createSharedMeal(
+        "Turkey Quinoa Bowl",
+        [
+          { ...turkey, id: "28", grams: 120, is_default: true, user_id: null },
+          { ...bellPepper, id: "29", grams: 100, is_default: true, user_id: null },
+          { ...quinoa, id: "30", grams: 150, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Cook quinoa according to package\n2. Sauté sliced turkey breast\n3. Sauté sliced bell peppers\n4. Combine all ingredients\n5. Season with herbs and spices"
+      ));
+    }
+    
+    if (chicken && quinoa && bellPepper) {
+      allMeals.push(...createSharedMeal(
+        "Spicy Chicken Quinoa",
+        [
+          { ...chicken, id: "34", grams: 150, is_default: true, user_id: null },
+          { ...quinoa, id: "35", grams: 150, is_default: true, user_id: null },
+          { ...bellPepper, id: "36", grams: 100, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Cook quinoa according to package\n2. Sauté sliced chicken breast\n3. Sauté sliced bell peppers\n4. Combine all ingredients\n5. Season with herbs and spices"
+      ));
+    }
+    
+    if (salmon && rice && avocado) {
+      allMeals.push(...createSharedMeal(
+        "Salmon Rice Bowl",
+        [
+          { ...salmon, id: "37", grams: 150, is_default: true, user_id: null },
+          { ...rice, id: "38", grams: 150, is_default: true, user_id: null },
+          { ...avocado, id: "39", grams: 50, is_default: true, user_id: null }
+        ],
+        30,
+        "Medium",
+        "1. Cook rice according to package\n2. Bake salmon\n3. Slice avocado\n4. Combine all ingredients\n5. Season with herbs and spices"
+      ));
+    }
+    
+    if (groundBeef && sweetPotato && broccoli) {
+      allMeals.push(...createSharedMeal(
+        "Beef & Sweet Potato Bowl",
+        [
+          { ...groundBeef, id: "48", grams: 150, is_default: true, user_id: null },
+          { ...sweetPotato, id: "49", grams: 200, is_default: true, user_id: null },
+          { ...broccoli, id: "50", grams: 100, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Brown ground beef with seasonings\n2. Roast sweet potato cubes\n3. Steam broccoli until tender\n4. Combine all ingredients"
+      ));
+    }
+    
+    if (chicken && pasta && spinach) {
+      allMeals.push(...createSharedMeal(
+        "Chicken Pasta Bowl",
+        [
+          { ...chicken, id: "51", grams: 150, is_default: true, user_id: null },
+          { ...pasta, id: "52", grams: 200, is_default: true, user_id: null },
+          { ...spinach, id: "53", grams: 50, is_default: true, user_id: null }
+        ],
+        20,
+        "Medium",
+        "1. Cook pasta according to package\n2. Grill seasoned chicken\n3. Sauté spinach\n4. Combine all ingredients"
       ));
     }
     
