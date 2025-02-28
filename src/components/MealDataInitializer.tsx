@@ -6,6 +6,7 @@ export const MealDataInitializer = () => {
   const { initializeMealsIfEmpty } = useMealPlanner();
 
   useEffect(() => {
+    console.log("MealDataInitializer useEffect running");
     initializeMealsIfEmpty();
   }, [initializeMealsIfEmpty]);
 
