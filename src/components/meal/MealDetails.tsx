@@ -63,10 +63,10 @@ export const MealDetails = ({
                 <MacroDisplay 
                   macros={macros}
                   visibilitySettings={{
-                    calories: true,
-                    protein: true,
-                    carbs: true,
-                    fat: true,
+                    calories: macros.calories,
+                    protein: macros.protein,
+                    carbs: macros.carbs,
+                    fat: macros.fat,
                     showCalories: true,
                     showProtein: true,
                     showCarbs: true,
