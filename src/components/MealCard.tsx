@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Edit2, Shuffle, Book, X, ChevronDown, ChevronUp, Clock, BarChart2 } from "lucide-react";
@@ -137,37 +138,37 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
   const currentMealDetails = meal ? meals.find(m => m.meal === meal) : null;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       {meal && (
         <div className="flex gap-1 justify-end">
           <button 
-            className="w-8 h-8 bg-secondary/50 hover:bg-destructive hover:text-white transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
+            className="w-6 h-6 bg-secondary/50 hover:bg-destructive hover:text-white transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
             onClick={handleRemove}
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
           </button>
           <button 
-            className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
+            className="w-6 h-6 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
             onClick={(e) => {
               e.stopPropagation();
               setIsSwitchDialogOpen(true);
               setShowAllMeals(false);
             }}
           >
-            <Shuffle className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+            <Shuffle className="w-3 h-3 text-primary/50 group-hover:text-primary transition-colors duration-200" />
           </button>
           <button 
-            className="w-8 h-8 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-md cursor-pointer"
+            className="w-6 h-6 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-md cursor-pointer"
             onClick={handleEdit}
           >
-            <Edit2 className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors duration-200" />
+            <Edit2 className="w-3 h-3 text-primary/50 group-hover:text-primary transition-colors duration-200" />
           </button>
         </div>
       )}
 
       <Card 
         className={cn(
-          "overflow-hidden transition-all duration-300 hover:shadow-lg border-2 border-transparent hover:border-primary/10 animate-fade-in w-full", 
+          "overflow-hidden transition-all duration-300 hover:shadow-lg border border-transparent hover:border-primary/10 animate-fade-in w-full", 
           !meal && "cursor-pointer hover:bg-secondary/50",
           className
         )}
@@ -175,28 +176,28 @@ const MealCard = ({ title, meal, macros, ingredients, className, onMealUpdate, m
       >
         {meal ? (
           <>
-            <div className="h-[120px] relative">
+            <div className="h-[80px] relative">
               <MealImage meal={meal} className="absolute inset-0 w-full h-full object-cover" />
             </div>
-            <div className="p-3">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-foreground line-clamp-1">{meal}</p>
+            <div className="p-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-foreground line-clamp-1">{meal}</p>
                 {currentMealDetails?.recipe && (
-                  <Book className="w-4 h-4 text-primary/50 shrink-0" />
+                  <Book className="w-3 h-3 text-primary/50 shrink-0" />
                 )}
               </div>
               {macros && (
                 <MacroDisplay 
                   macros={macros} 
                   visibilitySettings={macroVisibility}
-                  className="text-xs text-muted-foreground mt-2" 
+                  className="text-[10px] text-muted-foreground mt-1" 
                 />
               )}
             </div>
           </>
         ) : (
-          <div className="h-[180px] p-4 flex items-center justify-center">
-            <p className="text-muted-foreground italic">Click to add a meal</p>
+          <div className="h-[120px] p-2 flex items-center justify-center">
+            <p className="text-xs text-muted-foreground italic">Add meal</p>
           </div>
         )}
       </Card>

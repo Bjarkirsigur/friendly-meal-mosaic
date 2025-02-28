@@ -14,9 +14,9 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, macroVisibility }: MealR
   const isMobile = useIsMobile();
 
   return (
-    <div className="flex gap-2 md:gap-4 items-center">
-      <div className="text-muted-foreground font-medium w-[80px] md:w-[120px] text-sm md:text-base shrink-0">{mealType}</div>
-      <div className="flex gap-2 md:gap-4 w-full overflow-x-auto pb-2">
+    <div className="flex gap-2 md:gap-3 items-center">
+      <div className="text-muted-foreground font-medium w-[70px] md:w-[100px] text-xs md:text-sm shrink-0">{mealType}</div>
+      <div className="flex gap-2 md:gap-3 w-full overflow-x-auto pb-2">
         {Object.entries(weeklyMeals).map(([day, dayMeals]) => (
           <MealCard
             key={`${day}-${mealType}`}
@@ -24,7 +24,7 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, macroVisibility }: MealR
             meal={dayMeals?.[mealType]?.meal}
             macros={dayMeals?.[mealType]?.macros}
             ingredients={dayMeals?.[mealType]?.ingredients}
-            className="w-[200px] md:w-full shrink-0"
+            className="w-[140px] md:w-[160px] shrink-0"
             onMealUpdate={(ingredients, macros, mealName) => onMealUpdate(day, mealType, ingredients, macros, mealName)}
             macroVisibility={macroVisibility}
           />
