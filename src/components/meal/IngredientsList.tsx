@@ -36,7 +36,7 @@ export const IngredientsList = ({ ingredients }: IngredientsListProps) => {
                   </span>
                 </span>
                 <div className="flex items-center">
-                  <div className={`w-2 h-2 rounded-full ${color === 'text-green-600' ? 'bg-emerald-500' : color === 'text-amber-500' ? 'bg-amber-400' : 'bg-rose-400'} mr-1.5`}></div>
+                  <div className={`w-2 h-2 rounded-full ${color === 'text-emerald-600' ? 'bg-emerald-500' : color === 'text-amber-500' ? 'bg-amber-400' : 'bg-rose-400'} mr-1.5`}></div>
                   <span className="text-xs font-medium bg-secondary/80 px-2 py-0.5 rounded-full">
                     {classification}
                   </span>
