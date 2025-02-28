@@ -19,15 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Pencil, Trash2, Search, Upload, Library, Plus } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2, Search, Upload } from 'lucide-react';
 import { MacroInfo, Ingredient } from '@/types/meals';
 import { useIngredients } from '@/hooks/useIngredients';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { supabase } from '@/integrations/supabase/client';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card } from "@/components/ui/card";
-import { foodLibrary, FoodCategory } from '@/utils/foodLibrary';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const Ingredients = () => {
   const { toast } = useToast();
@@ -36,10 +32,8 @@ const Ingredients = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isLibraryDialogOpen, setIsLibraryDialogOpen] = useState(false);
   const [currentIngredient, setCurrentIngredient] = useState<Ingredient | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [librarySearchTerm, setLibrarySearchTerm] = useState('');
   const [newIngredient, setNewIngredient] = useState({
     name: '',
     grams: 100,
@@ -56,17 +50,6 @@ const Ingredients = () => {
       (ingredient) => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [ingredients, searchTerm]);
-
-  const filteredLibraryItems = useMemo(() => {
-    if (!librarySearchTerm) return foodLibrary;
-    
-    return foodLibrary.map(category => ({
-      ...category,
-      foods: category.foods.filter(food => 
-        food.name.toLowerCase().includes(librarySearchTerm.toLowerCase())
-      )
-    })).filter(category => category.foods.length > 0);
-  }, [librarySearchTerm]);
 
   const resetNewIngredient = () => {
     setNewIngredient({
@@ -223,42 +206,11 @@ const Ingredients = () => {
     }
   };
 
-  const handleAddFromLibrary = (food: Ingredient) => {
-    const ingredientToAdd: Omit<Ingredient, 'id' | 'is_default' | 'user_id'> = {
-      name: food.name,
-      grams: food.grams,
-      macros: {
-        calories: food.macros.calories,
-        protein: food.macros.protein,
-        carbs: food.macros.carbs,
-        fat: food.macros.fat,
-        showCalories: true,
-        showProtein: true,
-        showCarbs: true,
-        showFat: true
-      },
-      image_url: food.image_url
-    };
-
-    addIngredient(ingredientToAdd).then(result => {
-      if (result) {
-        toast({
-          title: 'Success',
-          description: `${food.name} added to your ingredients`,
-        });
-      }
-    });
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Ingredients</h1>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsLibraryDialogOpen(true)}>
-            <Library className="mr-2 h-4 w-4" />
-            Food Library
-          </Button>
           <Button onClick={() => setIsAddDialogOpen(true)}>
             <PlusCircle className="mr-2 h-4 w-4" />
             Add New Ingredient
@@ -344,71 +296,6 @@ const Ingredients = () => {
           </Table>
         </div>
       )}
-
-      {/* Food Library Dialog */}
-      <Dialog open={isLibraryDialogOpen} onOpenChange={setIsLibraryDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Food Library</DialogTitle>
-          </DialogHeader>
-          
-          <div className="relative mb-6 mt-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-10"
-              placeholder="Search food library..."
-              value={librarySearchTerm}
-              onChange={(e) => setLibrarySearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="grid gap-6">
-            {filteredLibraryItems.length === 0 ? (
-              <p className="text-center text-muted-foreground">No foods found</p>
-            ) : (
-              <Accordion type="multiple" defaultValue={filteredLibraryItems.map(cat => cat.name)}>
-                {filteredLibraryItems.map((category) => (
-                  <AccordionItem key={category.name} value={category.name}>
-                    <AccordionTrigger>{category.name}</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                        {category.foods.map((food, idx) => (
-                          <Card key={`${category.name}-${idx}`} className="p-4 flex flex-col justify-between h-full">
-                            <div>
-                              <h4 className="font-medium mb-2">{food.name}</h4>
-                              <div className="text-sm text-muted-foreground space-y-1">
-                                <p>Portion: {food.grams}g</p>
-                                <p>Calories: {food.macros.calories}</p>
-                                <p>Protein: {food.macros.protein}g</p>
-                                <p>Carbs: {food.macros.carbs}g</p>
-                                <p>Fat: {food.macros.fat}g</p>
-                              </div>
-                            </div>
-                            <Button 
-                              className="mt-4 w-full" 
-                              size="sm" 
-                              onClick={() => handleAddFromLibrary(food)}
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Add to My Ingredients
-                            </Button>
-                          </Card>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsLibraryDialogOpen(false)}>
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Add Ingredient Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
