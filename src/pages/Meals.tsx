@@ -15,7 +15,7 @@ import { useIngredients } from "@/hooks/useIngredients";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Ingredient } from "@/types/meals";
+import { Ingredient, MealCategory } from "@/types/meals";
 
 // Real meal image mappings
 const MEAL_IMAGES: Record<string, string> = {
@@ -31,7 +31,18 @@ const MEAL_IMAGES: Record<string, string> = {
   "Fruit salad": "https://images.unsplash.com/photo-1568158879083-c42860933ed7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
   "Turkey sandwich": "https://images.unsplash.com/photo-1554433607-66b5efe9d304?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
   "Vegetable soup": "https://images.unsplash.com/photo-1547592166-23ac45744acd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
-  "Caesar salad": "https://images.unsplash.com/photo-1551248429-40975aa4de74?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+  "Caesar salad": "https://images.unsplash.com/photo-1551248429-40975aa4de74?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Chicken Rice Bowl": "https://images.unsplash.com/photo-1512058454905-6b841e7ad132?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Oatmeal Breakfast": "https://images.unsplash.com/photo-1517673400267-0251440c45dc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Salmon & Sweet Potato": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Greek Yogurt Parfait": "https://images.unsplash.com/photo-1488477181946-6428a0bfcd9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Chicken Avocado Bowl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Beef Pasta Bowl": "https://images.unsplash.com/photo-1588013273468-315fd88ea34c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Protein Smoothie": "https://images.unsplash.com/photo-1525385133512-2f3bdd039054?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Protein Breakfast Bowl": "https://images.unsplash.com/photo-1494390248081-4e521a5940db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Tofu Stir Fry": "https://images.unsplash.com/photo-1512058454905-6b841e7ad132?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Turkey Quinoa Bowl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+  "Overnight Oats": "https://images.unsplash.com/photo-1611068122140-763a9799c71d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
 };
 
 // Helper function to get image URL for a meal
@@ -51,15 +62,20 @@ const Meals = () => {
     name: "",
     ingredients: [] as Ingredient[],
     recipe: "",
-    category: "Breakfast"
+    category: "Breakfast" as MealCategory
   });
   const [ingredientSearchOpen, setIngredientSearchOpen] = useState(false);
   const [ingredientSearch, setIngredientSearch] = useState("");
   const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null);
   const [ingredientGrams, setIngredientGrams] = useState<number>(100);
   const { toast } = useToast();
-  const { meals, loading } = useMeals();
+  const { meals, loading, addMeal, refreshMeals } = useMeals();
   const { ingredients: availableIngredients, loading: loadingIngredients } = useIngredients();
+
+  // Load meals on component mount
+  useEffect(() => {
+    refreshMeals();
+  }, [refreshMeals]);
 
   const calculateMacrosForGrams = (ingredient: Ingredient, grams: number) => {
     const ratio = grams / ingredient.grams;
@@ -131,7 +147,7 @@ const Meals = () => {
     });
   };
 
-  const handleCreateMeal = () => {
+  const handleCreateMeal = async () => {
     if (!newMeal.name || newMeal.ingredients.length === 0) {
       toast({
         title: "Missing Information",
@@ -142,30 +158,32 @@ const Meals = () => {
     }
 
     const totalMacros = calculateTotalMacros();
-    const newMealObject = {
+    const success = await addMeal({
       meal: newMeal.name,
       ingredients: newMeal.ingredients,
-      macros: totalMacros,
-      recipe: newMeal.recipe
-    };
+      recipe: newMeal.recipe,
+      meal_type: newMeal.category,
+      prepTime: 20, // default prep time
+      difficulty: "Medium" // default difficulty
+    });
 
-    if (!MEALS[newMeal.category]) {
-      MEALS[newMeal.category] = [];
+    if (success) {
+      toast({
+        title: "Meal Created",
+        description: "Your new meal has been added to the list.",
+      });
+      
+      setIsCreateDialogOpen(false);
+      setNewMeal({
+        name: "",
+        ingredients: [],
+        recipe: "",
+        category: "Breakfast"
+      });
+      
+      // Refresh meals list
+      refreshMeals();
     }
-    MEALS[newMeal.category].push(newMealObject);
-
-    toast({
-      title: "Meal Created",
-      description: "Your new meal has been added to the list.",
-    });
-    
-    setIsCreateDialogOpen(false);
-    setNewMeal({
-      name: "",
-      ingredients: [],
-      recipe: "",
-      category: "Breakfast"
-    });
   };
 
   // Filter ingredients based on search term
@@ -184,7 +202,7 @@ const Meals = () => {
       }
       mealsByCategory[category].push(meal);
     });
-  } else {
+  } else if (Object.keys(MEALS).length > 0) {
     // Fallback to static data if API data is not available
     Object.entries(MEALS).forEach(([category, meals]) => {
       mealsByCategory[category] = meals;
@@ -213,67 +231,77 @@ const Meals = () => {
           <p className="text-muted-foreground">Browse our collection of meals by category</p>
         </div>
 
-        <div className="grid gap-12">
-          {Object.entries(mealsByCategory).map(([category, meals]) => (
-            <section key={category} className="animate-fade-in">
-              <h2 className="text-2xl font-semibold text-primary mb-6">{category}</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {meals.map((meal, index) => (
-                  <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="relative">
-                      <AspectRatio ratio={16 / 9}>
-                        <img
-                          src={getMealImageUrl(meal.meal)}
-                          alt={meal.meal}
-                          className="object-cover w-full h-full"
-                        />
-                      </AspectRatio>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-medium mb-4">{meal.meal}</h3>
-                      <div className="mb-4">
-                        <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
-                        <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
-                          {meal.ingredients.map((ingredient: any, idx: number) => (
-                            <li key={idx} className="group cursor-pointer hover:text-foreground">
-                              {ingredient.name} ({ingredient.grams}g)
-                              <div className="hidden group-hover:block pl-4 pt-1 text-xs">
-                                <div className="grid grid-cols-4 gap-2">
-                                  <span>{ingredient.macros.calories} kcal</span>
-                                  <span>{ingredient.macros.protein}g protein</span>
-                                  <span>{ingredient.macros.carbs}g carbs</span>
-                                  <span>{ingredient.macros.fat}g fat</span>
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <p className="text-muted-foreground">Loading meals...</p>
+          </div>
+        ) : Object.keys(mealsByCategory).length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-muted-foreground">No meals available. Create your first meal!</p>
+          </div>
+        ) : (
+          <div className="grid gap-12">
+            {Object.entries(mealsByCategory).map(([category, categoryMeals]) => (
+              <section key={category} className="animate-fade-in">
+                <h2 className="text-2xl font-semibold text-primary mb-6">{category}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {categoryMeals.map((meal, index) => (
+                    <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <div className="relative">
+                        <AspectRatio ratio={16 / 9}>
+                          <img
+                            src={meal.image_url || getMealImageUrl(meal.meal)}
+                            alt={meal.meal}
+                            className="object-cover w-full h-full"
+                          />
+                        </AspectRatio>
+                      </div>
+                      <div className="p-6">
+                        <h3 className="font-medium mb-4">{meal.meal}</h3>
+                        <div className="mb-4">
+                          <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
+                          <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
+                            {meal.ingredients.map((ingredient: any, idx: number) => (
+                              <li key={idx} className="group cursor-pointer hover:text-foreground">
+                                {ingredient.name} ({ingredient.grams}g)
+                                <div className="hidden group-hover:block pl-4 pt-1 text-xs">
+                                  <div className="grid grid-cols-4 gap-2">
+                                    <span>{ingredient.macros.calories} kcal</span>
+                                    <span>{ingredient.macros.protein}g protein</span>
+                                    <span>{ingredient.macros.carbs}g carbs</span>
+                                    <span>{ingredient.macros.fat}g fat</span>
+                                  </div>
                                 </div>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
+                          <div className="text-center">
+                            <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
+                            <p>kcal</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="font-medium text-sm mb-0.5">{meal.macros.protein}g</p>
+                            <p>Protein</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="font-medium text-sm mb-0.5">{meal.macros.carbs}g</p>
+                            <p>Carbs</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="font-medium text-sm mb-0.5">{meal.macros.fat}g</p>
+                            <p>Fat</p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
-                        <div className="text-center">
-                          <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
-                          <p>kcal</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium text-sm mb-0.5">{meal.macros.protein}g</p>
-                          <p>Protein</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium text-sm mb-0.5">{meal.macros.carbs}g</p>
-                          <p>Carbs</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="font-medium text-sm mb-0.5">{meal.macros.fat}g</p>
-                          <p>Fat</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
 
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -302,14 +330,13 @@ const Meals = () => {
                   <select
                     id="category"
                     value={newMeal.category}
-                    onChange={(e) => setNewMeal({ ...newMeal, category: e.target.value })}
+                    onChange={(e) => setNewMeal({ ...newMeal, category: e.target.value as MealCategory })}
                     className="w-full rounded-md border border-input bg-background px-3 py-2"
                   >
-                    {Object.keys(MEALS).map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dinner">Dinner</option>
+                    <option value="Snacks">Snacks</option>
                   </select>
                 </div>
 
