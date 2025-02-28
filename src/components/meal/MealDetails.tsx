@@ -1,14 +1,11 @@
 
-import {
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { MacroInfo, Ingredient } from "@/types/meals";
-import { MealImage } from "./MealImage";
+import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { MacroInfo, Ingredient, DifficultyLevel } from "@/types/meals";
 import { MacroDisplay } from "./MacroDisplay";
+import { MealImage } from "./MealImage";
 import { IngredientsList } from "./IngredientsList";
-import { Clock, BarChart2 } from "lucide-react";
+import { Clock, BarChart2, Coffee } from "lucide-react";
 
 interface MealDetailsProps {
   meal: string;
@@ -16,45 +13,101 @@ interface MealDetailsProps {
   ingredients: Ingredient[];
   recipe?: string;
   prepTime?: number;
-  difficulty?: string;
+  difficulty?: DifficultyLevel;
+  drinksAndAccompaniments?: string[];
 }
 
-export const MealDetails = ({ meal, macros, ingredients, recipe, prepTime, difficulty }: MealDetailsProps) => {
+export const MealDetails = ({ 
+  meal, 
+  macros, 
+  ingredients, 
+  recipe, 
+  prepTime, 
+  difficulty,
+  drinksAndAccompaniments = []
+}: MealDetailsProps) => {
   return (
-    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-hidden">
       <DialogHeader>
-        <DialogTitle>{meal}</DialogTitle>
+        <DialogTitle className="text-xl md:text-2xl">{meal}</DialogTitle>
       </DialogHeader>
-      <div className="space-y-6">
-        <MealImage meal={meal} className="rounded-lg" />
-        
-        {/* Prep time and difficulty */}
-        {(prepTime !== undefined || difficulty) && (
-          <div className="flex items-center gap-6">
-            {prepTime !== undefined && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Clock className="w-4 h-4" />
-                <span>{prepTime} min</span>
+      
+      <ScrollArea className="max-h-[calc(90vh-140px)] md:max-h-[calc(80vh-140px)]">
+        <div className="space-y-6 py-4">
+          <div className="h-[200px] md:h-[300px] w-full relative rounded-lg overflow-hidden">
+            <MealImage meal={meal} className="w-full h-full object-cover" />
+          </div>
+          
+          <div className="space-y-6">
+            {/* Meal info section */}
+            <div className="space-y-4">
+              {(prepTime !== undefined || difficulty) && (
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  {prepTime !== undefined && (
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{prepTime} minutes prep time</span>
+                    </div>
+                  )}
+                  {difficulty && (
+                    <div className="flex items-center gap-1">
+                      <BarChart2 className="w-4 h-4" />
+                      <span>{difficulty} difficulty</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Macros</h3>
+                <MacroDisplay 
+                  macros={macros}
+                  visibilitySettings={{
+                    calories: true,
+                    protein: true,
+                    carbs: true,
+                    fat: true,
+                    showCalories: true,
+                    showProtein: true,
+                    showCarbs: true,
+                    showFat: true
+                  }}
+                  className="text-sm" 
+                />
               </div>
-            )}
-            {difficulty && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <BarChart2 className="w-4 h-4" />
-                <span>Difficulty: {difficulty}</span>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <IngredientsList ingredients={ingredients} />
+              
+              {drinksAndAccompaniments.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 text-lg font-semibold mb-3">
+                    <Coffee className="w-5 h-5" />
+                    <h3>Drinks & Accompaniments</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {drinksAndAccompaniments.map((item, idx) => (
+                      <div key={idx} className="p-2 bg-secondary/20 rounded">
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {recipe && (
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Recipe</h3>
+                <div className="text-muted-foreground whitespace-pre-line">
+                  {recipe}
+                </div>
               </div>
             )}
           </div>
-        )}
-        
-        <MacroDisplay macros={macros} className="p-4 bg-secondary/30 rounded-lg" size="large" />
-        <IngredientsList ingredients={ingredients} />
-        {recipe && (
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Recipe Instructions</h3>
-            <p className="text-muted-foreground whitespace-pre-line">{recipe}</p>
-          </div>
-        )}
-      </div>
+        </div>
+      </ScrollArea>
     </DialogContent>
   );
 };

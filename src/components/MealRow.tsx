@@ -2,6 +2,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import MealCard from "./MealCard";
 import { Ingredient, MacroInfo, MealType, DayMeals } from "../types/meals";
+import { useMealPlanner } from "@/hooks/useMealPlanner";
 
 interface MealRowProps {
   mealType: MealType;
@@ -12,6 +13,7 @@ interface MealRowProps {
 
 const MealRow = ({ mealType, weeklyMeals, onMealUpdate, macroVisibility }: MealRowProps) => {
   const isMobile = useIsMobile();
+  const { getDrinksAndAccompaniments, handleDrinksAccompanimentsUpdate } = useMealPlanner();
 
   return (
     <div className="flex gap-2 md:gap-3 items-center">
@@ -27,6 +29,8 @@ const MealRow = ({ mealType, weeklyMeals, onMealUpdate, macroVisibility }: MealR
             className="w-[140px] md:w-[160px] shrink-0"
             onMealUpdate={(ingredients, macros, mealName) => onMealUpdate(day, mealType, ingredients, macros, mealName)}
             macroVisibility={macroVisibility}
+            drinksAndAccompaniments={getDrinksAndAccompaniments(day, mealType)}
+            onDrinksAndAccompanimentsUpdate={(items) => handleDrinksAccompanimentsUpdate(day, mealType, items)}
           />
         ))}
       </div>
