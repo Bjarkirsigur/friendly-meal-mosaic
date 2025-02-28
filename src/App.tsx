@@ -8,11 +8,11 @@ import Index from "./pages/Index";
 import WeekPlanner from "./pages/WeekPlanner";
 import Meals from "./pages/Meals";
 import Ingredients from "./pages/Ingredients";
-import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AppSidebar } from "./components/AppSidebar";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { MealDataInitializer } from "./components/MealDataInitializer";
 
 const queryClient = new QueryClient();
 
@@ -22,9 +22,11 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
+        <MealDataInitializer />
         <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={<Auth />} />
+            {/* Redirect /auth to home page */}
+            <Route path="/auth" element={<Navigate to="/" replace />} />
             <Route
               path="/"
               element={
