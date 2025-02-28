@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import WeekPlanner from "./pages/WeekPlanner";
 import Meals from "./pages/Meals";
 import Ingredients from "./pages/Ingredients";
-import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AppSidebar } from "./components/AppSidebar";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -24,7 +23,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={<Auth />} />
+            {/* Redirect /auth to home page */}
+            <Route path="/auth" element={<Navigate to="/" replace />} />
             <Route
               path="/"
               element={
