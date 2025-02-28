@@ -315,14 +315,17 @@ export const useMeals = () => {
     try {
       setLoading(true);
       
-      // Always load sample meals if no user is logged in
+      // Check if we should use sample data for guest mode
       if (!user) {
+        console.log("Loading sample meals for guest mode");
         const sampleMeals = createSampleMeals();
         setMeals(sampleMeals);
+        setLoading(false);
         return;
       }
       
       // Fetch all meals
+      console.log("Fetching meals from database");
       const { data: mealsData, error: mealsError } = await supabase
         .from('meals')
         .select('*')
@@ -349,19 +352,24 @@ export const useMeals = () => {
       
       if (ingredientsError) throw ingredientsError;
       
+      console.log("Data fetched, converting to meals format");
+      
       // Convert DB data to app models
       if (mealsData && mealIngredientsData && ingredientsData) {
         const convertedMeals = mealsData.map((dbMeal: any) => 
           convertDbToMeal(dbMeal, mealIngredientsData, ingredientsData)
         );
         
+        console.log(`Loaded ${convertedMeals.length} meals`);
         setMeals(convertedMeals);
       } else {
+        console.log("No database data, using sample meals");
         // If no data found in database, use sample data
         const sampleMeals = createSampleMeals();
         setMeals(sampleMeals);
       }
     } catch (error: any) {
+      console.error("Error loading meals:", error.message);
       toast({
         title: 'Error loading meals',
         description: error.message,
@@ -369,6 +377,7 @@ export const useMeals = () => {
       });
       
       // Fallback to sample meals on error
+      console.log("Loading sample meals as fallback");
       const sampleMeals = createSampleMeals();
       setMeals(sampleMeals);
     } finally {
@@ -522,7 +531,9 @@ export const useMeals = () => {
     }
   };
 
+  // Initialize meals on component mount
   useEffect(() => {
+    console.log("useMeals hook initialized, loading meals");
     loadMeals();
   }, [user]);
 

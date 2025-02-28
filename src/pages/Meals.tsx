@@ -74,8 +74,9 @@ const Meals = () => {
 
   // Load meals on component mount
   useEffect(() => {
+    console.log("Meals component mounted, refreshing meals");
     refreshMeals();
-  }, [refreshMeals]);
+  }, []);
 
   const calculateMacrosForGrams = (ingredient: Ingredient, grams: number) => {
     const ratio = grams / ingredient.grams;
@@ -202,7 +203,7 @@ const Meals = () => {
       }
       mealsByCategory[category].push(meal);
     });
-  } else if (Object.keys(MEALS).length > 0) {
+  } else if (!loading && Object.keys(MEALS).length > 0 && meals.length === 0) {
     // Fallback to static data if API data is not available
     Object.entries(MEALS).forEach(([category, meals]) => {
       mealsByCategory[category] = meals;
@@ -232,12 +233,20 @@ const Meals = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-10">
+          <div className="flex flex-col items-center justify-center py-10">
+            <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mb-4"></div>
             <p className="text-muted-foreground">Loading meals...</p>
           </div>
         ) : Object.keys(mealsByCategory).length === 0 ? (
           <div className="text-center py-10">
             <p className="text-muted-foreground">No meals available. Create your first meal!</p>
+            <Button 
+              onClick={() => setIsCreateDialogOpen(true)}
+              className="mt-4"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Meal
+            </Button>
           </div>
         ) : (
           <div className="grid gap-12">
@@ -246,7 +255,7 @@ const Meals = () => {
                 <h2 className="text-2xl font-semibold text-primary mb-6">{category}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {categoryMeals.map((meal, index) => (
-                    <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <Card key={`${meal.id || index}`} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="relative">
                         <AspectRatio ratio={16 / 9}>
                           <img
@@ -261,7 +270,7 @@ const Meals = () => {
                         <div className="mb-4">
                           <p className="text-sm text-muted-foreground mb-2">Ingredients:</p>
                           <ul className="text-sm text-muted-foreground list-disc pl-4 space-y-1">
-                            {meal.ingredients.map((ingredient: any, idx: number) => (
+                            {meal.ingredients && meal.ingredients.map((ingredient: any, idx: number) => (
                               <li key={idx} className="group cursor-pointer hover:text-foreground">
                                 {ingredient.name} ({ingredient.grams}g)
                                 <div className="hidden group-hover:block pl-4 pt-1 text-xs">
@@ -276,24 +285,26 @@ const Meals = () => {
                             ))}
                           </ul>
                         </div>
-                        <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
-                          <div className="text-center">
-                            <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
-                            <p>kcal</p>
+                        {meal.macros && (
+                          <div className="grid grid-cols-4 gap-4 text-sm text-muted-foreground">
+                            <div className="text-center">
+                              <p className="font-medium text-sm mb-0.5">{meal.macros.calories}</p>
+                              <p>kcal</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="font-medium text-sm mb-0.5">{meal.macros.protein}g</p>
+                              <p>Protein</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="font-medium text-sm mb-0.5">{meal.macros.carbs}g</p>
+                              <p>Carbs</p>
+                            </div>
+                            <div className="text-center">
+                              <p className="font-medium text-sm mb-0.5">{meal.macros.fat}g</p>
+                              <p>Fat</p>
+                            </div>
                           </div>
-                          <div className="text-center">
-                            <p className="font-medium text-sm mb-0.5">{meal.macros.protein}g</p>
-                            <p>Protein</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="font-medium text-sm mb-0.5">{meal.macros.carbs}g</p>
-                            <p>Carbs</p>
-                          </div>
-                          <div className="text-center">
-                            <p className="font-medium text-sm mb-0.5">{meal.macros.fat}g</p>
-                            <p>Fat</p>
-                          </div>
-                        </div>
+                        )}
                       </div>
                     </Card>
                   ))}
