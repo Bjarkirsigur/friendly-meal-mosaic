@@ -6,6 +6,7 @@ import { MacroDisplay } from "./MacroDisplay";
 import { MealImage } from "./MealImage";
 import { IngredientsList } from "./IngredientsList";
 import { Clock, BarChart2, Coffee } from "lucide-react";
+import { DrinkAccompaniment } from "@/hooks/useMealPlanner";
 
 interface MealDetailsProps {
   meal: string;
@@ -14,7 +15,8 @@ interface MealDetailsProps {
   recipe?: string;
   prepTime?: number;
   difficulty?: DifficultyLevel;
-  drinksAndAccompaniments?: string[];
+  drinksAndAccompaniments?: DrinkAccompaniment[];
+  drinksMacros?: MacroInfo;
 }
 
 export const MealDetails = ({ 
@@ -24,7 +26,8 @@ export const MealDetails = ({
   recipe, 
   prepTime, 
   difficulty,
-  drinksAndAccompaniments = []
+  drinksAndAccompaniments = [],
+  drinksMacros
 }: MealDetailsProps) => {
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-hidden">
@@ -63,10 +66,10 @@ export const MealDetails = ({
                 <MacroDisplay 
                   macros={macros}
                   visibilitySettings={{
-                    calories: macros.calories,
-                    protein: macros.protein,
-                    carbs: macros.carbs,
-                    fat: macros.fat,
+                    calories: true,
+                    protein: true,
+                    carbs: true,
+                    fat: true,
                     showCalories: true,
                     showProtein: true,
                     showCarbs: true,
@@ -89,10 +92,31 @@ export const MealDetails = ({
                   <div className="space-y-2">
                     {drinksAndAccompaniments.map((item, idx) => (
                       <div key={idx} className="p-2 bg-secondary/20 rounded">
-                        <span>{item}</span>
+                        <span>{item.name}</span>
+                        {item.grams > 0 && <span className="ml-2 text-xs text-muted-foreground">({item.grams}g)</span>}
                       </div>
                     ))}
                   </div>
+                  
+                  {drinksMacros && (drinksMacros.calories > 0 || drinksMacros.protein > 0 || drinksMacros.carbs > 0 || drinksMacros.fat > 0) && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium mb-2">Drinks & Accompaniments Macros:</h4>
+                      <MacroDisplay 
+                        macros={drinksMacros}
+                        visibilitySettings={{
+                          calories: true,
+                          protein: true,
+                          carbs: true,
+                          fat: true,
+                          showCalories: true,
+                          showProtein: true,
+                          showCarbs: true,
+                          showFat: true
+                        }}
+                        className="text-xs" 
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

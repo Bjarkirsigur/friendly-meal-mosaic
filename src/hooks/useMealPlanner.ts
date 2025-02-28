@@ -6,15 +6,61 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from './use-toast';
 
+export type DrinkAccompaniment = {
+  name: string;
+  macros: MacroInfo;
+  grams: number;
+};
+
+export type DrinkAccompanimentData = {
+  items: DrinkAccompaniment[];
+};
+
 export const useMealPlanner = () => {
   const [weeklyMeals, setWeeklyMeals] = useState<Record<string, DayMeals>>(() => {
     const savedMeals = localStorage.getItem('weeklyMeals');
     return savedMeals ? JSON.parse(savedMeals) : createInitialMeals();
   });
 
-  const [drinksAndAccompaniments, setDrinksAndAccompaniments] = useState<Record<string, Record<string, { items: string[] }>>>(() => {
+  const [drinksAndAccompaniments, setDrinksAndAccompaniments] = useState<Record<string, Record<string, DrinkAccompanimentData>>>(() => {
     const savedItems = localStorage.getItem('drinksAndAccompaniments');
-    return savedItems ? JSON.parse(savedItems) : {};
+    try {
+      // Convert old format to new format
+      const parsedData = savedItems ? JSON.parse(savedItems) : {};
+      const newFormat: Record<string, Record<string, DrinkAccompanimentData>> = {};
+      
+      Object.keys(parsedData).forEach(day => {
+        newFormat[day] = {};
+        Object.keys(parsedData[day] || {}).forEach(mealType => {
+          if (Array.isArray(parsedData[day][mealType]?.items)) {
+            // Old format
+            newFormat[day][mealType] = {
+              items: parsedData[day][mealType].items.map((name: string) => ({
+                name,
+                macros: {
+                  calories: 0,
+                  protein: 0,
+                  carbs: 0,
+                  fat: 0,
+                  showCalories: true,
+                  showProtein: true,
+                  showCarbs: true,
+                  showFat: true
+                },
+                grams: 0
+              }))
+            };
+          } else if (parsedData[day][mealType]?.items && typeof parsedData[day][mealType]?.items === 'object') {
+            // Already in new format
+            newFormat[day][mealType] = parsedData[day][mealType];
+          }
+        });
+      });
+      
+      return newFormat;
+    } catch (e) {
+      return {};
+    }
   });
 
   const { user } = useAuth();
@@ -37,7 +83,7 @@ export const useMealPlanner = () => {
         
         if (data && data.length > 0) {
           const newWeeklyMeals = createInitialMeals();
-          const newDrinksAndAccompaniments: Record<string, Record<string, { items: string[] }>> = {};
+          const newDrinksAndAccompaniments: Record<string, Record<string, DrinkAccompanimentData>> = {};
           
           data.forEach((plan: any) => {
             const { day_name, meal_type, meal_name, ingredients, macros, drinks_and_accompaniments } = plan;
@@ -54,9 +100,28 @@ export const useMealPlanner = () => {
               if (!newDrinksAndAccompaniments[day_name]) {
                 newDrinksAndAccompaniments[day_name] = {};
               }
-              newDrinksAndAccompaniments[day_name][meal_type] = {
-                items: drinks_and_accompaniments.items || []
-              };
+              
+              // Convert old format if needed
+              if (Array.isArray(drinks_and_accompaniments.items)) {
+                newDrinksAndAccompaniments[day_name][meal_type] = {
+                  items: drinks_and_accompaniments.items.map((name: string) => ({
+                    name,
+                    macros: {
+                      calories: 0,
+                      protein: 0,
+                      carbs: 0,
+                      fat: 0,
+                      showCalories: true,
+                      showProtein: true,
+                      showCarbs: true,
+                      showFat: true
+                    },
+                    grams: 0
+                  }))
+                };
+              } else {
+                newDrinksAndAccompaniments[day_name][meal_type] = drinks_and_accompaniments;
+              }
             }
           });
           
@@ -170,7 +235,7 @@ export const useMealPlanner = () => {
     }
   };
 
-  const handleDrinksAccompanimentsUpdate = (day: string, mealType: string, items: string[]) => {
+  const handleDrinksAccompanimentsUpdate = (day: string, mealType: string, items: DrinkAccompaniment[]) => {
     setDrinksAndAccompaniments(prev => {
       const newItems = { ...prev };
       
@@ -191,8 +256,37 @@ export const useMealPlanner = () => {
     }
   };
 
-  const getDrinksAndAccompaniments = (day: string, mealType: string) => {
+  const getDrinksAndAccompaniments = (day: string, mealType: string): DrinkAccompaniment[] => {
     return drinksAndAccompaniments[day]?.[mealType]?.items || [];
+  };
+
+  const getDrinksAndAccompanimentsMacros = (day: string, mealType: string): MacroInfo => {
+    const items = getDrinksAndAccompaniments(day, mealType);
+    
+    return items.reduce(
+      (total, item) => {
+        return {
+          calories: total.calories + (item.macros?.calories || 0),
+          protein: total.protein + (item.macros?.protein || 0),
+          carbs: total.carbs + (item.macros?.carbs || 0),
+          fat: total.fat + (item.macros?.fat || 0),
+          showCalories: true,
+          showProtein: true,
+          showCarbs: true,
+          showFat: true,
+        };
+      },
+      {
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        showCalories: true,
+        showProtein: true,
+        showCarbs: true,
+        showFat: true,
+      }
+    );
   };
 
   return {
@@ -201,6 +295,7 @@ export const useMealPlanner = () => {
     handleMealUpdate,
     handleDrinksAccompanimentsUpdate,
     getDrinksAndAccompaniments,
+    getDrinksAndAccompanimentsMacros,
     loading
   };
 };

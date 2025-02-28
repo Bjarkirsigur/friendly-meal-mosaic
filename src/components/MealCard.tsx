@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Check } from "lucide-react";
+import { DrinkAccompaniment } from "@/hooks/useMealPlanner";
 
 interface MealCardProps {
   title: string;
@@ -32,8 +33,8 @@ interface MealCardProps {
   className?: string;
   onMealUpdate?: (ingredients: Ingredient[], macros: MacroInfo, mealName: string) => void;
   macroVisibility: MacroInfo;
-  drinksAndAccompaniments?: string[];
-  onDrinksAndAccompanimentsUpdate?: (items: string[]) => void;
+  drinksAndAccompaniments?: DrinkAccompaniment[];
+  onDrinksAndAccompanimentsUpdate?: (items: DrinkAccompaniment[]) => void;
 }
 
 const MealCard = ({ 
@@ -50,20 +51,13 @@ const MealCard = ({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSwitchDialogOpen, setIsSwitchDialogOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [isDrinksDialogOpen, setIsDrinksDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showAllMeals, setShowAllMeals] = useState(false);
   const [expandedMeals, setExpandedMeals] = useState<Record<string, boolean>>({});
-  const [selectedDrinks, setSelectedDrinks] = useState<string[]>(drinksAndAccompaniments);
-  const [newDrinkName, setNewDrinkName] = useState("");
   const { meals, loading: loadingMeals } = useMeals();
   const { ingredients: allIngredients } = useIngredients();
 
   const mealType = title.split(" ").pop() || "";
-
-  useEffect(() => {
-    setSelectedDrinks(drinksAndAccompaniments);
-  }, [drinksAndAccompaniments]);
 
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -161,61 +155,33 @@ const MealCard = ({
     return Object.entries(groupedMeals);
   };
 
-  const handleToggleDrink = (drinkName: string) => {
-    setSelectedDrinks(prev => {
-      if (prev.includes(drinkName)) {
-        return prev.filter(d => d !== drinkName);
-      } else {
-        return [...prev, drinkName];
-      }
-    });
-  };
-
-  const handleAddNewDrink = () => {
-    if (newDrinkName.trim() && !selectedDrinks.includes(newDrinkName)) {
-      setSelectedDrinks(prev => [...prev, newDrinkName]);
-      setNewDrinkName("");
-    }
-  };
-
-  const handleSaveDrinks = () => {
-    if (onDrinksAndAccompanimentsUpdate) {
-      onDrinksAndAccompanimentsUpdate(selectedDrinks);
-    }
-    setIsDrinksDialogOpen(false);
-  };
-
-  const handleOpenDrinksDialog = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDrinksDialogOpen(true);
-  };
-
   const currentMealDetails = meal ? meals.find(m => m.meal === meal) : null;
 
-  // Get ingredient suggestions for drinks/accompaniments
-  const drinkSuggestions = allIngredients
-    .filter(ing => 
-      ing.name.toLowerCase().includes("water") || 
-      ing.name.toLowerCase().includes("coffee") || 
-      ing.name.toLowerCase().includes("tea") ||
-      ing.name.toLowerCase().includes("juice") ||
-      ing.name.toLowerCase().includes("milk") ||
-      ing.name.toLowerCase().includes("drink")
-    )
-    .map(ing => ing.name);
-
-  const accompanimentSuggestions = allIngredients
-    .filter(ing => 
-      !(drinkSuggestions.includes(ing.name)) &&
-      (ing.name.toLowerCase().includes("bread") ||
-       ing.name.toLowerCase().includes("rice") ||
-       ing.name.toLowerCase().includes("sauce") ||
-       ing.name.toLowerCase().includes("dip") ||
-       ing.name.toLowerCase().includes("side"))
-    )
-    .map(ing => ing.name);
-
-  const allSuggestions = [...new Set([...drinkSuggestions, ...accompanimentSuggestions])];
+  // Calculate total macros for drinks & accompaniments
+  const drinksMacros = drinksAndAccompaniments.reduce(
+    (total, item) => {
+      return {
+        calories: total.calories + (item.macros?.calories || 0),
+        protein: total.protein + (item.macros?.protein || 0),
+        carbs: total.carbs + (item.macros?.carbs || 0),
+        fat: total.fat + (item.macros?.fat || 0),
+        showCalories: true,
+        showProtein: true,
+        showCarbs: true,
+        showFat: true,
+      };
+    },
+    {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      showCalories: true,
+      showProtein: true,
+      showCarbs: true,
+      showFat: true,
+    }
+  );
 
   return (
     <div className="flex flex-col gap-1">
@@ -236,12 +202,6 @@ const MealCard = ({
             }}
           >
             <Shuffle className="w-3 h-3 text-primary/50 group-hover:text-primary transition-colors duration-200" />
-          </button>
-          <button 
-            className="w-6 h-6 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center cursor-pointer rounded-md"
-            onClick={handleOpenDrinksDialog}
-          >
-            <Coffee className="w-3 h-3 text-primary/50 group-hover:text-primary transition-colors duration-200" />
           </button>
           <button 
             className="w-6 h-6 bg-secondary/50 hover:bg-secondary transition-colors duration-200 flex items-center justify-center rounded-md cursor-pointer"
@@ -303,6 +263,7 @@ const MealCard = ({
             prepTime={currentMealDetails?.prepTime}
             difficulty={currentMealDetails?.difficulty}
             drinksAndAccompaniments={drinksAndAccompaniments}
+            drinksMacros={drinksMacros}
           />
         </Dialog>
       )}
@@ -317,87 +278,6 @@ const MealCard = ({
           macroVisibility={macroVisibility}
         />
       )}
-
-      <Dialog open={isDrinksDialogOpen} onOpenChange={setIsDrinksDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Drinks & Accompaniments</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="flex items-center space-x-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start">
-                    {newDrinkName || "Select from ingredients..."}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-0">
-                  <Command>
-                    <CommandInput placeholder="Search ingredients..." />
-                    <CommandEmpty>No ingredient found.</CommandEmpty>
-                    <CommandGroup className="max-h-[200px] overflow-y-auto">
-                      {allIngredients.map((ing) => (
-                        <CommandItem
-                          key={ing.id}
-                          onSelect={() => {
-                            setNewDrinkName(ing.name);
-                          }}
-                          className="cursor-pointer"
-                        >
-                          {ing.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              <Button onClick={handleAddNewDrink} disabled={!newDrinkName}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div>
-              <div className="font-medium mb-2">Suggestions:</div>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {allSuggestions.slice(0, 8).map((item) => (
-                  <Badge 
-                    key={item} 
-                    variant="outline" 
-                    className="cursor-pointer hover:bg-secondary"
-                    onClick={() => handleToggleDrink(item)}
-                  >
-                    {item}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="font-medium mb-2">Selected items:</div>
-              <div className="flex flex-wrap gap-2">
-                {selectedDrinks.length > 0 ? (
-                  selectedDrinks.map((item) => (
-                    <Badge 
-                      key={item} 
-                      className="cursor-pointer bg-primary"
-                      onClick={() => handleToggleDrink(item)}
-                    >
-                      {item}
-                      <X className="ml-1 h-3 w-3" />
-                    </Badge>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">No items selected</p>
-                )}
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDrinksDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleSaveDrinks}>Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={isSwitchDialogOpen} onOpenChange={setIsSwitchDialogOpen}>
         <DialogContent className="max-h-[90vh] md:max-h-[80vh] w-[95vw] md:w-full overflow-y-auto">
