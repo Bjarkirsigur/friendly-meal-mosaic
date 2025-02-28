@@ -24,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Check } from "lucide-react";
 import { DrinkAccompaniment } from "@/hooks/useMealPlanner";
+import { getProteinRatio } from "@/utils/proteinRatio";
 
 interface MealCardProps {
   title: string;
@@ -183,6 +184,9 @@ const MealCard = ({
     }
   );
 
+  // Calculate protein ratio for badge
+  const proteinRatioBadge = macros ? getProteinRatio(macros.calories, macros.protein) : null;
+
   return (
     <div className="flex flex-col gap-1">
       {meal && (
@@ -224,11 +228,18 @@ const MealCard = ({
           <>
             <div className="h-[80px] relative">
               <MealImage meal={meal} className="absolute inset-0 w-full h-full object-cover" />
-              {drinksAndAccompaniments.length > 0 && (
-                <div className="absolute bottom-1 right-1 bg-black/50 rounded-full p-1">
-                  <Coffee className="w-3 h-3 text-white" />
-                </div>
-              )}
+              <div className="absolute bottom-1 left-1 flex items-center gap-1">
+                {proteinRatioBadge && (
+                  <Badge variant="outline" className={`${proteinRatioBadge.color} text-[8px] py-0 px-1 h-auto bg-black/40 border-none`}>
+                    {proteinRatioBadge.classification}
+                  </Badge>
+                )}
+                {drinksAndAccompaniments.length > 0 && (
+                  <div className="bg-black/50 rounded-full p-1">
+                    <Coffee className="w-3 h-3 text-white" />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="p-2">
               <div className="flex items-center justify-between">
@@ -314,8 +325,15 @@ const MealCard = ({
                           onClick={() => handleSwitch(availableMeal)}
                           className="w-full flex flex-col gap-3 hover:bg-secondary/30 transition-colors duration-200 text-left"
                         >
-                          <div className="w-full h-32 overflow-hidden">
+                          <div className="w-full h-32 relative overflow-hidden">
                             <MealImage meal={availableMeal.meal} className="w-full h-full object-cover" />
+                            {availableMeal.macros && (
+                              <div className="absolute bottom-2 left-2">
+                                <Badge className={getProteinRatio(availableMeal.macros.calories, availableMeal.macros.protein).color}>
+                                  {getProteinRatio(availableMeal.macros.calories, availableMeal.macros.protein).classification} Protein
+                                </Badge>
+                              </div>
+                            )}
                           </div>
                           
                           <div className="p-4">
@@ -365,6 +383,9 @@ const MealCard = ({
                                 {availableMeal.ingredients.map((ingredient, idx) => (
                                   <li key={idx}>
                                     {ingredient.name} ({ingredient.grams}g)
+                                    <span className={getProteinRatio(ingredient.macros.calories, ingredient.macros.protein).color + " ml-2 text-xs"}>
+                                      ({getProteinRatio(ingredient.macros.calories, ingredient.macros.protein).classification} protein)
+                                    </span>
                                   </li>
                                 ))}
                               </ul>
