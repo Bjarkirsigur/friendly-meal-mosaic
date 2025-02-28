@@ -17,6 +17,7 @@ export type Database = {
           fat: number
           grams: number
           id: string
+          image_url: string | null
           is_default: boolean | null
           name: string
           protein: number
@@ -29,6 +30,7 @@ export type Database = {
           fat: number
           grams: number
           id?: string
+          image_url?: string | null
           is_default?: boolean | null
           name: string
           protein: number
@@ -41,6 +43,7 @@ export type Database = {
           fat?: number
           grams?: number
           id?: string
+          image_url?: string | null
           is_default?: boolean | null
           name?: string
           protein?: number
@@ -147,6 +150,7 @@ export type Database = {
           created_at: string | null
           difficulty: string | null
           id: string
+          image_url: string | null
           is_default: boolean | null
           meal_type: string
           name: string
@@ -158,6 +162,7 @@ export type Database = {
           created_at?: string | null
           difficulty?: string | null
           id?: string
+          image_url?: string | null
           is_default?: boolean | null
           meal_type: string
           name: string
@@ -169,6 +174,7 @@ export type Database = {
           created_at?: string | null
           difficulty?: string | null
           id?: string
+          image_url?: string | null
           is_default?: boolean | null
           meal_type?: string
           name?: string

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Meal, Ingredient, MacroInfo } from '@/types/meals';
 import { useToast } from '@/hooks/use-toast';
+import { foodLibrary } from '@/utils/foodLibrary';
 
 export const useMeals = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -74,9 +75,253 @@ export const useMeals = () => {
     };
   };
 
+  const createSampleMeals = (): Meal[] => {
+    // Function to create a sample meal with ingredients from the food library
+    const createMealFromIngredients = (
+      name: string, 
+      mealType: string, 
+      ingredients: Ingredient[],
+      prepTime: number = 20,
+      difficulty: string = "Medium",
+      recipe: string = ""
+    ): Meal => {
+      // Calculate total macros
+      const totalMacros = ingredients.reduce(
+        (total, ingredient) => ({
+          calories: total.calories + ingredient.macros.calories,
+          protein: Math.round((total.protein + ingredient.macros.protein) * 10) / 10,
+          carbs: Math.round((total.carbs + ingredient.macros.carbs) * 10) / 10,
+          fat: Math.round((total.fat + ingredient.macros.fat) * 10) / 10,
+          showCalories: true,
+          showProtein: true,
+          showCarbs: true,
+          showFat: true
+        }),
+        { calories: 0, protein: 0, carbs: 0, fat: 0, showCalories: true, showProtein: true, showCarbs: true, showFat: true }
+      );
+      
+      return {
+        id: `sample-${name.toLowerCase().replace(/\s+/g, '-')}`,
+        meal: name,
+        ingredients,
+        macros: totalMacros,
+        prepTime,
+        difficulty,
+        recipe,
+        meal_type: mealType,
+        is_default: true,
+        user_id: null,
+        image_url: null
+      };
+    };
+    
+    // Get ingredients from food library
+    const chicken = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Chicken Breast");
+    const rice = foodLibrary.find(cat => cat.name === "Grains & Carbs")?.foods.find(f => f.name === "Brown Rice");
+    const broccoli = foodLibrary.find(cat => cat.name === "Vegetables")?.foods.find(f => f.name === "Broccoli");
+    const sweetPotato = foodLibrary.find(cat => cat.name === "Grains & Carbs")?.foods.find(f => f.name === "Sweet Potato");
+    const eggs = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Eggs");
+    const oats = foodLibrary.find(cat => cat.name === "Grains & Carbs")?.foods.find(f => f.name === "Oats");
+    const yogurt = foodLibrary.find(cat => cat.name === "Dairy & Alternatives")?.foods.find(f => f.name === "Greek Yogurt");
+    const banana = foodLibrary.find(cat => cat.name === "Fruits")?.foods.find(f => f.name === "Banana");
+    const almonds = foodLibrary.find(cat => cat.name === "Nuts & Seeds")?.foods.find(f => f.name === "Almonds");
+    const spinach = foodLibrary.find(cat => cat.name === "Vegetables")?.foods.find(f => f.name === "Spinach");
+    const salmon = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Salmon");
+    const avocado = foodLibrary.find(cat => cat.name === "Fruits")?.foods.find(f => f.name === "Avocado");
+    const groundBeef = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Ground Beef (90% lean)");
+    const whey = foodLibrary.find(cat => cat.name === "Supplements")?.foods.find(f => f.name === "Whey Protein Powder");
+    const berries = foodLibrary.find(cat => cat.name === "Fruits")?.foods.find(f => f.name === "Blueberries");
+    const peanutButter = foodLibrary.find(cat => cat.name === "Nuts & Seeds")?.foods.find(f => f.name === "Peanut Butter");
+    const cottage = foodLibrary.find(cat => cat.name === "Dairy & Alternatives")?.foods.find(f => f.name === "Cottage Cheese");
+    const quinoa = foodLibrary.find(cat => cat.name === "Grains & Carbs")?.foods.find(f => f.name === "Quinoa");
+    const tofu = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Tofu");
+    const pasta = foodLibrary.find(cat => cat.name === "Grains & Carbs")?.foods.find(f => f.name === "Pasta (cooked)");
+    const turkey = foodLibrary.find(cat => cat.name === "Proteins")?.foods.find(f => f.name === "Turkey Breast");
+    const bellPepper = foodLibrary.find(cat => cat.name === "Vegetables")?.foods.find(f => f.name === "Bell Pepper");
+
+    // Create an array to hold all meals
+    const allMeals: Meal[] = [];
+
+    // Create each meal with unique ID and ingredients
+    if (chicken && rice && broccoli) {
+      allMeals.push(createMealFromIngredients(
+        "Chicken Rice Bowl",
+        "Lunch",
+        [
+          { ...chicken, id: "1", grams: 150, is_default: true, user_id: null },
+          { ...rice, id: "2", grams: 200, is_default: true, user_id: null },
+          { ...broccoli, id: "3", grams: 100, is_default: true, user_id: null }
+        ],
+        25,
+        "Easy",
+        "1. Season chicken with salt and pepper\n2. Grill chicken until fully cooked\n3. Cook rice according to package instructions\n4. Steam broccoli until tender\n5. Combine all ingredients in a bowl"
+      ));
+    }
+    
+    if (eggs && oats && banana) {
+      allMeals.push(createMealFromIngredients(
+        "Oatmeal Breakfast",
+        "Breakfast",
+        [
+          { ...oats, id: "4", grams: 80, is_default: true, user_id: null },
+          { ...eggs, id: "5", grams: 50, is_default: true, user_id: null },
+          { ...banana, id: "6", grams: 120, is_default: true, user_id: null }
+        ],
+        10,
+        "Easy",
+        "1. Cook oats with water or milk\n2. Whisk eggs separately and cook\n3. Slice banana\n4. Combine all ingredients in a bowl"
+      ));
+    }
+    
+    if (salmon && sweetPotato && spinach) {
+      allMeals.push(createMealFromIngredients(
+        "Salmon & Sweet Potato",
+        "Dinner",
+        [
+          { ...salmon, id: "7", grams: 150, is_default: true, user_id: null },
+          { ...sweetPotato, id: "8", grams: 200, is_default: true, user_id: null },
+          { ...spinach, id: "9", grams: 100, is_default: true, user_id: null }
+        ],
+        30,
+        "Medium",
+        "1. Season salmon with herbs and lemon\n2. Bake salmon at 400°F for 15-20 minutes\n3. Roast sweet potato cubes at 425°F for 25 minutes\n4. Sauté spinach with garlic\n5. Serve all together"
+      ));
+    }
+    
+    if (yogurt && berries && almonds) {
+      allMeals.push(createMealFromIngredients(
+        "Greek Yogurt Parfait",
+        "Snacks",
+        [
+          { ...yogurt, id: "10", grams: 200, is_default: true, user_id: null },
+          { ...berries, id: "11", grams: 100, is_default: true, user_id: null },
+          { ...almonds, id: "12", grams: 30, is_default: true, user_id: null }
+        ],
+        5,
+        "Easy",
+        "1. Layer yogurt, berries, and crushed almonds in a bowl\n2. Optional: drizzle with honey"
+      ));
+    }
+    
+    if (chicken && avocado && quinoa) {
+      allMeals.push(createMealFromIngredients(
+        "Chicken Avocado Bowl",
+        "Lunch",
+        [
+          { ...chicken, id: "13", grams: 150, is_default: true, user_id: null },
+          { ...avocado, id: "14", grams: 75, is_default: true, user_id: null },
+          { ...quinoa, id: "15", grams: 150, is_default: true, user_id: null }
+        ],
+        20,
+        "Medium",
+        "1. Cook quinoa according to package instructions\n2. Grill seasoned chicken\n3. Slice avocado\n4. Combine in a bowl\n5. Optional: add lime juice and cilantro"
+      ));
+    }
+    
+    if (groundBeef && pasta && spinach) {
+      allMeals.push(createMealFromIngredients(
+        "Beef Pasta Bowl",
+        "Dinner",
+        [
+          { ...groundBeef, id: "16", grams: 150, is_default: true, user_id: null },
+          { ...pasta, id: "17", grams: 200, is_default: true, user_id: null },
+          { ...spinach, id: "18", grams: 80, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Brown ground beef with seasonings\n2. Cook pasta al dente\n3. Add spinach to beef until wilted\n4. Mix pasta with beef and spinach\n5. Optional: add tomato sauce"
+      ));
+    }
+    
+    if (whey && banana && peanutButter) {
+      allMeals.push(createMealFromIngredients(
+        "Protein Smoothie",
+        "Snacks",
+        [
+          { ...whey, id: "19", grams: 30, is_default: true, user_id: null },
+          { ...banana, id: "20", grams: 120, is_default: true, user_id: null },
+          { ...peanutButter, id: "21", grams: 20, is_default: true, user_id: null }
+        ],
+        5,
+        "Easy",
+        "1. Blend all ingredients with water or milk\n2. Add ice for a thicker consistency"
+      ));
+    }
+    
+    if (eggs && spinach && cottage) {
+      allMeals.push(createMealFromIngredients(
+        "Protein Breakfast Bowl",
+        "Breakfast",
+        [
+          { ...eggs, id: "22", grams: 100, is_default: true, user_id: null },
+          { ...spinach, id: "23", grams: 50, is_default: true, user_id: null },
+          { ...cottage, id: "24", grams: 100, is_default: true, user_id: null }
+        ],
+        15,
+        "Medium",
+        "1. Scramble eggs with spinach\n2. Serve with cottage cheese on the side\n3. Season with salt and pepper"
+      ));
+    }
+    
+    if (tofu && broccoli && rice) {
+      allMeals.push(createMealFromIngredients(
+        "Tofu Stir Fry",
+        "Dinner",
+        [
+          { ...tofu, id: "25", grams: 150, is_default: true, user_id: null },
+          { ...broccoli, id: "26", grams: 120, is_default: true, user_id: null },
+          { ...rice, id: "27", grams: 150, is_default: true, user_id: null }
+        ],
+        20,
+        "Medium",
+        "1. Press and cube tofu\n2. Stir fry tofu until golden\n3. Add broccoli and cook until tender\n4. Serve over cooked rice\n5. Add soy sauce or teriyaki sauce"
+      ));
+    }
+    
+    if (turkey && bellPepper && quinoa) {
+      allMeals.push(createMealFromIngredients(
+        "Turkey Quinoa Bowl",
+        "Lunch",
+        [
+          { ...turkey, id: "28", grams: 120, is_default: true, user_id: null },
+          { ...bellPepper, id: "29", grams: 100, is_default: true, user_id: null },
+          { ...quinoa, id: "30", grams: 150, is_default: true, user_id: null }
+        ],
+        25,
+        "Medium",
+        "1. Cook quinoa according to package\n2. Sauté sliced turkey breast\n3. Sauté sliced bell peppers\n4. Combine all ingredients\n5. Season with herbs and spices"
+      ));
+    }
+    
+    if (oats && yogurt && berries) {
+      allMeals.push(createMealFromIngredients(
+        "Overnight Oats",
+        "Breakfast",
+        [
+          { ...oats, id: "31", grams: 80, is_default: true, user_id: null },
+          { ...yogurt, id: "32", grams: 120, is_default: true, user_id: null },
+          { ...berries, id: "33", grams: 80, is_default: true, user_id: null }
+        ],
+        5,
+        "Easy",
+        "1. Mix oats and yogurt\n2. Add a splash of milk if desired\n3. Refrigerate overnight\n4. Top with berries before serving"
+      ));
+    }
+    
+    return allMeals;
+  };
+
   const loadMeals = async () => {
     try {
       setLoading(true);
+      
+      // Check if we should use sample data or fetch from database
+      if (!user) {
+        // Use sample data
+        const sampleMeals = createSampleMeals();
+        setMeals(sampleMeals);
+        return;
+      }
       
       // Fetch all meals
       const { data: mealsData, error: mealsError } = await supabase
@@ -112,6 +357,10 @@ export const useMeals = () => {
         );
         
         setMeals(convertedMeals);
+      } else {
+        // If no data found in database, use sample data
+        const sampleMeals = createSampleMeals();
+        setMeals(sampleMeals);
       }
     } catch (error: any) {
       toast({
@@ -271,9 +520,7 @@ export const useMeals = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      loadMeals();
-    }
+    loadMeals();
   }, [user]);
 
   return {
