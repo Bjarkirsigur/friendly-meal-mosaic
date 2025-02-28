@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useIngredients } from "@/hooks/useIngredients";
+import { MealDataInitializer } from "@/components/MealDataInitializer";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -462,6 +463,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Include the MealDataInitializer component */}
+      <MealDataInitializer />
 
       <MacroGoalsDialog
         isOpen={isGoalsDialogOpen}
