@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { DayMeals, Ingredient, MacroInfo, MealType } from '@/types/meals';
 import { createInitialMeals } from '@/utils/mealUtils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -66,6 +66,21 @@ export const useMealPlanner = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+
+  // Add the initializeMealsIfEmpty function
+  const initializeMealsIfEmpty = useCallback(() => {
+    setWeeklyMeals(prevMeals => {
+      // Check if meals are already initialized
+      const isEmpty = Object.keys(prevMeals).length === 0;
+      
+      // If empty, initialize with default meals
+      if (isEmpty) {
+        return createInitialMeals();
+      }
+      
+      return prevMeals;
+    });
+  }, []);
 
   // Load meal plans from database when user logs in
   useEffect(() => {
@@ -314,6 +329,7 @@ export const useMealPlanner = () => {
     handleDrinksAccompanimentsUpdate,
     getDrinksAndAccompaniments,
     getDrinksAndAccompanimentsMacros,
+    initializeMealsIfEmpty, // Export the new function
     loading
   };
 };
