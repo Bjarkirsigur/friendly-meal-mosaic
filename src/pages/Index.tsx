@@ -7,14 +7,13 @@ import { useMacroGoals } from "@/hooks/useMacroGoals";
 import { useMealPlanner, DrinkAccompaniment } from "@/hooks/useMealPlanner";
 import { format } from "date-fns";
 import { MacroDisplay } from "@/components/meal/MacroDisplay";
-import { Settings, Plus, X, Search } from "lucide-react";
+import { Settings, Plus, X, Coffee, Search } from "lucide-react";
 import MealCard from "@/components/MealCard";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useIngredients } from "@/hooks/useIngredients";
-import { MealDataInitializer } from "@/components/MealDataInitializer";
 
 const Index = () => {
   const [currentDate] = useState(new Date());
@@ -77,7 +76,7 @@ const Index = () => {
 
     // Add drinks and accompaniments macros
     MEAL_TYPES.forEach((mealType) => {
-      const drinksMacros = getDrinksAndAccompanimentsMacros(currentDayName, mealType as MealType);
+      const drinksMacros = getDrinksAndAccompanimentsMacros(currentDayName, mealType);
       totalMacros = {
         ...totalMacros,
         calories: Math.round((totalMacros.calories + drinksMacros.calories) * 10) / 10,
@@ -106,7 +105,7 @@ const Index = () => {
     if (!currentEditingMeal || !selectedIngredient) return;
     
     const { day, mealType } = currentEditingMeal;
-    const currentItems = getDrinksAndAccompaniments(day, mealType as MealType);
+    const currentItems = getDrinksAndAccompaniments(day, mealType);
     
     // Check if this ingredient is already in the list
     const exists = currentItems.find(item => item.name === selectedIngredient.name);
@@ -129,14 +128,14 @@ const Index = () => {
     
     const updatedItems = [...currentItems, newItem];
     
-    handleDrinksAccompanimentsUpdate(day, mealType as MealType, updatedItems);
+    handleDrinksAccompanimentsUpdate(day, mealType, updatedItems);
     setSelectedIngredient(null);
   };
 
   const handleRemoveDrinkItem = (day: string, mealType: string, index: number) => {
-    const currentItems = getDrinksAndAccompaniments(day, mealType as MealType);
+    const currentItems = getDrinksAndAccompaniments(day, mealType);
     const updatedItems = currentItems.filter((_, idx) => idx !== index);
-    handleDrinksAccompanimentsUpdate(day, mealType as MealType, updatedItems);
+    handleDrinksAccompanimentsUpdate(day, mealType, updatedItems);
   };
 
   const filteredIngredients = useMemo(() => {
@@ -147,7 +146,7 @@ const Index = () => {
 
   const currentItemsMacros = useMemo(() => {
     if (!currentEditingMeal) return null;
-    return getDrinksAndAccompanimentsMacros(currentEditingMeal.day, currentEditingMeal.mealType as MealType);
+    return getDrinksAndAccompanimentsMacros(currentEditingMeal.day, currentEditingMeal.mealType);
   }, [currentEditingMeal, getDrinksAndAccompanimentsMacros]);
 
   return (
@@ -464,9 +463,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Include the MealDataInitializer component */}
-      <MealDataInitializer />
-
       <MacroGoalsDialog
         isOpen={isGoalsDialogOpen}
         onOpenChange={setIsGoalsDialogOpen}
@@ -527,10 +523,10 @@ const Index = () => {
           
           <div className="mt-6">
             <h4 className="mb-2 text-sm font-medium">Current Items:</h4>
-            {currentEditingMeal && getDrinksAndAccompaniments(currentEditingMeal.day, currentEditingMeal.mealType as MealType).length > 0 ? (
+            {currentEditingMeal && getDrinksAndAccompaniments(currentEditingMeal.day, currentEditingMeal.mealType).length > 0 ? (
               <>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {currentEditingMeal && getDrinksAndAccompaniments(currentEditingMeal.day, currentEditingMeal.mealType as MealType).map((item, idx) => (
+                  {currentEditingMeal && getDrinksAndAccompaniments(currentEditingMeal.day, currentEditingMeal.mealType).map((item, idx) => (
                     <div key={idx} className="bg-primary/10 px-3 py-1 rounded-md text-sm flex items-center gap-2">
                       {item.name}
                       <button 
