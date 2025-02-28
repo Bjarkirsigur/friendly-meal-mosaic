@@ -13,7 +13,6 @@ import NotFound from "./pages/NotFound";
 import { AppSidebar } from "./components/AppSidebar";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { MealDataInitializer } from "./components/MealDataInitializer";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +22,6 @@ const App = () => (
       <AuthProvider>
         <Toaster />
         <Sonner />
-        <MealDataInitializer />
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
