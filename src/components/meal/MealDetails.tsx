@@ -9,7 +9,6 @@ import { Clock, BarChart2, Coffee } from "lucide-react";
 import { DrinkAccompaniment } from "@/hooks/useMealPlanner";
 import { useMeals } from "@/hooks/useMeals";
 import { getProteinRatio, getProteinRatioDescription } from "@/utils/proteinRatio";
-import { Badge } from "@/components/ui/badge";
 
 interface MealDetailsProps {
   meal: string;
@@ -48,6 +47,12 @@ export const MealDetails = ({
   const { classification, color } = getProteinRatio(macros.calories, macros.protein);
   const proteinRatioDescription = getProteinRatioDescription(macros.calories, macros.protein);
   
+  const proteinRatioColors = {
+    'High': 'bg-gradient-to-r from-emerald-500 to-emerald-400',
+    'Medium': 'bg-gradient-to-r from-amber-500 to-amber-400',
+    'Low': 'bg-gradient-to-r from-rose-500 to-rose-400'
+  };
+  
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-hidden">
       <DialogHeader>
@@ -69,11 +74,12 @@ export const MealDetails = ({
           <div className="space-y-6">
             {/* Meal info section */}
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className={color}>
-                  {classification} Protein
-                </Badge>
-                <span className="text-sm text-muted-foreground">{proteinRatioDescription}</span>
+              <div className="inline-flex px-3 py-2 rounded-lg bg-secondary/50 items-center">
+                <div className={`w-3 h-3 rounded-full ${proteinRatioColors[classification]} mr-2 shadow-sm`}></div>
+                <div>
+                  <span className="font-medium text-sm">{classification} protein content</span>
+                  <p className="text-xs text-muted-foreground">{proteinRatioDescription}</p>
+                </div>
               </div>
               
               {(prepTime !== undefined || difficulty) && (

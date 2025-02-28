@@ -28,16 +28,19 @@ export const IngredientsList = ({ ingredients }: IngredientsListProps) => {
           
           return (
             <div key={idx} className="p-2 bg-secondary/20 rounded flex flex-col">
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span>
                   {ingredient.name} 
                   <span className="text-xs text-muted-foreground ml-2">
                     ({ingredient.grams}g)
                   </span>
                 </span>
-                <span className={`text-xs ${color}`}>
-                  {classification} protein
-                </span>
+                <div className="flex items-center">
+                  <div className={`w-2 h-2 rounded-full ${color === 'text-green-600' ? 'bg-emerald-500' : color === 'text-amber-500' ? 'bg-amber-400' : 'bg-rose-400'} mr-1.5`}></div>
+                  <span className="text-xs font-medium bg-secondary/80 px-2 py-0.5 rounded-full">
+                    {classification}
+                  </span>
+                </div>
               </div>
               <div className="text-xs text-muted-foreground mt-1">
                 {ingredient.macros.calories} cal · {ingredient.macros.protein}g protein · {ingredient.macros.carbs}g carbs · {ingredient.macros.fat}g fat
