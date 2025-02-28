@@ -7,6 +7,7 @@ import { MealImage } from "./MealImage";
 import { IngredientsList } from "./IngredientsList";
 import { Clock, BarChart2, Coffee } from "lucide-react";
 import { DrinkAccompaniment } from "@/hooks/useMealPlanner";
+import { useMeals } from "@/hooks/useMeals";
 
 interface MealDetailsProps {
   meal: string;
@@ -29,6 +30,19 @@ export const MealDetails = ({
   drinksAndAccompaniments = [],
   drinksMacros
 }: MealDetailsProps) => {
+  const { updateMeal, meals } = useMeals();
+  
+  const currentMeal = meals.find(m => m.meal === meal);
+  
+  const handleImageUpdate = async (newImageUrl: string) => {
+    if (currentMeal?.id) {
+      // Update the meal with the new image URL
+      await updateMeal(currentMeal.id, {
+        image_url: newImageUrl
+      });
+    }
+  };
+  
   return (
     <DialogContent className="max-w-2xl max-h-[90vh] lg:max-h-[80vh] overflow-hidden">
       <DialogHeader>
@@ -38,7 +52,13 @@ export const MealDetails = ({
       <ScrollArea className="max-h-[calc(90vh-140px)] md:max-h-[calc(80vh-140px)]">
         <div className="space-y-6 py-4">
           <div className="h-[200px] md:h-[300px] w-full relative rounded-lg overflow-hidden">
-            <MealImage meal={meal} className="w-full h-full object-cover" />
+            <MealImage 
+              meal={meal} 
+              className="w-full h-full object-cover"
+              imageUrl={currentMeal?.image_url}
+              onImageUpdate={handleImageUpdate}
+              editable={true}
+            />
           </div>
           
           <div className="space-y-6">

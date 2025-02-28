@@ -151,6 +151,22 @@ export const useMealPlanner = () => {
     localStorage.setItem('drinksAndAccompaniments', JSON.stringify(drinksAndAccompaniments));
   }, [drinksAndAccompaniments]);
 
+  // Helper function to serialize drinkAccompaniments for storage
+  const serializeDrinksAccompaniments = (items: DrinkAccompaniment[]) => {
+    return {
+      items: items.map(item => ({
+        name: item.name,
+        grams: item.grams,
+        macros: {
+          calories: item.macros.calories,
+          protein: item.macros.protein,
+          carbs: item.macros.carbs,
+          fat: item.macros.fat
+        }
+      }))
+    };
+  };
+
   // Helper function to sync with database
   const syncMealPlan = async (day: string, mealType: string) => {
     if (!user) return;
@@ -170,6 +186,8 @@ export const useMealPlanner = () => {
       
       if (fetchError) throw fetchError;
       
+      const serializedDrinks = drinksItems ? serializeDrinksAccompaniments(drinksItems) : null;
+      
       if (existingData) {
         // Update existing meal plan
         const { error: updateError } = await supabase
@@ -178,7 +196,7 @@ export const useMealPlanner = () => {
             meal_name: meal?.meal || null,
             ingredients: meal?.ingredients ? JSON.parse(JSON.stringify(meal.ingredients)) : null,
             macros: meal?.macros ? JSON.parse(JSON.stringify(meal.macros)) : null,
-            drinks_and_accompaniments: drinksItems ? { items: drinksItems } : null,
+            drinks_and_accompaniments: serializedDrinks,
             updated_at: new Date().toISOString()
           })
           .eq('id', existingData.id);
@@ -188,15 +206,15 @@ export const useMealPlanner = () => {
         // Insert new meal plan
         const { error: insertError } = await supabase
           .from('meal_plans')
-          .insert([{
+          .insert({
             user_id: user.id,
             day_name: day,
             meal_type: mealType,
             meal_name: meal?.meal || null,
             ingredients: meal?.ingredients ? JSON.parse(JSON.stringify(meal.ingredients)) : null,
             macros: meal?.macros ? JSON.parse(JSON.stringify(meal.macros)) : null,
-            drinks_and_accompaniments: drinksItems ? { items: drinksItems } : null
-          }]);
+            drinks_and_accompaniments: serializedDrinks
+          });
         
         if (insertError) throw insertError;
       }

@@ -38,7 +38,8 @@ export const useMeals = () => {
             showFat: true
           },
           is_default: ingredientDetails.is_default,
-          user_id: ingredientDetails.user_id
+          user_id: ingredientDetails.user_id,
+          image_url: ingredientDetails.image_url
         } as Ingredient;
       })
       .filter(Boolean) as Ingredient[];
@@ -68,7 +69,8 @@ export const useMeals = () => {
       difficulty: dbMeal.difficulty,
       meal_type: dbMeal.meal_type,
       is_default: dbMeal.is_default,
-      user_id: dbMeal.user_id
+      user_id: dbMeal.user_id,
+      image_url: dbMeal.image_url
     };
   };
 
@@ -136,7 +138,8 @@ export const useMeals = () => {
           difficulty: newMeal.difficulty,
           meal_type: newMeal.meal_type || 'Snacks',
           user_id: user.id,
-          is_default: false
+          is_default: false,
+          image_url: newMeal.image_url
         }])
         .select();
       
@@ -189,6 +192,7 @@ export const useMeals = () => {
       if (updatedMeal.prepTime !== undefined) updateData.prep_time = updatedMeal.prepTime;
       if (updatedMeal.difficulty) updateData.difficulty = updatedMeal.difficulty;
       if (updatedMeal.meal_type) updateData.meal_type = updatedMeal.meal_type;
+      if (updatedMeal.image_url) updateData.image_url = updatedMeal.image_url;
       
       // Update the meal
       const { error: mealError } = await supabase

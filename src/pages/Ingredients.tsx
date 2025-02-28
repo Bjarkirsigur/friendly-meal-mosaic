@@ -1,553 +1,589 @@
 
-import { useState } from "react";
-import { useIngredients } from "@/hooks/useIngredients";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Search, Plus, Barcode, X } from "lucide-react";
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import BarcodeScanner from "@/components/BarcodeScanner";
-import { fetchProductByBarcode } from "@/services/foodApi";
-import { Ingredient } from "@/types/meals";
+import { useToast } from '@/hooks/use-toast';
+import { PlusCircle, Pencil, Trash2, Search, Upload } from 'lucide-react';
+import { MacroInfo, Ingredient } from '@/types/meals';
+import { useIngredients } from '@/hooks/useIngredients';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { supabase } from '@/integrations/supabase/client';
 
-export default function Ingredients() {
-  const { ingredients, loading, addIngredient } = useIngredients();
-  const [searchTerm, setSearchTerm] = useState("");
+const Ingredients = () => {
+  const { toast } = useToast();
+  const { ingredients, loading, addIngredient, updateIngredient, deleteIngredient, refreshIngredients } = useIngredients();
+
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isScanning, setIsScanning] = useState(false);
-  const [newIngredient, setNewIngredient] = useState<Omit<Ingredient, 'id' | 'is_default' | 'user_id'>>({
-    name: "",
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [currentIngredient, setCurrentIngredient] = useState<Ingredient | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newIngredient, setNewIngredient] = useState({
+    name: '',
     grams: 100,
-    macros: {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    image_url: ''
+  });
+  const [uploading, setUploading] = useState(false);
+
+  const filteredIngredients = useMemo(() => {
+    return ingredients.filter(
+      (ingredient) => ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [ingredients, searchTerm]);
+
+  const resetNewIngredient = () => {
+    setNewIngredient({
+      name: '',
+      grams: 100,
       calories: 0,
       protein: 0,
       carbs: 0,
       fat: 0,
-      showCalories: true,
-      showProtein: true,
-      showCarbs: true,
-      showFat: true
-    },
-    image_url: ""
-  });
-  const [barcodeInput, setBarcodeInput] = useState("");
-  const [isLoadingBarcode, setIsLoadingBarcode] = useState(false);
-  const { toast } = useToast();
-  
-  const filteredIngredients = ingredients.filter(ingredient =>
-    ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      image_url: ''
+    });
+  };
 
-  const resetForm = () => {
-    setNewIngredient({
-      name: "",
-      grams: 100,
+  const handleOpenEditDialog = (ingredient: Ingredient) => {
+    setCurrentIngredient(ingredient);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleOpenDeleteDialog = (ingredient: Ingredient) => {
+    setCurrentIngredient(ingredient);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleAddIngredient = async () => {
+    if (!newIngredient.name) {
+      toast({
+        title: 'Validation Error',
+        description: 'Ingredient name is required',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const ingredientToAdd: Omit<Ingredient, 'id' | 'is_default' | 'user_id'> = {
+      name: newIngredient.name,
+      grams: Number(newIngredient.grams),
       macros: {
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fat: 0,
+        calories: Number(newIngredient.calories),
+        protein: Number(newIngredient.protein),
+        carbs: Number(newIngredient.carbs),
+        fat: Number(newIngredient.fat),
         showCalories: true,
         showProtein: true,
         showCarbs: true,
         showFat: true
       },
-      image_url: ""
-    });
-    setBarcodeInput("");
-    setIsScanning(false);
-  };
+      image_url: newIngredient.image_url
+    };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    
-    if (name === "grams") {
-      setNewIngredient({
-        ...newIngredient,
-        [name]: parseFloat(value) || 0
-      });
-    } else if (name.startsWith("macros.")) {
-      const macroProperty = name.split(".")[1];
-      setNewIngredient({
-        ...newIngredient,
-        macros: {
-          ...newIngredient.macros,
-          [macroProperty]: parseFloat(value) || 0
-        }
-      });
-    } else {
-      setNewIngredient({
-        ...newIngredient,
-        [name]: value
-      });
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!newIngredient.name) {
+    const result = await addIngredient(ingredientToAdd);
+    if (result) {
       toast({
-        title: "Missing information",
-        description: "Please provide a name for the ingredient",
-        variant: "destructive"
+        title: 'Success',
+        description: 'Ingredient added successfully',
       });
-      return;
+      setIsAddDialogOpen(false);
+      resetNewIngredient();
     }
+  };
+
+  const handleUpdateIngredient = async () => {
+    if (!currentIngredient) return;
+
+    const updatedIngredient: Partial<Omit<Ingredient, 'id' | 'is_default' | 'user_id'>> = {
+      name: currentIngredient.name,
+      grams: currentIngredient.grams,
+      macros: {
+        calories: currentIngredient.macros.calories,
+        protein: currentIngredient.macros.protein,
+        carbs: currentIngredient.macros.carbs,
+        fat: currentIngredient.macros.fat,
+        showCalories: true,
+        showProtein: true,
+        showCarbs: true,
+        showFat: true
+      },
+      image_url: currentIngredient.image_url
+    };
+
+    const result = await updateIngredient(currentIngredient.id, updatedIngredient);
+    if (result) {
+      toast({
+        title: 'Success',
+        description: 'Ingredient updated successfully',
+      });
+      setIsEditDialogOpen(false);
+    }
+  };
+
+  const handleDeleteIngredient = async () => {
+    if (!currentIngredient) return;
+
+    const result = await deleteIngredient(currentIngredient.id);
+    if (result) {
+      toast({
+        title: 'Success',
+        description: 'Ingredient deleted successfully',
+      });
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  const handleIngredientImageUpload = async (event: React.ChangeEvent<HTMLInputElement>, isNewIngredient: boolean) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
     try {
-      const result = await addIngredient(newIngredient);
-      if (result) {
-        toast({
-          title: "Success",
-          description: "Ingredient added successfully"
+      setUploading(true);
+      
+      // Create a unique file name
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `ingredients/${fileName}`;
+      
+      // Upload to Supabase
+      const { data, error } = await supabase.storage
+        .from('images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
         });
-        resetForm();
-        setIsAddDialogOpen(false);
+      
+      if (error) throw error;
+      
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+      
+      if (isNewIngredient) {
+        setNewIngredient({
+          ...newIngredient,
+          image_url: publicUrl
+        });
+      } else if (currentIngredient) {
+        setCurrentIngredient({
+          ...currentIngredient,
+          image_url: publicUrl
+        });
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add ingredient",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const startBarcodeScanning = () => {
-    setIsScanning(true);
-  };
-
-  const stopBarcodeScanning = () => {
-    setIsScanning(false);
-  };
-
-  const handleBarcodeDetected = async (barcode: string) => {
-    // Stop scanning once we detect a barcode
-    stopBarcodeScanning();
-    setIsLoadingBarcode(true);
-    
-    try {
-      // Attempt to fetch product data from the food API
-      const productData = await fetchProductByBarcode(barcode);
-      
-      // Type assertion for the product data
-      const typedData = productData as {
-        name: string;
-        grams: number;
-        macros: {
-          calories: number;
-          protein: number;
-          carbs: number;
-          fat: number;
-        };
-        image_url?: string;
-      };
-      
-      // Update the form with product data
-      setNewIngredient({
-        name: typedData.name,
-        grams: typedData.grams,
-        image_url: typedData.image_url || "",
-        macros: {
-          calories: typedData.macros.calories,
-          protein: typedData.macros.protein,
-          carbs: typedData.macros.carbs,
-          fat: typedData.macros.fat,
-          showCalories: true,
-          showProtein: true,
-          showCarbs: true,
-          showFat: true
-        }
-      });
       
       toast({
-        title: "Product found",
-        description: `Found data for ${typedData.name}`
+        title: "Image uploaded",
+        description: "Your image has been successfully uploaded.",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Product not found",
-        description: "Could not find product information. Please enter details manually.",
-        variant: "destructive"
+        title: "Error uploading image",
+        description: error.message,
+        variant: "destructive",
       });
     } finally {
-      setIsLoadingBarcode(false);
+      setUploading(false);
     }
-  };
-
-  const handleBarcodeScanError = (error: any) => {
-    console.error("Barcode scanning error:", error);
-    toast({
-      title: "Scanner Error",
-      description: "Could not access camera. Please check permissions or enter barcode manually.",
-      variant: "destructive"
-    });
-    stopBarcodeScanning();
-  };
-
-  const handleManualBarcodeSearch = async () => {
-    if (!barcodeInput) {
-      toast({
-        title: "Error",
-        description: "Please enter a barcode",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    setIsLoadingBarcode(true);
-    
-    try {
-      const productData = await fetchProductByBarcode(barcodeInput);
-      
-      // Type assertion for the product data
-      const typedData = productData as {
-        name: string;
-        grams: number;
-        macros: {
-          calories: number;
-          protein: number;
-          carbs: number;
-          fat: number;
-        };
-        image_url?: string;
-      };
-      
-      setNewIngredient({
-        name: typedData.name,
-        grams: typedData.grams,
-        image_url: typedData.image_url || "",
-        macros: {
-          calories: typedData.macros.calories,
-          protein: typedData.macros.protein,
-          carbs: typedData.macros.carbs,
-          fat: typedData.macros.fat,
-          showCalories: true,
-          showProtein: true,
-          showCarbs: true,
-          showFat: true
-        }
-      });
-      
-      toast({
-        title: "Product found",
-        description: `Found data for ${typedData.name}`
-      });
-    } catch (error) {
-      toast({
-        title: "Product not found",
-        description: "Could not find product information. Please enter details manually.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoadingBarcode(false);
-    }
-  };
-
-  // Helper function to get a fallback image based on ingredient name
-  const getFallbackImage = (name: string) => {
-    // Default categories
-    const proteinFoods = ["chicken", "beef", "fish", "salmon", "tuna", "egg", "turkey", "tofu", "protein"];
-    const dairyFoods = ["milk", "yogurt", "cheese", "cream", "butter"];
-    const fruitFoods = ["apple", "banana", "orange", "berry", "fruit", "berries"];
-    const vegetableFoods = ["broccoli", "spinach", "lettuce", "carrot", "vegetable", "tomato", "pepper"];
-    const grainFoods = ["rice", "oat", "bread", "pasta", "grain", "cereal", "wheat"];
-    const nutsFoods = ["almond", "walnut", "peanut", "cashew", "nut"];
-    const oilsFoods = ["oil", "olive"];
-    
-    const nameLower = name.toLowerCase();
-    
-    if (proteinFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=1470&auto=format&fit=crop";
-    } else if (dairyFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=1470&auto=format&fit=crop";
-    } else if (fruitFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?q=80&w=1470&auto=format&fit=crop";
-    } else if (vegetableFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1590779033100-9f60a05a013d?q=80&w=1374&auto=format&fit=crop";
-    } else if (grainFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1586201375761-83865001e31c?q=80&w=1470&auto=format&fit=crop";
-    } else if (nutsFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1573851552153-816785fecb2f?q=80&w=1470&auto=format&fit=crop";
-    } else if (oilsFoods.some(food => nameLower.includes(food))) {
-      return "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?q=80&w=1470&auto=format&fit=crop";
-    }
-    
-    // Default fallback
-    return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1470&auto=format&fit=crop";
   };
 
   return (
-    <div className="container py-6 space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Ingredients Library</h1>
-          <p className="text-muted-foreground mt-1">
-            Browse our comprehensive collection of ingredients with accurate nutritional information
-          </p>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search ingredients..."
-              className="w-full pl-9 pr-4 py-2 rounded-md border border-input bg-background"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          
-          <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-            setIsAddDialogOpen(open);
-            if (!open) {
-              resetForm();
-            }
-          }}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Ingredient
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add New Ingredient</DialogTitle>
-              </DialogHeader>
-              
-              {isScanning ? (
-                <div className="space-y-4">
-                  <div className="flex flex-col items-center justify-center p-4 border rounded-md bg-secondary/30 min-h-[240px]">
-                    <BarcodeScanner 
-                      onDetected={handleBarcodeDetected}
-                      onError={handleBarcodeScanError}
-                    />
-                  </div>
-                  <Button variant="outline" onClick={stopBarcodeScanning} className="w-full">
-                    <X className="mr-2 h-4 w-4" />
-                    Cancel Scanning
-                  </Button>
-                </div>
-              ) : (
-                <div className="grid gap-4 py-4">
-                  {isLoadingBarcode ? (
-                    <div className="flex flex-col items-center justify-center p-4 h-[200px]">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                      <p className="mt-4 text-muted-foreground">Looking up product information...</p>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="grid gap-2">
-                        <div className="flex gap-2">
-                          <div className="flex-1">
-                            <Label htmlFor="barcode" className="text-sm">
-                              Enter Barcode
-                            </Label>
-                            <div className="flex gap-2 mt-1">
-                              <Input
-                                id="barcode"
-                                placeholder="Enter barcode number"
-                                value={barcodeInput}
-                                onChange={(e) => setBarcodeInput(e.target.value)}
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={handleManualBarcodeSearch}
-                                size="icon"
-                              >
-                                <Search className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div>
-                            <Label htmlFor="scan" className="text-sm">
-                              Scan
-                            </Label>
-                            <Button
-                              id="scan"
-                              type="button"
-                              variant="outline"
-                              onClick={startBarcodeScanning}
-                              className="mt-1"
-                              size="icon"
-                            >
-                              <Barcode className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="grid gap-2">
-                        <Label htmlFor="name" className="text-sm">
-                          Name
-                        </Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={newIngredient.name}
-                          onChange={handleInputChange}
-                          placeholder="Ingredient name"
-                        />
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="grams" className="text-sm">
-                            Serving Size (g)
-                          </Label>
-                          <Input
-                            id="grams"
-                            name="grams"
-                            type="number"
-                            value={newIngredient.grams}
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        
-                        <div className="grid gap-2">
-                          <Label htmlFor="macros.calories" className="text-sm">
-                            Calories
-                          </Label>
-                          <Input
-                            id="macros.calories"
-                            name="macros.calories"
-                            type="number"
-                            value={newIngredient.macros.calories}
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="macros.protein" className="text-sm">
-                            Protein (g)
-                          </Label>
-                          <Input
-                            id="macros.protein"
-                            name="macros.protein"
-                            type="number"
-                            value={newIngredient.macros.protein}
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        
-                        <div className="grid gap-2">
-                          <Label htmlFor="macros.carbs" className="text-sm">
-                            Carbs (g)
-                          </Label>
-                          <Input
-                            id="macros.carbs"
-                            name="macros.carbs"
-                            type="number"
-                            value={newIngredient.macros.carbs}
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                        
-                        <div className="grid gap-2">
-                          <Label htmlFor="macros.fat" className="text-sm">
-                            Fat (g)
-                          </Label>
-                          <Input
-                            id="macros.fat"
-                            name="macros.fat"
-                            type="number"
-                            value={newIngredient.macros.fat}
-                            onChange={handleInputChange}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="grid gap-2">
-                        <Label htmlFor="image_url" className="text-sm">
-                          Image URL (optional)
-                        </Label>
-                        <Input
-                          id="image_url"
-                          name="image_url"
-                          value={newIngredient.image_url}
-                          onChange={handleInputChange}
-                          placeholder="https://example.com/image.jpg"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-              
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="outline" onClick={resetForm}>
-                    Cancel
-                  </Button>
-                </DialogClose>
-                <Button type="button" onClick={handleSubmit} disabled={isScanning || isLoadingBarcode}>
-                  Add Ingredient
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Ingredients</h1>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add New Ingredient
+        </Button>
       </div>
-      
-      <Separator />
-      
+
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          className="pl-10"
+          placeholder="Search ingredients..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       {loading ? (
-        <div className="flex justify-center items-center min-h-[200px]">
-          <p className="text-lg text-muted-foreground">Loading ingredients...</p>
-        </div>
+        <div className="text-center py-8">Loading ingredients...</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredIngredients.map((ingredient) => (
-            <Card key={ingredient.id} className="overflow-hidden h-full flex flex-col">
-              <div className="aspect-video w-full overflow-hidden bg-secondary/20">
-                <img 
-                  src={ingredient.image_url || getFallbackImage(ingredient.name)} 
-                  alt={ingredient.name} 
-                  className="w-full h-full object-cover transition-transform hover:scale-105"
-                  onError={(e) => {
-                    // If image fails to load, set source to fallback
-                    const target = e.target as HTMLImageElement;
-                    if (target.src !== getFallbackImage(ingredient.name)) {
-                      target.src = getFallbackImage(ingredient.name);
-                    }
-                  }}
-                />
-              </div>
-              <CardContent className="flex-1 p-4">
-                <h3 className="font-medium text-lg mb-2">{ingredient.name}</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Calories:</span>
-                    <span className="font-medium">{ingredient.macros.calories}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Serving:</span>
-                    <span className="font-medium">{ingredient.grams}g</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Protein:</span>
-                    <span className="font-medium">{ingredient.macros.protein}g</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Carbs:</span>
-                    <span className="font-medium">{ingredient.macros.carbs}g</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Fat:</span>
-                    <span className="font-medium">{ingredient.macros.fat}g</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="overflow-auto rounded-lg border shadow">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-20">Image</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead className="text-right">Portion (g)</TableHead>
+                <TableHead className="text-right">Calories</TableHead>
+                <TableHead className="text-right">Protein (g)</TableHead>
+                <TableHead className="text-right">Carbs (g)</TableHead>
+                <TableHead className="text-right">Fat (g)</TableHead>
+                <TableHead className="text-right w-[100px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredIngredients.length > 0 ? (
+                filteredIngredients.map((ingredient) => (
+                  <TableRow key={ingredient.id}>
+                    <TableCell>
+                      <div className="w-12 h-12 rounded-md overflow-hidden">
+                        <img
+                          src={ingredient.image_url || '/placeholder.svg'}
+                          alt={ingredient.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">{ingredient.name}</TableCell>
+                    <TableCell className="text-right">{ingredient.grams}</TableCell>
+                    <TableCell className="text-right">{ingredient.macros.calories}</TableCell>
+                    <TableCell className="text-right">{ingredient.macros.protein}</TableCell>
+                    <TableCell className="text-right">{ingredient.macros.carbs}</TableCell>
+                    <TableCell className="text-right">{ingredient.macros.fat}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenEditDialog(ingredient)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenDeleteDialog(ingredient)}
+                          disabled={ingredient.is_default}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} className="h-24 text-center">
+                    No ingredients found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
       )}
+
+      {/* Add Ingredient Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Ingredient</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="mb-4">
+              <div className="flex justify-center mb-4">
+                <div className="w-32 h-32 rounded-md overflow-hidden border relative group">
+                  <img
+                    src={newIngredient.image_url || '/placeholder.svg'}
+                    alt="Ingredient"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <label className="cursor-pointer">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => handleIngredientImageUpload(e, true)}
+                        disabled={uploading}
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="text-white border-white hover:bg-white/20 hover:text-white"
+                        disabled={uploading}
+                      >
+                        <Upload className="mr-2 h-4 w-4" />
+                        {uploading ? "Uploading..." : "Upload"}
+                      </Button>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div className="grid gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    value={newIngredient.name}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, name: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="grams" className="text-right">
+                    Grams
+                  </Label>
+                  <Input
+                    id="grams"
+                    type="number"
+                    value={newIngredient.grams}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, grams: Number(e.target.value) })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="calories" className="text-right">
+                    Calories
+                  </Label>
+                  <Input
+                    id="calories"
+                    type="number"
+                    value={newIngredient.calories}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, calories: Number(e.target.value) })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="protein" className="text-right">
+                    Protein (g)
+                  </Label>
+                  <Input
+                    id="protein"
+                    type="number"
+                    value={newIngredient.protein}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, protein: Number(e.target.value) })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="carbs" className="text-right">
+                    Carbs (g)
+                  </Label>
+                  <Input
+                    id="carbs"
+                    type="number"
+                    value={newIngredient.carbs}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, carbs: Number(e.target.value) })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="fat" className="text-right">
+                    Fat (g)
+                  </Label>
+                  <Input
+                    id="fat"
+                    type="number"
+                    value={newIngredient.fat}
+                    onChange={(e) => setNewIngredient({ ...newIngredient, fat: Number(e.target.value) })}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddIngredient}>Add Ingredient</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Ingredient Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Ingredient</DialogTitle>
+          </DialogHeader>
+          {currentIngredient && (
+            <div className="grid gap-4 py-4">
+              <div className="mb-4">
+                <div className="flex justify-center mb-4">
+                  <div className="w-32 h-32 rounded-md overflow-hidden border relative group">
+                    <img
+                      src={currentIngredient.image_url || '/placeholder.svg'}
+                      alt={currentIngredient.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <label className="cursor-pointer">
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => handleIngredientImageUpload(e, false)}
+                          disabled={uploading}
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-white border-white hover:bg-white/20 hover:text-white"
+                          disabled={uploading}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          {uploading ? "Uploading..." : "Change Image"}
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="edit-name" className="text-right">
+                      Name
+                    </Label>
+                    <Input
+                      id="edit-name"
+                      value={currentIngredient.name}
+                      onChange={(e) => setCurrentIngredient({ ...currentIngredient, name: e.target.value })}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="edit-grams" className="text-right">
+                      Grams
+                    </Label>
+                    <Input
+                      id="edit-grams"
+                      type="number"
+                      value={currentIngredient.grams}
+                      onChange={(e) => setCurrentIngredient({ ...currentIngredient, grams: Number(e.target.value) })}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="edit-calories" className="text-right">
+                      Calories
+                    </Label>
+                    <Input
+                      id="edit-calories"
+                      type="number"
+                      value={currentIngredient.macros.calories}
+                      onChange={(e) => setCurrentIngredient({
+                        ...currentIngredient,
+                        macros: {
+                          ...currentIngredient.macros,
+                          calories: Number(e.target.value)
+                        }
+                      })}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="edit-protein" className="text-right">
+                      Protein (g)
+                    </Label>
+                    <Input
+                      id="edit-protein"
+                      type="number"
+                      value={currentIngredient.macros.protein}
+                      onChange={(e) => setCurrentIngredient({
+                        ...currentIngredient,
+                        macros: {
+                          ...currentIngredient.macros,
+                          protein: Number(e.target.value)
+                        }
+                      })}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="edit-carbs" className="text-right">
+                      Carbs (g)
+                    </Label>
+                    <Input
+                      id="edit-carbs"
+                      type="number"
+                      value={currentIngredient.macros.carbs}
+                      onChange={(e) => setCurrentIngredient({
+                        ...currentIngredient,
+                        macros: {
+                          ...currentIngredient.macros,
+                          carbs: Number(e.target.value)
+                        }
+                      })}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="edit-fat" className="text-right">
+                      Fat (g)
+                    </Label>
+                    <Input
+                      id="edit-fat"
+                      type="number"
+                      value={currentIngredient.macros.fat}
+                      onChange={(e) => setCurrentIngredient({
+                        ...currentIngredient,
+                        macros: {
+                          ...currentIngredient.macros,
+                          fat: Number(e.target.value)
+                        }
+                      })}
+                      className="col-span-3"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateIngredient}>Update Ingredient</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Ingredient Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+          </DialogHeader>
+          <p>
+            Are you sure you want to delete the ingredient "{currentIngredient?.name}"? This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteIngredient}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}
+};
+
+export default Ingredients;
